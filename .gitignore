@@ -1,0 +1,61 @@
+# Visual Studio
+.vs
+.user
+.suo
+.userosscache
+.sln.docstates
+
+# Build results
+[Bb]in
+[Oo]bj
+[Dd]ebug
+[Rr]elease
+x64
+x86
+
+# NuGet
+packages
+.nupkg
+.snupkg
+
+# Rider  ReSharper
+_ReSharper
+.DotSettings.user
+
+# Logs
+.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test results
+TestResults
+
+# Publish output
+publish
+
+# Windows Forms designer cache
+.cache
+
+# SQL Server local db
+.mdf
+.ldf
+
+# Temporary files
+.tmp
+.temp
+
+# Generated files
+Generated_Code
+
+# Backup files
+.bak
+.backup
+
+# JetBrains Rider
+.idea
+
+# Optional app settings if they contain secrets
+# appsettings.json
+# .config
