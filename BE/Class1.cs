@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace BE
 {
-    internal class Class1
+    public enum RolUsuario
     {
+        RolSimple = 1,
     }
 }

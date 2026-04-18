@@ -6,7 +6,16 @@ using System.Threading.Tasks;
 
 namespace BE
 {
-    public class Class1
+    public class Usuario
     {
+        //pk
+        public int DNI { get; set; }
+        public string Apellido { get; set; }
+        public string Nombre { get; set; }
+        public RolUsuario RolUsuario { get; set; }
+        public string Login { get; set; }
+        public string Contrasena { get; set; }
+        public bool Bloqueado { get; set; }
+        public bool Activo { get; set; }
     }
 }

@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL
+namespace BLL.Interfaces
 {
-    public class Class1
+    public interface IEncriptador
     {
+        string HashContrasena(string texto);
     }
 }
