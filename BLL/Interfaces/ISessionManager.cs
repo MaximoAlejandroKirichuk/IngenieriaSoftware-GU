@@ -11,5 +11,6 @@ namespace BLL.Interfaces
     {
         void IniciarSesion(Usuario usuario);
         void CerrarSesion();
+        Usuario UsuarioActivo { get; }
     }
 }

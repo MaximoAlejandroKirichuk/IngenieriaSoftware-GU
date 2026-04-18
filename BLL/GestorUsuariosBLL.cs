@@ -14,7 +14,8 @@ namespace BLL
     {
         private readonly IUsuarioDAL _dal;
         private readonly IEncriptador _encriptador;
-        public GestorUsuarioBLL(IUsuarioDAL dal, IEncriptador encriptador, )
+        private readonly ISessionManager _sessionManager;
+        public GestorUsuarioBLL(IUsuarioDAL dal, IEncriptador encriptador, ISessionManager sessionManager)
         {
             _dal = dal;
             _encriptador = encriptador;
@@ -23,11 +24,11 @@ namespace BLL
         public void Login(string email, string contrasena)
         {
             string hash = _encriptador.HashContrasena(contrasena);
-            var usuario = _dal.OptenerPorMail(email);
+            var usuario = _dal.ObtenerPorMail(email);
 
             if (usuario != null && usuario.Contrasena == hash)
             {
-                SessionManager.Login(usuario);
+                _sessionManager.IniciarSesion(usuario);
             }
             else
             {

@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BE;
+using BLL.Interfaces;
 namespace Service
 {
-    public class SessionManager
+    public class SessionManager : ISessionManager
     {
         private static SessionManager _instancia;
         public Usuario UsuarioActivo { get; private set; }
