@@ -13,6 +13,6 @@ namespace BLL.Interfaces
         void Logout();
         void CambioContrasena(string email, string contrasenaActual, string nuevaContrasena);
         void ModificarRolUsuario(RolUsuario Rol);
-        void BloqueoCuentaUsuario();
+        void BloqueoCuentaUsuario(Usuario usuario);
     }
 }

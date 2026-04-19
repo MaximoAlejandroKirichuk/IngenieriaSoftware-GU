@@ -29,16 +29,17 @@ namespace BLL
 
         public void Login(string email, string contrasena)
         {
-            var usuario = _dal.ObtenerPorMail(email);
-
             if (_sessionManager.UsuarioActivo != null)
                 throw new UsuarioActivoActualmenteException();
+            
+            var usuario = _dal.ObtenerPorMail(email);
 
             if (usuario == null)
             {
-                _bitacora.RegistrarEvento($"Intento de login fallido: {email} no existe", 2, "Seguridad", email);
+                _bitacora.RegistrarEvento($"Intento de login fallido: {email} no existe", 2, Modulo.Seguridad, email);
                 throw new UsuarioNoExisteException();
             }
+
             string hash = _encriptador.HashContrasena(contrasena);
 
             if (usuario.Contrasena != hash)
@@ -46,11 +47,7 @@ namespace BLL
                 usuario.Intentos++;
                 if (usuario.Intentos >= NumeroIntentos)
                 {
-                    usuario.Bloqueado = true;
-                    _dal.BloquearUsuario(usuario);
-                    // REGISTRO DE BLOQUEO (Criticidad 1)
-                    _bitacora.RegistrarEvento($"Usuario bloqueado: {email}", 1, "Usuario", email);
-                    throw new UsuarioBloqueadoException();
+                    BloqueoCuentaUsuario(usuario);
                 }
 
                 _dal.ActualizarIntentos(usuario);
@@ -62,11 +59,16 @@ namespace BLL
             usuario.Intentos = 0; // Reseteamos intentos
             _dal.ActualizarIntentos(usuario);
             //REGISTRO DE LOGIN(Criticidad 1)
-            _bitacora.RegistrarEvento($"Login exitoso: {usuario.Email}", 1, "Usuario", email);
+            _bitacora.RegistrarEvento($"Login exitoso: {usuario.Email}", 1, Modulo.Usuarios, email);
         }
         public void Logout()
         {
-            throw new NotImplementedException();
+            var usuario = _sessionManager.UsuarioActivo;
+            if (usuario != null)
+            {
+                _sessionManager.CerrarSesion();
+                _bitacora.RegistrarEvento($"Login exitoso: {usuario.Email}", 1, Modulo.Usuarios, usuario.Email);
+            }
         }
 
         public void CambioContrasena(string email, string contrasenaActual, string nuevaContrasena)
@@ -79,9 +81,15 @@ namespace BLL
             throw new NotImplementedException();
         }
 
-        public void BloqueoCuentaUsuario()
+        public void BloqueoCuentaUsuario(Usuario usuario)
         {
-            throw new NotImplementedException();
+            usuario.Bloqueado = true;
+            _dal.BloquearUsuario(usuario);
+            // REGISTRO DE BLOQUEO (Criticidad 1)
+            _bitacora.RegistrarEvento($"Usuario bloqueado: {usuario.Email}", 1, Modulo.Usuarios, usuario.Email);
+            throw new UsuarioBloqueadoException();
         }
+
+        
     }
 }

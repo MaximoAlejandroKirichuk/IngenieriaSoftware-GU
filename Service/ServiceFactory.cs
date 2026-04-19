@@ -19,10 +19,10 @@ namespace Service
         {
             if (_gestorUsuario == null)
             {
-                
-
+                //necesito para consulta y escriba con la base de datos
                 IUsuarioDAL datos = new UsuarioDAL();
                 IBitacoraDAL bitacoraDAL = new BitacoraEventoDAL();
+
 
                 IEncriptador encriptador = new Encriptador();
                 ISessionManager sessionManager = SessionManager.Instancia;

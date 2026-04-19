@@ -62,7 +62,8 @@ namespace DAL
                         Fecha = Convert.ToDateTime(row["Fecha"]),
                         Descripcion = row["Descripcion"].ToString(),
                         Criticidad = Convert.ToInt32(row["Criticidad"]),
-                        Modulo = row["Modulo"].ToString()
+                        //es un enum
+                        //Modulo = row["Modulo"].ToString()
                     });
                 }
             }

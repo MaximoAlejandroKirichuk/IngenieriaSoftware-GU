@@ -11,4 +11,9 @@ namespace BE
         Admin,
         RolSimple,
     }
+    public enum Modulo
+    {
+        Usuarios,
+        Seguridad
+    }
 }

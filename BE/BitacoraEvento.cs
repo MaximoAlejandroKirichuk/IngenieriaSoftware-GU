@@ -13,13 +13,13 @@ namespace BE
         public DateTime Fecha { get; set; }
         public string Descripcion { get; set; }
         public int Criticidad { get; set; } // 1 a 5 como en el Excel
-        public string Modulo { get; set; }    // "Usuario"
+        public Modulo Modulo { get; set; }    // "Usuario"
         public string EmailUsuario { get; set; }
-        // Constructor para crear eventos rápido desde la BLL
-
+        
         // Constructor vacío para la DAL
         public BitacoraEvento() { }
-        public BitacoraEvento(string descripcion, int criticidad, string modulo, string email)
+        // Constructor para crear eventos rápido desde la BLL
+        public BitacoraEvento(string descripcion, int criticidad, Modulo modulo, string email)
         {
             Fecha = DateTime.Now;
             Descripcion = descripcion;
