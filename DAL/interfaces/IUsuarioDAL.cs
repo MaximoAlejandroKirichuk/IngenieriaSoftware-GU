@@ -10,5 +10,7 @@ namespace DAL.interfaces
     public interface IUsuarioDAL
     {
         Usuario ObtenerPorMail(string mail);
+        void ActualizarIntentos(Usuario usuario); // Incrementa o resetea a 0
+        void BloquearUsuario(Usuario usuario); 
     }
 }

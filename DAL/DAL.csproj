@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccesoDAL.cs" />
     <Compile Include="UsuarioDAL.cs" />
     <Compile Include="interfaces\IUsuarioDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
