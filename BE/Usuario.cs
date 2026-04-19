@@ -16,6 +16,7 @@ namespace BE
         public string Login { get; set; }
         public string Contrasena { get; set; }
         public bool Bloqueado { get; set; }
-        public bool Activo { get; set; }
+        public int Intentos { get; set; }
+        public string Email { get; set; }
     }
 }
