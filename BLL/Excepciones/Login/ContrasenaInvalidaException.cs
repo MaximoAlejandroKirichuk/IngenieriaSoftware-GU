@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace BLL.Excepciones.Login
 {
-    internal class UsuarioInactivoException
+    public class ContrasenaInvalidaException : Exception
     {
+        private readonly string _mensajeIntentos;
+        public ContrasenaInvalidaException(string mensajeIntentos)
+        {
+            _mensajeIntentos = mensajeIntentos;
+        }
+        public override string Message => $"La contraseña es invalida: {_mensajeIntentos}";
     }
 }

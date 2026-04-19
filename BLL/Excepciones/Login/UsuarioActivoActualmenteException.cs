@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Excepciones.Login
 {
-    public class UsuarioNoExisteException : Exception
+    internal class UsuarioActivoActualmenteException
     {
-        public override string Message => "El usuario no existe";
     }
 }
