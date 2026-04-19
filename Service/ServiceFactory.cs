@@ -19,12 +19,16 @@ namespace Service
         {
             if (_gestorUsuario == null)
             {
-                // La Factory sabe que el BLL necesita una DAL para funcionar
-                // Inyectamos la DAL en el constructor del BLL
+                
+
                 IUsuarioDAL datos = new UsuarioDAL();
+                IBitacoraDAL bitacoraDAL = new BitacoraEventoDAL();
+
                 IEncriptador encriptador = new Encriptador();
                 ISessionManager sessionManager = SessionManager.Instancia;
-                _gestorUsuario = new GestorUsuarioBLL(datos, encriptador, sessionManager);
+                IBitacoraManager bitacoraManager = new BitacoraBLL(bitacoraDAL);
+
+                _gestorUsuario = new GestorUsuarioBLL(datos, encriptador, sessionManager, bitacoraManager);
             }
             return _gestorUsuario;
         }
