@@ -12,30 +12,63 @@ namespace DAL
     {
         internal class AccesoDAL
         {
-         
-            //TODO: REVISAR
-            private SqlConnection _conexion = new SqlConnection("tu_string_conexion");
 
-            public DataTable Leer(string consulta, SqlParameter[] parametros = null)
+            private readonly string _stringConnection = "";
+
+            public DataSet Leer(string consulta, List<SqlParameter> parametros = null)
             {
-                DataTable tabla = new DataTable();
-                using (SqlDataAdapter da = new SqlDataAdapter(consulta, _conexion))
+                DataSet ds = new DataSet();
+                using (SqlConnection conn = new SqlConnection(_stringConnection))
                 {
-                    if (parametros != null) da.SelectCommand.Parameters.AddRange(parametros);
-                    da.Fill(tabla);
+                    using (SqlCommand cmd = new SqlCommand(consulta, conn))
+                    {
+                        if (parametros != null)
+                        {
+                            cmd.Parameters.AddRange(parametros.ToArray());
+                        }
+
+                        SqlDataAdapter da = new SqlDataAdapter(cmd);
+                        try
+                        {
+                            // El Fill se encarga de abrir y cerrar la conexión solo si es necesario
+                            da.Fill(ds);
+                        }
+                        catch (SqlException ex)
+                        {
+                            throw new Exception("Error de lectura en la base de datos", ex);
+                        }
+                    }
                 }
-                return tabla;
+                return ds;
             }
 
-            public int Escribir(string consulta, SqlParameter[] parametros)
+      
+            public int Escribir(string consulta, List<SqlParameter> parametros)
             {
-                using (SqlCommand cmd = new SqlCommand(consulta, _conexion))
+                using (SqlConnection conn = new SqlConnection(_stringConnection))
                 {
-                    cmd.Parameters.AddRange(parametros);
-                    _conexion.Open();
-                    int filas = cmd.ExecuteNonQuery();
-                    _conexion.Close();
-                    return filas;
+                    using (SqlCommand cmd = new SqlCommand(consulta, conn))
+                    {
+                        if (parametros != null)
+                        {
+                            cmd.Parameters.AddRange(parametros.ToArray());
+                        }
+
+                        try
+                        {
+                            conn.Open();
+                            return cmd.ExecuteNonQuery();
+                        }
+                        catch (SqlException ex)
+                        {
+                            throw new Exception("Error al escribir en la base de datos", ex);
+                        }
+                        finally
+                        {
+                            // Por las dudas, aunque el using se encarga, el finally asegura el cierre
+                            if (conn.State == ConnectionState.Open) conn.Close();
+                        }
+                    }
                 }
             }
         }
