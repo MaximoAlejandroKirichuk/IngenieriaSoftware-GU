@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Drawing2D;
 
 namespace UI
 {
@@ -22,11 +23,57 @@ namespace UI
             InitializeComponent();
         }
 
-        private void Login_Load(object sender, EventArgs e)
+        public void LoginDesignConfig(PictureBox pic)  //diseño de la interfaz
         {
-
+            BackColor = Color.FromArgb(70, 130, 180);
+            txt_email.BackColor = Color.FromArgb(240, 240, 240);
+            txt_Contrasena.BackColor = Color.FromArgb(240, 240, 240);
+            //diseño imagen
+            GraphicsPath path = new GraphicsPath();
+            path.AddEllipse(0, 0, pic.Width, pic.Height);
+            pic.Region = new Region(path);
         }
 
+        private void RedondearPanel(Panel panel) //diseño del panel
+        {
+            GraphicsPath path = new GraphicsPath();
+            int radio = 30;
+
+            path.StartFigure();
+            path.AddArc(0, 0, radio, radio, 180, 90);
+            path.AddArc(panel.Width - radio, 0, radio, radio, 270, 90);
+            path.AddArc(panel.Width - radio, panel.Height - radio, radio, radio, 0, 90);
+            path.AddArc(0, panel.Height - radio, radio, radio, 90, 90);
+            path.CloseFigure();
+
+            panel.Region = new Region(path);
+        }
+
+        public void ButtonDesing(Button btn) //diseño del boton 
+        {
+            btn.BackColor = Color.FromArgb(70, 130, 180);
+            btn.ForeColor = Color.White;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            GraphicsPath path = new GraphicsPath();
+            int radio = 20;
+
+            path.StartFigure();
+            path.AddArc(0, 0, radio, radio, 180, 90);
+            path.AddArc(btn.Width - radio, 0, radio, radio, 270, 90);
+            path.AddArc(btn.Width - radio, btn.Height - radio, radio, radio, 0, 90);
+            path.AddArc(0, btn.Height - radio, radio, radio, 90, 90);
+            path.CloseFigure();
+
+            btn.Region = new Region(path);
+        }
+
+        private void Login_Load(object sender, EventArgs e)
+        {
+            LoginDesignConfig(pictureBox1);
+            RedondearPanel(panelLogin);
+            ButtonDesing(btnLogin);
+        }
         private void btnLogin_Click(object sender, EventArgs e)
         {
             try
