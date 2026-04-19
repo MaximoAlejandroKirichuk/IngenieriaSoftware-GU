@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BLL.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,9 +13,30 @@ namespace UI
 {
     public partial class Login : Form
     {
+        private readonly IGestorUsuario _gestor;
         public Login()
         {
+            _gestor = Service.ServiceFactory.GetGestorUsuario();
             InitializeComponent();
+        }
+
+        private void Login_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var email = txt_email.Text;
+                var contrasena = txt_Contrasena.Text;
+                _gestor.Login(email, contrasena);
+            }
+            catch (Exception)
+            {
+                //TODO: AGREGAR EXCEP PERSONALIZADA
+            }
         }
     }
 }
