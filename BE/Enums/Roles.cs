@@ -8,6 +8,7 @@ namespace BE
 {
     public enum RolUsuario
     {
-        RolSimple = 1,
+        Admin,
+        RolSimple,
     }
 }
