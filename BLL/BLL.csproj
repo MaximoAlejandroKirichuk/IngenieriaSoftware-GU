@@ -41,8 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="Excepciones\UsuarioBloqueadoException.cs" />
+    <Compile Include="Excepciones\Login\UsuarioBloqueadoException.cs" />
+    <Compile Include="Excepciones\Login\ContrasenaInvalidaException.cs" />
+    <Compile Include="Excepciones\Login\UsuarioNoExisteException.cs" />
     <Compile Include="GestorUsuariosBLL.cs" />
     <Compile Include="Interfaces\IEncriptador.cs" />
     <Compile Include="Interfaces\IGestorUsuario.cs" />
