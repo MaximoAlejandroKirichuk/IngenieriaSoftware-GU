@@ -1,4 +1,6 @@
-﻿using BLL.Interfaces;
+﻿using BLL.Excepciones;
+using BLL.Excepciones.Login;
+using BLL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,9 +35,18 @@ namespace UI
                 var contrasena = txt_Contrasena.Text;
                 _gestor.Login(email, contrasena);
             }
-            catch (Exception)
+            catch(UsuarioActivoActualmenteException ex)
             {
-                //TODO: AGREGAR EXCEP PERSONALIZADA
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (UsuarioBloqueadoException ex)
+            {
+                MessageBox.Show(ex.Message, "Seguridad", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
+            
+            catch (ContrasenaInvalidaException ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
     }
