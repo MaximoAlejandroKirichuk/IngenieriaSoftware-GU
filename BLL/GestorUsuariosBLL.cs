@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using BLL.Interfaces;
 using DAL.interfaces;
 using DAL;
+using BLL.Excepciones.Login;
 namespace BLL
 {
     public class GestorUsuarioBLL : IGestorUsuario
@@ -19,21 +20,22 @@ namespace BLL
         {
             _dal = dal;
             _encriptador = encriptador;
+            _sessionManager = sessionManager;
         }
 
         public void Login(string email, string contrasena)
         {
             string hash = _encriptador.HashContrasena(contrasena);
             var usuario = _dal.ObtenerPorMail(email);
+            
+            if (usuario == null)
+                throw new UsuarioNoExisteException();
+            
+            if (usuario.Contrasena != hash)
+            //TODO: falta agregar el contador de errores
+                throw new ContrasenaInvalidaException();
+            _sessionManager.IniciarSesion(usuario);
 
-            if (usuario != null && usuario.Contrasena == hash)
-            {
-                _sessionManager.IniciarSesion(usuario);
-            }
-            else
-            {
-                throw new Exception("Credenciales inválidas");
-            }
         }
 
         public void Logout()
