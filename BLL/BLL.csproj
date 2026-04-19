@@ -41,10 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitacoraBLL.cs" />
+    <Compile Include="Excepciones\Login\UsuarioActivoActualmenteException.cs" />
     <Compile Include="Excepciones\Login\UsuarioBloqueadoException.cs" />
     <Compile Include="Excepciones\Login\ContrasenaInvalidaException.cs" />
     <Compile Include="Excepciones\Login\UsuarioNoExisteException.cs" />
     <Compile Include="GestorUsuariosBLL.cs" />
+    <Compile Include="Interfaces\IBitacoraManager.cs" />
     <Compile Include="Interfaces\IEncriptador.cs" />
     <Compile Include="Interfaces\IGestorUsuario.cs" />
     <Compile Include="Interfaces\ISessionManager.cs" />

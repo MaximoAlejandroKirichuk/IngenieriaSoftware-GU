@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccesoDAL.cs" />
+    <Compile Include="BitacoraEventoDAL.cs" />
+    <Compile Include="interfaces\IBitacoraDAL.cs" />
     <Compile Include="UsuarioDAL.cs" />
     <Compile Include="interfaces\IUsuarioDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
