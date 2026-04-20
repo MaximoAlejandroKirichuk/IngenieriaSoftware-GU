@@ -11,6 +11,7 @@ namespace DAL.interfaces
     {
         Usuario ObtenerPorMail(string mail);
         void ActualizarIntentos(Usuario usuario); // Incrementa o resetea a 0
-        void BloquearUsuario(Usuario usuario); 
+        void BloquearUsuario(Usuario usuario);
+        void CrearUsuario(Usuario usuario);
     }
 }
