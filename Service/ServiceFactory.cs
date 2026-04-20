@@ -32,5 +32,7 @@ namespace Service
             }
             return _gestorUsuario;
         }
+
+        
     }
 }
