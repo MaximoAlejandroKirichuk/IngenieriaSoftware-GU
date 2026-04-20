@@ -11,6 +11,7 @@ namespace BLL.Interfaces
     {
         void Login(string email, string contrasena);
         void Logout();
+        void CrearUsuario(Usuario usuario);
         void CambioContrasena(string email, string contrasenaActual, string nuevaContrasena);
         void ModificarRolUsuario(RolUsuario Rol);
         void BloqueoCuentaUsuario(Usuario usuario);

@@ -90,6 +90,11 @@ namespace BLL
             throw new UsuarioBloqueadoException();
         }
 
-        
+        public void CrearUsuario(Usuario usuario)
+        {
+            //validaciones de que no puede haber una persona con el mismo mail y/o dni
+            _dal.CrearUsuario(usuario);
+            _bitacora.RegistrarEvento($"Usuario bloqueado: {usuario.Email}", 1, Modulo.Usuarios, usuario.Email);
+        }
     }
 }
