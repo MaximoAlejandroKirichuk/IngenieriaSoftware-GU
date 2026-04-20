@@ -28,46 +28,46 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.txtNombre = new System.Windows.Forms.TextBox();
+            this.txtApellido = new System.Windows.Forms.TextBox();
+            this.txtEmail = new System.Windows.Forms.TextBox();
+            this.txt_Dni = new System.Windows.Forms.TextBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.frm_lbl_nombre = new System.Windows.Forms.Label();
             this.frm_lbl_apellido = new System.Windows.Forms.Label();
             this.frm_lbl_email = new System.Windows.Forms.Label();
             this.btnCrearUsuario = new System.Windows.Forms.Button();
             this.frm_lbl_dni = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
+            this.frm_lbl_rol = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // textBox1
+            // txtNombre
             // 
-            this.textBox1.Location = new System.Drawing.Point(130, 159);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 0;
+            this.txtNombre.Location = new System.Drawing.Point(130, 159);
+            this.txtNombre.Name = "txtNombre";
+            this.txtNombre.Size = new System.Drawing.Size(100, 20);
+            this.txtNombre.TabIndex = 0;
             // 
-            // textBox2
+            // txtApellido
             // 
-            this.textBox2.Location = new System.Drawing.Point(130, 198);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 1;
+            this.txtApellido.Location = new System.Drawing.Point(130, 198);
+            this.txtApellido.Name = "txtApellido";
+            this.txtApellido.Size = new System.Drawing.Size(100, 20);
+            this.txtApellido.TabIndex = 1;
             // 
-            // textBox3
+            // txtEmail
             // 
-            this.textBox3.Location = new System.Drawing.Point(130, 245);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
-            this.textBox3.TabIndex = 2;
+            this.txtEmail.Location = new System.Drawing.Point(130, 245);
+            this.txtEmail.Name = "txtEmail";
+            this.txtEmail.Size = new System.Drawing.Size(100, 20);
+            this.txtEmail.TabIndex = 2;
             // 
-            // textBox4
+            // txt_Dni
             // 
-            this.textBox4.Location = new System.Drawing.Point(133, 289);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(100, 20);
-            this.textBox4.TabIndex = 3;
+            this.txt_Dni.Location = new System.Drawing.Point(133, 289);
+            this.txt_Dni.Name = "txt_Dni";
+            this.txt_Dni.Size = new System.Drawing.Size(100, 20);
+            this.txt_Dni.TabIndex = 3;
             // 
             // comboBox1
             // 
@@ -106,7 +106,7 @@
             // 
             // btnCrearUsuario
             // 
-            this.btnCrearUsuario.Location = new System.Drawing.Point(196, 389);
+            this.btnCrearUsuario.Location = new System.Drawing.Point(177, 383);
             this.btnCrearUsuario.Name = "btnCrearUsuario";
             this.btnCrearUsuario.Size = new System.Drawing.Size(96, 23);
             this.btnCrearUsuario.TabIndex = 8;
@@ -119,35 +119,35 @@
             this.frm_lbl_dni.AutoSize = true;
             this.frm_lbl_dni.Location = new System.Drawing.Point(130, 273);
             this.frm_lbl_dni.Name = "frm_lbl_dni";
-            this.frm_lbl_dni.Size = new System.Drawing.Size(35, 13);
+            this.frm_lbl_dni.Size = new System.Drawing.Size(23, 13);
             this.frm_lbl_dni.TabIndex = 9;
-            this.frm_lbl_dni.Text = "label4";
+            this.frm_lbl_dni.Text = "Dni";
             // 
-            // label5
+            // frm_lbl_rol
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(130, 323);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(35, 13);
-            this.label5.TabIndex = 10;
-            this.label5.Text = "label5";
+            this.frm_lbl_rol.AutoSize = true;
+            this.frm_lbl_rol.Location = new System.Drawing.Point(130, 323);
+            this.frm_lbl_rol.Name = "frm_lbl_rol";
+            this.frm_lbl_rol.Size = new System.Drawing.Size(23, 13);
+            this.frm_lbl_rol.TabIndex = 10;
+            this.frm_lbl_rol.Text = "Rol";
             // 
             // FrmCrearUsuario
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.label5);
+            this.Controls.Add(this.frm_lbl_rol);
             this.Controls.Add(this.frm_lbl_dni);
             this.Controls.Add(this.btnCrearUsuario);
             this.Controls.Add(this.frm_lbl_email);
             this.Controls.Add(this.frm_lbl_apellido);
             this.Controls.Add(this.frm_lbl_nombre);
             this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.txt_Dni);
+            this.Controls.Add(this.txtEmail);
+            this.Controls.Add(this.txtApellido);
+            this.Controls.Add(this.txtNombre);
             this.Name = "FrmCrearUsuario";
             this.Text = "FrmCrearUsuario";
             this.ResumeLayout(false);
@@ -157,16 +157,16 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox txtNombre;
+        private System.Windows.Forms.TextBox txtApellido;
+        private System.Windows.Forms.TextBox txtEmail;
+        private System.Windows.Forms.TextBox txt_Dni;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label frm_lbl_nombre;
         private System.Windows.Forms.Label frm_lbl_apellido;
         private System.Windows.Forms.Label frm_lbl_email;
         private System.Windows.Forms.Button btnCrearUsuario;
         private System.Windows.Forms.Label frm_lbl_dni;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label frm_lbl_rol;
     }
 }
