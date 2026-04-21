@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace BLL.Excepciones.CrearUsuario
 {
-    internal class DniRegistradoException
+    public class DniRegistradoException: Exception
     {
+        public override string Message => "El DNI ya esta registrado a un usuario";
     }
 }

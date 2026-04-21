@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace BLL.Excepciones.CrearUsuario
 {
-    internal class EmailExisteException
+    public class EmailRegistradoException : Exception
     {
+        public override string Message => "Email ya registrado a un usuario.";
     }
 }
