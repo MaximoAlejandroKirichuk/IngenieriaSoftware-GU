@@ -1,5 +1,6 @@
 ﻿using BE;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,6 @@ namespace BLL.Interfaces
         void CambioContrasena(string email, string contrasenaActual, string nuevaContrasena);
         void ModificarRolUsuario(RolUsuario Rol);
         void BloqueoCuentaUsuario(Usuario usuario);
+        IEnumerable<Usuario> ObtenerUsuarios();
     }
 }

@@ -15,5 +15,6 @@ namespace DAL.interfaces
         void CrearUsuario(Usuario usuario);
         bool ExisteDni(int dni);
         bool ExisteEmail(string email);
+        IEnumerable<Usuario> ObtenerUsuarios();
     }
 }
