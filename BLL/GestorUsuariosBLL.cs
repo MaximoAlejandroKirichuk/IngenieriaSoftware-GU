@@ -10,6 +10,7 @@ using DAL.interfaces;
 using DAL;
 using BLL.Excepciones.Login;
 using Microsoft.Win32;
+using BLL.Excepciones.CrearUsuario;
 namespace BLL
 {
     public class GestorUsuarioBLL : IGestorUsuario
@@ -58,8 +59,8 @@ namespace BLL
             _sessionManager.IniciarSesion(usuario);
             usuario.Intentos = 0; // Reseteamos intentos
             _dal.ActualizarIntentos(usuario);
-            //REGISTRO DE LOGIN(Criticidad 1)
-            _bitacora.RegistrarEvento($"Login exitoso: {usuario.Email}", 1, Modulo.Usuarios, email);
+            //REGISTRO DE LOGIN(Criticidad 3)
+            _bitacora.RegistrarEvento($"Login exitoso: {usuario.Email}", 3, Modulo.Usuarios, email);
         }
         public void Logout()
         {
@@ -67,7 +68,7 @@ namespace BLL
             if (usuario != null)
             {
                 _sessionManager.CerrarSesion();
-                _bitacora.RegistrarEvento($"Login exitoso: {usuario.Email}", 1, Modulo.Usuarios, usuario.Email);
+                _bitacora.RegistrarEvento($"Login exitoso: {usuario.Email}", 3, Modulo.Usuarios, usuario.Email);
             }
         }
 
@@ -92,9 +93,18 @@ namespace BLL
 
         public void CrearUsuario(Usuario usuario)
         {
-            //validaciones de que no puede haber una persona con el mismo mail y/o dni
+            if (_dal.ExisteDni(usuario.DNI)) throw new DniRegistradoException();
+            if (_dal.ExisteEmail(usuario.Email)) throw new EmailRegistradoException();
+            
+            usuario.Contrasena = _encriptador.HashContrasena(usuario.DNI.ToString());
+
             _dal.CrearUsuario(usuario);
-            _bitacora.RegistrarEvento($"Usuario bloqueado: {usuario.Email}", 1, Modulo.Usuarios, usuario.Email);
+            _bitacora.RegistrarEvento(
+                $"Nuevo usuario creado: {usuario.Email} (Rol: {usuario.RolUsuario})",
+                1,
+                Modulo.Usuarios,
+                usuario.Email
+            );
         }
     }
 }
