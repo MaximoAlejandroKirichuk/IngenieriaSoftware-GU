@@ -13,5 +13,7 @@ namespace DAL.interfaces
         void ActualizarIntentos(Usuario usuario); // Incrementa o resetea a 0
         void BloquearUsuario(Usuario usuario);
         void CrearUsuario(Usuario usuario);
+        bool ExisteDni(int dni);
+        bool ExisteEmail(string email);
     }
 }

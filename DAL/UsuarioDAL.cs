@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -54,7 +55,6 @@ namespace DAL
 
         public void BloquearUsuario(Usuario usuario)
         {
-            // Aprovechamos y actualizamos el bit de Bloqueado y los Intentos a 3
             string consulta = "UPDATE Usuarios SET Bloqueado = 1, Intentos = 3 WHERE DNI = @dni";
 
             List<SqlParameter> parametros = new List<SqlParameter>
@@ -63,6 +63,65 @@ namespace DAL
             };
 
             _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void CrearUsuario(Usuario usuario)
+        {
+            // Nota: No incluimos ID si es Identity/Autonumérico en SQL
+            string consulta = @"INSERT INTO Usuarios (Nombre, Apellido, DNI, Email, Rol, Password) 
+                        VALUES (@nombre, @apellido, @dni, @email, @rol, @pass)";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@nombre", usuario.Nombre),
+                new SqlParameter("@apellido", usuario.Apellido),
+                new SqlParameter("@dni",usuario.DNI),
+                new SqlParameter("@email", usuario.Email),
+                new SqlParameter("@rol", usuario.RolUsuario.ToString()), // Guardamos el nombre del Enum
+                new SqlParameter("@pass", usuario.Contrasena)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public bool ExisteDni(int dni)
+        {
+            string query = "SELECT COUNT(1) AS Total FROM Usuarios WHERE DNI = @dni";
+
+            var parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", dni)
+            };
+
+            DataSet ds = _accesoDAL.Leer(query, parametros);
+
+            // Verificamos si tiene datos y accedemos a la primera tabla, primera fila
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                int total = Convert.ToInt32(ds.Tables[0].Rows[0]["Total"]);
+                return total > 0;
+            }
+
+            return false;
+        }
+
+        public bool ExisteEmail(string email)
+        {
+            string query = "SELECT COUNT(1) AS Total FROM Usuarios WHERE Email = @email";
+
+            var parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni",email)
+            };
+
+            DataSet ds = _accesoDAL.Leer(query, parametros);
+
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                int total = Convert.ToInt32(ds.Tables[0].Rows[0]["Total"]);
+                return total > 0;
+            }
+            return false;
         }
     }
 }

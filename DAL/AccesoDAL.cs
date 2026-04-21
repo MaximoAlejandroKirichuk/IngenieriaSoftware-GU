@@ -41,8 +41,30 @@ namespace DAL
                 }
                 return ds;
             }
+            public object LeerEscalar(string consulta, List<SqlParameter> parametros = null)
+            {
+                using (SqlConnection conn = new SqlConnection(_stringConnection))
+                {
+                    using (SqlCommand cmd = new SqlCommand(consulta, conn))
+                    {
+                        if (parametros != null)
+                        {
+                            cmd.Parameters.AddRange(parametros.ToArray());
+                        }
 
-      
+                        try
+                        {
+                            conn.Open();
+                            return cmd.ExecuteScalar(); // Devuelve solo la primera columna de la primera fila
+                        }
+                        catch (SqlException ex)
+                        {
+                            throw new Exception("Error al obtener valor escalar", ex);
+                        }
+                    }
+                }
+            }
+
             public int Escribir(string consulta, List<SqlParameter> parametros)
             {
                 using (SqlConnection conn = new SqlConnection(_stringConnection))
