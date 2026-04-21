@@ -106,10 +106,9 @@ namespace BLL
                 usuario.Email
             );
         }
-
-        public IEnumerable<Usuario> ListarUsuario()
+        public IEnumerable<Usuario> ObtenerUsuarios()
         {
-            _dal.
+            return _dal.ObtenerUsuarios();
         }
     }
 }

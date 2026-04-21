@@ -13,7 +13,6 @@ namespace BE
         public string Apellido { get; set; }
         public string Nombre { get; set; }
         public RolUsuario RolUsuario { get; set; }
-        public string Login { get; set; }
         public string Contrasena { get; set; }
         public bool Bloqueado { get; set; }
         public int Intentos { get; set; }

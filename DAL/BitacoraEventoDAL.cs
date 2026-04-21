@@ -17,7 +17,7 @@ namespace DAL
 
         public void Registrar(BitacoraEvento evento)
         {
-            string consulta = "INSERT INTO EVENTOS (Criticidad, Descripcion, DNI, Fecha, Modulo) " +
+            string consulta = "INSERT INTO BitacoraEventos (Criticidad, Descripcion, DNI, Fecha, Modulo) " +
                               "VALUES (@crit, @desc, @dni, @fecha, @mod)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
@@ -35,7 +35,7 @@ namespace DAL
         public IEnumerable<BitacoraEvento> Consultar(DateTime desde, DateTime hasta, string modulo = null, int? criticidad = null)
         {
             List<BitacoraEvento> lista = new List<BitacoraEvento>();
-            string consultaBase = "SELECT * FROM EVENTOS WHERE Fecha BETWEEN @desde AND @hasta";
+            string consultaBase = "SELECT * FROM BitacoraEventos WHERE Fecha BETWEEN @desde AND @hasta";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {

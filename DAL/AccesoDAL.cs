@@ -13,7 +13,7 @@ namespace DAL
         internal class AccesoDAL
         {
 
-            private readonly string _stringConnection = "";
+            private readonly string _stringConnection = "Data Source=mk\\MSSQLSERVER02;Initial Catalog=GestionUsuarios;Integrated Security=True;Trust Server Certificate=True";
 
             public DataSet Leer(string consulta, List<SqlParameter> parametros = null)
             {

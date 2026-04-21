@@ -123,6 +123,30 @@ namespace DAL
             }
             return false;
         }
+
+        public IEnumerable<Usuario> ObtenerUsuarios()
+        {
+            string query = "SELECT * FROM Usuarios";
+            DataSet ds = _accesoDAL.Leer(query);
+            List<Usuario> listaTemporal = new List<Usuario>();
+
+            if (ds != null && ds.Tables.Count > 0)
+            {
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    listaTemporal.Add(new Usuario
+                    {
+                        DNI = Convert.ToInt32(row["DNI"]),
+                        Nombre = row["Nombre"].ToString(),
+                        Apellido = row["Apellido"].ToString(),
+                        Email = row["Email"].ToString(),
+                        Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
+                        Intentos = Convert.ToInt32(row["Intentos"])
+                    });
+                }
+            }
+            return listaTemporal;
+        }
     }
 }
 
