@@ -16,8 +16,8 @@ namespace UI
 {
     public partial class FrmCrearUsuario : Form
     {
-        private readonly IGestorUsuario _usuarioService;
-        public FrmCrearUsuario(IGestorUsuario gestorUsuario)
+        private readonly IGestorUsuario_83KI _usuarioService;
+        public FrmCrearUsuario(IGestorUsuario_83KI gestorUsuario)
         {
             InitializeComponent();
             _usuarioService = gestorUsuario;
@@ -33,11 +33,11 @@ namespace UI
                 MessageBox.Show("Usuario registrado con éxito.");
                 this.DialogResult = DialogResult.OK;
             }
-            catch (DniRegistradoException ex)
+            catch (DniRegistradoException_83KI ex)
             {
                 MessageBox.Show(ex.Message);
             }
-            catch (EmailRegistradoException ex)
+            catch (EmailRegistradoException_83KI ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -46,13 +46,13 @@ namespace UI
                 MessageBox.Show(ex.Message);
             }
         }
-        private Usuario ObtenerDatos()
+        private Usuario_83KI ObtenerDatos()
         {
             int.TryParse(txt_Dni.Text, out int dni);
 
             Enum.TryParse(comboBox1.SelectedItem?.ToString(), true, out RolUsuario rol);
 
-            return new Usuario
+            return new Usuario_83KI
             {
                 Nombre = txtNombre.Text.Trim(),
                 Apellido = txtApellido.Text.Trim(),

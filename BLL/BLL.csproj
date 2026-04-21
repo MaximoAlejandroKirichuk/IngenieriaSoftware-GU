@@ -41,18 +41,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitacoraBLL.cs" />
-    <Compile Include="Excepciones\CrearUsuario\DniRegistradoException.cs" />
-    <Compile Include="Excepciones\CrearUsuario\EmailRegistradoException.cs" />
-    <Compile Include="Excepciones\Login\UsuarioActivoActualmenteException.cs" />
-    <Compile Include="Excepciones\Login\UsuarioBloqueadoException.cs" />
-    <Compile Include="Excepciones\Login\ContrasenaInvalidaException.cs" />
-    <Compile Include="Excepciones\Login\UsuarioNoExisteException.cs" />
-    <Compile Include="GestorUsuariosBLL.cs" />
-    <Compile Include="Interfaces\IBitacoraManager.cs" />
-    <Compile Include="Interfaces\IEncriptador.cs" />
-    <Compile Include="Interfaces\IGestorUsuario.cs" />
-    <Compile Include="Interfaces\ISessionManager.cs" />
+    <Compile Include="BitacoraBLL_83KI.cs" />
+    <Compile Include="Excepciones\CrearUsuario\DniRegistradoException_83KI.cs" />
+    <Compile Include="Excepciones\CrearUsuario\EmailRegistradoException_83KI.cs" />
+    <Compile Include="Excepciones\Login\UsuarioActivoActualmenteException_83KI.cs" />
+    <Compile Include="Excepciones\Login\UsuarioBloqueadoException_83KI.cs" />
+    <Compile Include="Excepciones\Login\ContrasenaInvalidaException_83KI.cs" />
+    <Compile Include="Excepciones\Login\UsuarioNoExisteException_83KI.cs" />
+    <Compile Include="GestorUsuariosBLL_83KI.cs" />
+    <Compile Include="Interfaces\IBitacoraManager_83KI.cs" />
+    <Compile Include="Interfaces\IEncriptador_83KI.cs" />
+    <Compile Include="Interfaces\IGestorUsuario_83KI.cs" />
+    <Compile Include="Interfaces\ISessionManager_83KI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

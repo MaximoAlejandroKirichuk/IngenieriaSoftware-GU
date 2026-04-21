@@ -16,10 +16,10 @@ namespace UI
 {
     public partial class Login : Form
     {
-        private readonly IGestorUsuario _gestor;
+        private readonly IGestorUsuario_83KI _gestor;
         public Login()
         {
-            _gestor = Service.ServiceFactory.GetGestorUsuario();
+            _gestor = Service.ServiceFactory_83KI.GetGestorUsuario();
             InitializeComponent();
         }
 
@@ -82,16 +82,16 @@ namespace UI
                 var contrasena = txt_Contrasena.Text;
                 _gestor.Login(email, contrasena);
             }
-            catch(UsuarioActivoActualmenteException ex)
+            catch(UsuarioActivoActualmenteException_83KI ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            catch (UsuarioBloqueadoException ex)
+            catch (UsuarioBloqueadoException_83KI ex)
             {
                 MessageBox.Show(ex.Message, "Seguridad", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
             
-            catch (ContrasenaInvalidaException ex)
+            catch (ContrasenaInvalidaException_83KI ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }

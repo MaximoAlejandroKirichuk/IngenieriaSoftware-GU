@@ -41,9 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Encriptador.cs" />
-    <Compile Include="ServiceFactory.cs" />
-    <Compile Include="SessionManager.cs" />
+    <Compile Include="Encriptador_83KI.cs" />
+    <Compile Include="ServiceFactory_83KI.cs" />
+    <Compile Include="SessionManager_83KI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

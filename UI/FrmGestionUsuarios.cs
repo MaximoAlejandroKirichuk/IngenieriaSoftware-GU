@@ -18,12 +18,12 @@ namespace UI
         {
             InitializeComponent();
         }
-        private readonly IGestorUsuario _gestorUsuario;
+        private readonly IGestorUsuario_83KI _gestorUsuario;
         private void btnCrearUsuario_Click(object sender, EventArgs e)
         {
             try
             {
-                IGestorUsuario gestorUsuario = Service.ServiceFactory.GetGestorUsuario();
+                IGestorUsuario_83KI gestorUsuario = Service.ServiceFactory_83KI.GetGestorUsuario();
                 FrmCrearUsuario frmCrearUsuario = new FrmCrearUsuario(gestorUsuario);
                 //todo: que pasa si no agrego nada? se actualice igual
                 ActualizarDatos();

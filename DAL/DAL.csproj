@@ -41,11 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccesoDAL.cs" />
-    <Compile Include="BitacoraEventoDAL.cs" />
-    <Compile Include="interfaces\IBitacoraDAL.cs" />
-    <Compile Include="UsuarioDAL.cs" />
-    <Compile Include="interfaces\IUsuarioDAL.cs" />
+    <Compile Include="AccesoDAL_83KI.cs" />
+    <Compile Include="BitacoraEventoDAL_83KI.cs" />
+    <Compile Include="interfaces\IBitacoraDAL_83KI.cs" />
+    <Compile Include="UsuarioDAL_83KI.cs" />
+    <Compile Include="interfaces\IUsuarioDAL_83KI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
