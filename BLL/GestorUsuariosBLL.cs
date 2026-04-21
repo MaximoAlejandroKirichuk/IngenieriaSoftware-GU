@@ -106,5 +106,10 @@ namespace BLL
                 usuario.Email
             );
         }
+
+        public IEnumerable<Usuario> ListarUsuario()
+        {
+            _dal.
+        }
     }
 }
