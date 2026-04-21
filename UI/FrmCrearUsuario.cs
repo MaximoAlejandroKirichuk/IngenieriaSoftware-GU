@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -22,6 +23,7 @@ namespace UI
             InitializeComponent();
             _usuarioService = gestorUsuario;
         }
+
 
         private void btnCrearUsuario_Click(object sender, EventArgs e)
         {
@@ -88,6 +90,50 @@ namespace UI
             }
 
             return true;
+        }
+        public void FormDesign(Panel panel, Button btn)
+        {
+            //colores de los botones, txt, etc
+            BackColor = Color.FromArgb(70, 130, 180);
+            txtNombre.BackColor = Color.FromArgb(240, 240, 240);
+            txtApellido.BackColor = Color.FromArgb(240, 240, 240);
+            txtEmail.BackColor = Color.FromArgb(240, 240, 240);
+            txt_Dni.BackColor = Color.FromArgb(240, 240, 240);
+            comboBox1.BackColor = Color.FromArgb(240, 240, 240);
+            btnCrearUsuario.BackColor = Color.FromArgb(240, 240, 240);
+
+            //bordes del panel
+            GraphicsPath path = new GraphicsPath();
+            int radio = 30;
+
+            path.StartFigure();
+            path.AddArc(0, 0, radio, radio, 180, 90);
+            path.AddArc(panel.Width - radio, 0, radio, radio, 270, 90);
+            path.AddArc(panel.Width - radio, panel.Height - radio, radio, radio, 0, 90);
+            path.AddArc(0, panel.Height - radio, radio, radio, 90, 90);
+            path.CloseFigure();
+
+            panel.Region = new Region(path);
+
+            //color de boton
+            btn.BackColor = Color.FromArgb(70, 130, 180);
+            btn.ForeColor = Color.White;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            path.Reset();
+            int radioBtn = btn.Height;
+            path.StartFigure();
+            path.AddArc(0, 0, radio, radio, 180, 90);
+            path.AddArc(btn.Width - radio, 0, radio, radio, 270, 90);
+            path.AddArc(btn.Width - radio, btn.Height - radio, radio, radio, 0, 90);
+            path.AddArc(0, btn.Height - radio, radio, radio, 90, 90);
+            path.CloseFigure();
+
+            btn.Region = new Region(path);
+        }
+        private void FrmCrearUsuario_Load(object sender, EventArgs e)
+        {
+            FormDesign(panelCrearUsu, btnCrearUsuario); 
         }
     }
 }
