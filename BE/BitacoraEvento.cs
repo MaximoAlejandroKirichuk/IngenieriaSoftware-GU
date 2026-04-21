@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BE
 {
-    public class BitacoraEvento
+    public class BitacoraEvento_83KI
     {
         public int Id { get; set; }
         public long DNI { get; set; } // Usamos DNI porque es tu PK
@@ -17,9 +17,9 @@ namespace BE
         public string EmailUsuario { get; set; }
         
         // Constructor vacío para la DAL
-        public BitacoraEvento() { }
+        public BitacoraEvento_83KI() { }
         // Constructor para crear eventos rápido desde la BLL
-        public BitacoraEvento(string descripcion, int criticidad, Modulo modulo, string email)
+        public BitacoraEvento_83KI(string descripcion, int criticidad, Modulo modulo, string email)
         {
             Fecha = DateTime.Now;
             Descripcion = descripcion;

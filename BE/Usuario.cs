@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BE
 {
-    public class Usuario
+    public class Usuario_83KI
     {
         //pk
         public int DNI { get; set; }
