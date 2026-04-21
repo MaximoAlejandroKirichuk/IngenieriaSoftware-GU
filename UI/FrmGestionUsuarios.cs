@@ -38,5 +38,10 @@ namespace UI
             dgvUsuarios.DataSource = null;
             dgvUsuarios.DataSource = _gestorUsuario.ObtenerUsuarios();
         }
+
+        private void btnDesbloquearusuario_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
