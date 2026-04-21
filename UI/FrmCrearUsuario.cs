@@ -25,14 +25,9 @@ namespace UI
         private void btnCrearUsuario_Click(object sender, EventArgs e)
         {
             if (!ValidarDatosFormato()) return;
-
             try
             {
-             
                 var nuevoUsuario = ObtenerDatos();
-
-                // 3. Envío a BLL (Aquí es donde ocurre la validación de existencia y persistencia)
-                // La BLL debería lanzar una excepción o devolver un resultado si el DNI ya existe.
                 _usuarioService.CrearUsuario(nuevoUsuario);
                 MessageBox.Show("Usuario registrado con éxito.");
                 this.DialogResult = DialogResult.OK;
@@ -41,7 +36,6 @@ namespace UI
             {
                 MessageBox.Show(ex.Message);
             }
-
         }
         private Usuario ObtenerDatos()
         {
