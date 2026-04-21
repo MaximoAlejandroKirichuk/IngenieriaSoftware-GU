@@ -1,4 +1,5 @@
 ﻿using BE;
+using BLL.Excepciones.CrearUsuario;
 using BLL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,14 @@ namespace UI
                 _usuarioService.CrearUsuario(nuevoUsuario);
                 MessageBox.Show("Usuario registrado con éxito.");
                 this.DialogResult = DialogResult.OK;
+            }
+            catch (DniRegistradoException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            catch (EmailRegistradoException ex)
+            {
+                MessageBox.Show(ex.Message);
             }
             catch (Exception ex)
             {
