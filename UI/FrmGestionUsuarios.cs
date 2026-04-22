@@ -1,4 +1,5 @@
-﻿using BLL;
+﻿using BE;
+using BLL;
 using BLL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,17 @@ namespace UI
 
         private void btnDesbloquearusuario_Click(object sender, EventArgs e)
         {
+            try
+            {
+                Usuario_83KI usuarioElegido = dgvUsuarios.Rows[0].DataBoundItem; 
+                _gestorUsuario.DesbloquearCuenta(usuarioElegido);
 
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }
