@@ -147,6 +147,19 @@ namespace DAL
             }
             return listaTemporal;
         }
+
+        public void DesbloquearCuenta(Usuario_83KI usuario)
+        {
+            string consulta = "UPDATE Usuarios SET Bloqueado = 0, Intentos = 0, Contrasena = @contrasena WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", usuario.DNI)
+                new SqlParameter("@contrasena",usuario.Contrasena)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
     }
 }
 

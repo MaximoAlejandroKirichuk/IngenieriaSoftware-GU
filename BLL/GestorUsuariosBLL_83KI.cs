@@ -111,5 +111,11 @@ namespace BLL
         {
             return _dal.ObtenerUsuarios();
         }
+
+        public void DesbloquearCuenta(Usuario_83KI usuario)
+        {
+            //todo: falta logica aca
+            _dal.DesbloquearCuenta(usuario);
+        }
     }
 }
