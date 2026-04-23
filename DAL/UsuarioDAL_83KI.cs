@@ -154,10 +154,9 @@ namespace DAL
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
-                new SqlParameter("@dni", usuario.DNI)
-                new SqlParameter("@contrasena",usuario.Contrasena)
-            };
-
+                new SqlParameter("@dni", usuario.DNI),
+                new SqlParameter("@contrasena", usuario.Contrasena)
+            }; 
             _accesoDAL.Escribir(consulta, parametros);
         }
     }
