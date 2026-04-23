@@ -96,8 +96,10 @@ namespace BLL
         {
             if (_dal.ExisteDni(usuario.DNI)) throw new DniRegistradoException_83KI();
             if (_dal.ExisteEmail(usuario.Email)) throw new EmailRegistradoException_83KI();
-            
-            usuario.Contrasena = _encriptador.HashContrasena(usuario.DNI.ToString());
+
+            string contrasenaPorDefecto = EstablecerContrasenaPorDefecto(usuario.Nombre, usuario.DNI);
+            //TODO: PREGUNTAR SI ESTO ESTA BIEN
+            usuario.Contrasena = _encriptador.HashContrasena(contrasenaPorDefecto);
 
             _dal.CrearUsuario(usuario);
             _bitacora.RegistrarEvento(
@@ -107,6 +109,16 @@ namespace BLL
                 usuario.Email
             );
         }
+        private string EstablecerContrasenaPorDefecto(string nombre, int dni)
+        {
+            // % 1000 obtiene el resto de la división = equivale a quedarse con los últimos 3 dígitos del DNI
+            // Ej: 12345678 % 1000 = 678
+
+            // :D3 formatea el número a 3 dígitos, agregando ceros a la izquierda si hace falta
+            // Ej: 5 → "005", 45 → "045"
+
+            return $"{nombre}{dni % 1000:D3}";
+        }
         public IEnumerable<Usuario_83KI> ObtenerUsuarios()
         {
             return _dal.ObtenerUsuarios();
@@ -114,8 +126,15 @@ namespace BLL
 
         public void DesbloquearCuenta(Usuario_83KI usuario)
         {
-            //todo: falta logica aca
+            string contrasenaPorDefecto = EstablecerContrasenaPorDefecto(usuario.Nombre, usuario.DNI);
+            usuario.Contrasena = _encriptador.HashContrasena(contrasenaPorDefecto);
             _dal.DesbloquearCuenta(usuario);
+            _bitacora.RegistrarEvento(
+               $"Usuario desbloqueado: {usuario.Email} (Rol: {usuario.RolUsuario})",
+               1,
+               Modulo.Usuarios,
+               usuario.Email
+           );
         }
     }
 }
