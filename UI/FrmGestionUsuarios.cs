@@ -44,9 +44,9 @@ namespace UI
         {
             try
             {
-                Usuario_83KI usuarioElegido = dgvUsuarios.Rows[0].DataBoundItem; 
+                Usuario_83KI usuarioElegido = (Usuario_83KI) dgvUsuarios.Rows[0].DataBoundItem; 
                 _gestorUsuario.DesbloquearCuenta(usuarioElegido);
-
+                ActualizarDatos();
             }
             catch (Exception)
             {
