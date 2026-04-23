@@ -154,7 +154,7 @@ namespace DAL
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
-                new SqlParameter("@dni", usuario.DNI)
+                new SqlParameter("@dni", usuario.DNI),
                 new SqlParameter("@contrasena",usuario.Contrasena)
             };
 
