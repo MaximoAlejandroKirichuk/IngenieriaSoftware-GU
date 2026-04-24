@@ -45,7 +45,7 @@
             // 
             // btnCrearUsuario
             // 
-            this.btnCrearUsuario.Location = new System.Drawing.Point(1001, 236);
+            this.btnCrearUsuario.Location = new System.Drawing.Point(1001, 240);
             this.btnCrearUsuario.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
             this.btnCrearUsuario.Name = "btnCrearUsuario";
             this.btnCrearUsuario.Size = new System.Drawing.Size(312, 65);
