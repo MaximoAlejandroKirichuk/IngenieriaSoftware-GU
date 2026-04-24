@@ -67,7 +67,6 @@ namespace UI
 
         private bool ValidarDatosFormato()
         {
-            
             if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
                 string.IsNullOrWhiteSpace(txtApellido.Text) ||
                 string.IsNullOrWhiteSpace(txt_Dni.Text))

@@ -37,19 +37,18 @@
             // dgvUsuarios
             // 
             this.dgvUsuarios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvUsuarios.Location = new System.Drawing.Point(171, 265);
-            this.dgvUsuarios.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
+            this.dgvUsuarios.Location = new System.Drawing.Point(44, 77);
+            this.dgvUsuarios.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
             this.dgvUsuarios.Name = "dgvUsuarios";
-            this.dgvUsuarios.RowHeadersWidth = 102;
-            this.dgvUsuarios.Size = new System.Drawing.Size(960, 494);
+            this.dgvUsuarios.Size = new System.Drawing.Size(900, 589);
             this.dgvUsuarios.TabIndex = 0;
             // 
             // btnCrearUsuario
             // 
-            this.btnCrearUsuario.Location = new System.Drawing.Point(1477, 336);
-            this.btnCrearUsuario.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
+            this.btnCrearUsuario.Location = new System.Drawing.Point(1001, 236);
+            this.btnCrearUsuario.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
             this.btnCrearUsuario.Name = "btnCrearUsuario";
-            this.btnCrearUsuario.Size = new System.Drawing.Size(333, 55);
+            this.btnCrearUsuario.Size = new System.Drawing.Size(312, 65);
             this.btnCrearUsuario.TabIndex = 1;
             this.btnCrearUsuario.Text = "Crear usuario";
             this.btnCrearUsuario.UseVisualStyleBackColor = true;
@@ -57,10 +56,10 @@
             // 
             // btnDesbloquearusuario
             // 
-            this.btnDesbloquearusuario.Location = new System.Drawing.Point(1477, 467);
-            this.btnDesbloquearusuario.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
+            this.btnDesbloquearusuario.Location = new System.Drawing.Point(1001, 400);
+            this.btnDesbloquearusuario.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
             this.btnDesbloquearusuario.Name = "btnDesbloquearusuario";
-            this.btnDesbloquearusuario.Size = new System.Drawing.Size(333, 55);
+            this.btnDesbloquearusuario.Size = new System.Drawing.Size(312, 65);
             this.btnDesbloquearusuario.TabIndex = 2;
             this.btnDesbloquearusuario.Text = "Desbloquear usuario";
             this.btnDesbloquearusuario.UseVisualStyleBackColor = true;
@@ -68,13 +67,16 @@
             // 
             // FrmGestionUsuarios
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 31F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(15F, 37F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(2133, 1073);
+            this.BackColor = System.Drawing.Color.SteelBlue;
+            this.ClientSize = new System.Drawing.Size(1372, 743);
             this.Controls.Add(this.btnDesbloquearusuario);
             this.Controls.Add(this.btnCrearUsuario);
             this.Controls.Add(this.dgvUsuarios);
-            this.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
+            this.Font = new System.Drawing.Font("Segoe UI", 20.25F);
+            this.ForeColor = System.Drawing.Color.Black;
+            this.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
             this.Name = "FrmGestionUsuarios";
             this.Text = "FrmGestionUsuarios";
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).EndInit();
