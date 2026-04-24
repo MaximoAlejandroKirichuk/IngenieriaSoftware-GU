@@ -28,17 +28,17 @@ namespace BLL
             _bitacora = bitacora;
         }
 
-        public void Login(string email, string contrasena)
+        public void Login(string userName, string contrasena)
         {
             if (_sessionManager.UsuarioActivo != null)
                 throw new UsuarioActivoActualmenteException_83KI();
             
             
-            var usuario = _dal.ObtenerPorMail(email);
+            var usuario = _dal.ObtenerPorUserName(userName);
 
             if (usuario == null)
             {
-                _bitacora.RegistrarEvento($"Intento de login fallido: {email} no existe", 2, Modulo.Seguridad, email);
+                _bitacora.RegistrarEvento($"Intento de login fallido: {userName} no existe", 2, Modulo.Seguridad, userName);
                 throw new UsuarioNoExisteException_83KI();
             }
 
@@ -61,7 +61,7 @@ namespace BLL
             usuario.Intentos = 0; // Reseteamos intentos
             _dal.ActualizarIntentos(usuario);
             //REGISTRO DE LOGIN(Criticidad 3)
-            _bitacora.RegistrarEvento($"Login exitoso: {usuario.Email}", 3, Modulo.Usuarios, email);
+            _bitacora.RegistrarEvento($"Login exitoso: {usuario.UserName}", 3, Modulo.Usuarios, userName);
         }
         public void Logout()
         {
@@ -69,11 +69,11 @@ namespace BLL
             if (usuario != null)
             {
                 _sessionManager.CerrarSesion();
-                _bitacora.RegistrarEvento($"Login exitoso: {usuario.Email}", 3, Modulo.Usuarios, usuario.Email);
+                _bitacora.RegistrarEvento($"Login exitoso: {usuario.UserName}", 3, Modulo.Usuarios, usuario.UserName);
             }
         }
 
-        public void CambioContrasena(string email, string contrasenaActual, string nuevaContrasena)
+        public void CambioContrasena(string userName, string contrasenaActual, string nuevaContrasena)
         {
             throw new NotImplementedException();
         }
@@ -88,25 +88,26 @@ namespace BLL
             usuario.Bloqueado = true;
             _dal.BloquearUsuario(usuario);
             // REGISTRO DE BLOQUEO (Criticidad 1)
-            _bitacora.RegistrarEvento($"Usuario bloqueado: {usuario.Email}", 1, Modulo.Usuarios, usuario.Email);
+            _bitacora.RegistrarEvento($"Usuario bloqueado: {usuario.UserName}", 1, Modulo.Usuarios, usuario.UserName);
             throw new UsuarioBloqueadoException_83KI();
         }
-
+        
         public void CrearUsuario(Usuario_83KI usuario)
         {
             if (_dal.ExisteDni(usuario.DNI)) throw new DniRegistradoException_83KI();
-            if (_dal.ExisteEmail(usuario.Email)) throw new EmailRegistradoException_83KI();
+            //if (_dal.ExisteEmail(usuario.UserName)) throw new EmailRegistradoException_83KI(); //esto ya no hace falta
 
             string contrasenaPorDefecto = EstablecerContrasenaPorDefecto(usuario.Nombre, usuario.DNI);
+
             //TODO: PREGUNTAR SI ESTO ESTA BIEN
             usuario.Contrasena = _encriptador.HashContrasena(contrasenaPorDefecto);
 
             _dal.CrearUsuario(usuario);
             _bitacora.RegistrarEvento(
-                $"Nuevo usuario creado: {usuario.Email} (Rol: {usuario.RolUsuario})",
+                $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
                 1,
                 Modulo.Usuarios,
-                usuario.Email
+                usuario.UserName
             );
         }
         private string EstablecerContrasenaPorDefecto(string nombre, int dni)
@@ -126,14 +127,18 @@ namespace BLL
 
         public void DesbloquearCuenta(Usuario_83KI usuario)
         {
+            //asi se resetea el estado del usuario.
+            usuario.Intentos = 0;
+            usuario.Bloqueado = false;
+
             string contrasenaPorDefecto = EstablecerContrasenaPorDefecto(usuario.Nombre, usuario.DNI);
             usuario.Contrasena = _encriptador.HashContrasena(contrasenaPorDefecto);
             _dal.DesbloquearCuenta(usuario);
             _bitacora.RegistrarEvento(
-               $"Usuario desbloqueado: {usuario.Email} (Rol: {usuario.RolUsuario})",
+               $"Usuario desbloqueado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
                1,
                Modulo.Usuarios,
-               usuario.Email
+               usuario.UserName
            );
         }
     }

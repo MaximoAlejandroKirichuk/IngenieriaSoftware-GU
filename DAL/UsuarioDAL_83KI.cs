@@ -16,10 +16,10 @@ namespace DAL
     {
         private AccesoDAL_83KI _accesoDAL = new AccesoDAL_83KI();
 
-        public Usuario_83KI ObtenerPorMail(string mail)
+        public Usuario_83KI ObtenerPorUserName(string userName)
         {
-            string sql = "SELECT * FROM Usuarios WHERE Email = @mail";
-            var parametros = new List<SqlParameter> { new SqlParameter("@mail", mail) };
+            string sql = "SELECT * FROM Usuarios WHERE UserName = @userName";
+            var parametros = new List<SqlParameter> { new SqlParameter("@userName", userName) };
 
             DataSet ds = _accesoDAL.Leer(sql, parametros);
 
@@ -31,6 +31,7 @@ namespace DAL
                 return new Usuario_83KI
                 {
                     DNI = (int)Convert.ToInt64(row["DNI"]),
+                    Nombre = row["Nombre"].ToString(),
                     Email = row["Email"].ToString(),
                     Contrasena = row["Contrasena"].ToString(),
                     Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
@@ -68,11 +69,12 @@ namespace DAL
         public void CrearUsuario(Usuario_83KI usuario)
         {
             // Nota: No incluimos ID si es Identity/Autonumérico en SQL
-            string consulta = @"INSERT INTO Usuarios (Nombre, Apellido, DNI, Email, Rol, Password) 
-                        VALUES (@nombre, @apellido, @dni, @email, @rol, @pass)";
+            string consulta = @"INSERT INTO Usuarios (UserName, Nombre, Apellido, DNI, Email, Rol, Password) 
+                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @rol, @pass)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
+                new SqlParameter("@username", usuario.UserName),
                 new SqlParameter("@nombre", usuario.Nombre),
                 new SqlParameter("@apellido", usuario.Apellido),
                 new SqlParameter("@dni",usuario.DNI),
@@ -111,7 +113,7 @@ namespace DAL
 
             var parametros = new List<SqlParameter>
             {
-                new SqlParameter("@dni",email)
+                new SqlParameter("@email",email)
             };
 
             DataSet ds = _accesoDAL.Leer(query, parametros);
