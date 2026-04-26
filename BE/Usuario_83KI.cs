@@ -17,5 +17,7 @@ namespace BE
         public bool Bloqueado { get; set; }
         public int Intentos { get; set; }
         public string Email { get; set; }
+
+        public string UserName => $"{DNI}{Nombre}";
     }
 }

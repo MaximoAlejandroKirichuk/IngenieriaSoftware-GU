@@ -1,4 +1,5 @@
-﻿using BLL;
+﻿using BE;
+using BLL;
 using BLL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,11 +15,17 @@ namespace UI
 {
     public partial class FrmGestionUsuarios : Form
     {
-        public FrmGestionUsuarios()
+        private readonly IGestorUsuario_83KI _gestorUsuario;
+        public FrmGestionUsuarios(IGestorUsuario_83KI gestorUsuario)
         {
             InitializeComponent();
+            _gestorUsuario = gestorUsuario;
         }
-        private readonly IGestorUsuario_83KI _gestorUsuario;
+        private void FrmGestionUsuarios_Load(object sender, EventArgs e)
+        {
+            ActualizarDatos();
+
+        }
         private void btnCrearUsuario_Click(object sender, EventArgs e)
         {
             try
@@ -41,7 +48,26 @@ namespace UI
 
         private void btnDesbloquearusuario_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                if (dgvUsuarios.CurrentRow != null)
+                {
+                    Usuario_83KI usuarioElegido = (Usuario_83KI)dgvUsuarios.CurrentRow.DataBoundItem;
+                    _gestorUsuario.DesbloquearCuenta(usuarioElegido);
+                    ActualizarDatos();
+                    MessageBox.Show("Usuario desbloqueado con éxito.");
+                }
+                else
+                {
+                    MessageBox.Show("Por favor, seleccione un usuario de la lista.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al intentar desbloquear: " + ex.Message);
+            }
         }
+
+
     }
 }

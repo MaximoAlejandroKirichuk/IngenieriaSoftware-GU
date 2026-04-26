@@ -16,6 +16,7 @@ namespace BLL.Interfaces
         void CambioContrasena(string email, string contrasenaActual, string nuevaContrasena);
         void ModificarRolUsuario(RolUsuario Rol);
         void BloqueoCuentaUsuario(Usuario_83KI usuario);
+        void DesbloquearCuenta(Usuario_83KI usuario);
         IEnumerable<Usuario_83KI> ObtenerUsuarios();
     }
 }

@@ -26,9 +26,6 @@ namespace UI
 
         private void Login_Load(object sender, EventArgs e)
         {
-            FrmCrearUsuario frmCrearusu = new FrmCrearUsuario(_gestor);
-            frmCrearusu.ShowDialog();
-
             LoginDesignConfig(pictureBox1);
             RedondearPanel(panelLogin);
             ButtonDesing(btnLogin);
@@ -39,11 +36,18 @@ namespace UI
         {
             try
             {
-                var email = txt_email.Text;
+                var userName = txt_userName.Text;
                 var contrasena = txt_Contrasena.Text;
-                _gestor.Login(email, contrasena);
+                _gestor.Login(userName, contrasena);
+                var formPrincipal =new FrmPrincipal(_gestor);
+                formPrincipal.ShowDialog();
+                this.Close();
             }
-            catch(UsuarioActivoActualmenteException_83KI ex)
+            catch (UsuarioNoExisteException_83KI ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            catch (UsuarioActivoActualmenteException_83KI ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -61,7 +65,7 @@ namespace UI
         public void LoginDesignConfig(PictureBox pic)  //diseño de la interfaz
         {
             BackColor = Color.FromArgb(70, 130, 180);
-            txt_email.BackColor = Color.FromArgb(240, 240, 240);
+            txt_userName.BackColor = Color.FromArgb(240, 240, 240);
             txt_Contrasena.BackColor = Color.FromArgb(240, 240, 240);
             //diseño imagen
             GraphicsPath path = new GraphicsPath();

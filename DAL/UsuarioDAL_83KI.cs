@@ -16,10 +16,10 @@ namespace DAL
     {
         private AccesoDAL_83KI _accesoDAL = new AccesoDAL_83KI();
 
-        public Usuario_83KI ObtenerPorMail(string mail)
+        public Usuario_83KI ObtenerPorUserName(string userName)
         {
-            string sql = "SELECT * FROM Usuarios WHERE Email = @mail";
-            var parametros = new List<SqlParameter> { new SqlParameter("@mail", mail) };
+            string sql = "SELECT * FROM Usuarios WHERE UserName = @userName";
+            var parametros = new List<SqlParameter> { new SqlParameter("@userName", userName) };
 
             DataSet ds = _accesoDAL.Leer(sql, parametros);
 
@@ -31,6 +31,7 @@ namespace DAL
                 return new Usuario_83KI
                 {
                     DNI = (int)Convert.ToInt64(row["DNI"]),
+                    Nombre = row["Nombre"].ToString(),
                     Email = row["Email"].ToString(),
                     Contrasena = row["Contrasena"].ToString(),
                     Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
@@ -68,11 +69,12 @@ namespace DAL
         public void CrearUsuario(Usuario_83KI usuario)
         {
             // Nota: No incluimos ID si es Identity/Autonumérico en SQL
-            string consulta = @"INSERT INTO Usuarios (Nombre, Apellido, DNI, Email, Rol, Password) 
-                        VALUES (@nombre, @apellido, @dni, @email, @rol, @pass)";
+            string consulta = @"INSERT INTO Usuarios (UserName, Nombre, Apellido, DNI, Email, Rol, Password) 
+                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @rol, @pass)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
+                new SqlParameter("@username", usuario.UserName),
                 new SqlParameter("@nombre", usuario.Nombre),
                 new SqlParameter("@apellido", usuario.Apellido),
                 new SqlParameter("@dni",usuario.DNI),
@@ -111,7 +113,7 @@ namespace DAL
 
             var parametros = new List<SqlParameter>
             {
-                new SqlParameter("@dni",email)
+                new SqlParameter("@email",email)
             };
 
             DataSet ds = _accesoDAL.Leer(query, parametros);
@@ -146,6 +148,37 @@ namespace DAL
                 }
             }
             return listaTemporal;
+        }
+
+        public void DesbloquearCuenta(Usuario_83KI usuario)
+        {
+            string consulta = "UPDATE Usuarios SET Bloqueado = 0, Intentos = 0, Contrasena = @contrasena WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", usuario.DNI),
+                new SqlParameter("@contrasena", usuario.Contrasena)
+            }; 
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public bool EstaBloqueado(int dni)
+        {
+            string query = "SELECT COUNT(1) AS Total FROM Usuarios WHERE DNI = @dni";
+
+            var parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni",dni)
+            };
+
+            DataSet ds = _accesoDAL.Leer(query, parametros);
+
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                int total = Convert.ToInt32(ds.Tables[0].Rows[0]["Total"]);
+                return total > 0;
+            }
+            return false;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BE;
 using BLL.Excepciones.CrearUsuario;
+using BLL.Excepciones.Login;
 using BLL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,7 @@ namespace UI
                 MessageBox.Show("Usuario registrado con éxito.");
                 this.DialogResult = DialogResult.OK;
             }
+
             catch (DniRegistradoException_83KI ex)
             {
                 MessageBox.Show(ex.Message);
@@ -67,7 +69,6 @@ namespace UI
 
         private bool ValidarDatosFormato()
         {
-            
             if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
                 string.IsNullOrWhiteSpace(txtApellido.Text) ||
                 string.IsNullOrWhiteSpace(txt_Dni.Text))
