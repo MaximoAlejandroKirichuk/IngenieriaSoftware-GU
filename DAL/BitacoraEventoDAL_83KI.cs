@@ -17,16 +17,17 @@ namespace DAL
 
         public void Registrar(BitacoraEvento_83KI evento)
         {
-            string consulta = "INSERT INTO BitacoraEventos (Criticidad, Descripcion, DNI, Fecha, Modulo) " +
-                              "VALUES (@crit, @desc, @dni, @fecha, @mod)";
+            string consulta = "INSERT INTO BitacoraEventos (Criticidad, Descripcion, Fecha, Modulo, Username) " +
+                              "VALUES (@crit, @desc, @fecha, @mod, @username)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
                 new SqlParameter("@crit", evento.Criticidad),
                 new SqlParameter("@desc", evento.Descripcion),
-                new SqlParameter("@dni", evento.DNI),
                 new SqlParameter("@fecha", evento.Fecha),
-                new SqlParameter("@mod", evento.Modulo)
+                new SqlParameter("@mod", evento.Modulo),
+                new SqlParameter("@username", evento.Username)
+
             };
 
             _acceso.Escribir(consulta, parametros);
@@ -58,7 +59,6 @@ namespace DAL
                     lista.Add(new BitacoraEvento_83KI
                     {
                         Id = Convert.ToInt32(row["Id"]),
-                        DNI = Convert.ToInt32(row["DNI"]),
                         Fecha = Convert.ToDateTime(row["Fecha"]),
                         Descripcion = row["Descripcion"].ToString(),
                         Criticidad = Convert.ToInt32(row["Criticidad"]),

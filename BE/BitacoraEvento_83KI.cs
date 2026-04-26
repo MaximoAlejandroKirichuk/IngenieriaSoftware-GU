@@ -10,7 +10,6 @@ namespace BE
     public class BitacoraEvento_83KI
     {
         public int Id { get; set; }
-        public int DNI { get; set; } // Usamos DNI porque es tu PK
         public DateTime Fecha { get; set; }
         public string Descripcion { get; set; }
         public int Criticidad { get; set; } // 1 a 5 como en el Excel
@@ -20,9 +19,8 @@ namespace BE
         // Constructor vacío para la DAL
         public BitacoraEvento_83KI() { }
         // Constructor para crear eventos rápido desde la BLL
-        public BitacoraEvento_83KI(string descripcion, int criticidad, Modulo modulo, string username, int dni)
+        public BitacoraEvento_83KI(string descripcion, int criticidad, Modulo modulo, string username)
         {
-            DNI = dni;
             Fecha = DateTime.UtcNow;
             Descripcion = descripcion;
             Criticidad = criticidad;

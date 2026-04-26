@@ -37,7 +37,14 @@ namespace BLL
 
             if (usuario == null)
             {
-                _bitacora.RegistrarEvento($"Intento de login fallido: {userName} no existe", 2, Modulo.Seguridad, userName,usuario.DNI);
+                _bitacora.RegistrarEvento(
+                    new BitacoraEvento_83KI(
+                        $"Intento de login fallido: {userName} no existe",
+                        2,
+                        Modulo.Seguridad,
+                        userName
+                    )
+                );
                 throw new UsuarioNoExisteException_83KI();
             }
 
@@ -63,7 +70,14 @@ namespace BLL
             usuario.Intentos = 0; // Reseteamos intentos
             _dal.ActualizarIntentos(usuario);
             //REGISTRO DE LOGIN(Criticidad 3)
-            _bitacora.RegistrarEvento($"Login exitoso: {usuario.UserName}", 3, Modulo.Usuarios, userName, usuario.DNI);
+            _bitacora.RegistrarEvento(
+                new BitacoraEvento_83KI(
+                    $"Login exitoso: {usuario.UserName}",
+                    3,
+                    Modulo.Usuarios,
+                    userName
+                )
+            );
         }
         public void Logout()
         {
@@ -71,7 +85,14 @@ namespace BLL
             if (usuario != null)
             {
                 _sessionManager.CerrarSesion();
-                _bitacora.RegistrarEvento($"Login exitoso: {usuario.UserName}", 3, Modulo.Usuarios, usuario.UserName,usuario.DNI);
+                _bitacora.RegistrarEvento(
+                    new BitacoraEvento_83KI(
+                        $"Login exitoso: {usuario.UserName}",
+                        3,
+                        Modulo.Usuarios,
+                        usuario.UserName
+                    )
+                );
             }
         }
 
@@ -90,7 +111,14 @@ namespace BLL
             usuario.Bloqueado = true;
             _dal.BloquearUsuario(usuario);
             // REGISTRO DE BLOQUEO (Criticidad 1)
-            _bitacora.RegistrarEvento($"Usuario bloqueado: {usuario.UserName}", 1, Modulo.Usuarios, usuario.UserName, usuario.DNI);
+            _bitacora.RegistrarEvento(
+                new BitacoraEvento_83KI(
+                    $"Usuario bloqueado: {usuario.UserName}",
+                    1,
+                    Modulo.Usuarios,
+                    usuario.UserName
+                )
+            );
             throw new UsuarioBloqueadoException_83KI();
         }
         
@@ -106,11 +134,12 @@ namespace BLL
 
             _dal.CrearUsuario(usuario);
             _bitacora.RegistrarEvento(
-                $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
-                1,
-                Modulo.Usuarios,
-                usuario.UserName,
-                usuario.DNI
+                new BitacoraEvento_83KI(
+                    $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
+                    1,
+                    Modulo.Usuarios,
+                    usuario.UserName
+                )
             );
         }
         private string EstablecerContrasenaPorDefecto(string nombre, int dni)
@@ -138,12 +167,13 @@ namespace BLL
             usuario.Contrasena = _encriptador.HashContrasena(contrasenaPorDefecto);
             _dal.DesbloquearCuenta(usuario);
             _bitacora.RegistrarEvento(
-               $"Usuario desbloqueado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
-               1,
-               Modulo.Usuarios,
-               usuario.UserName,
-               usuario.DNI
-           );
+                new BitacoraEvento_83KI(
+                    $"Usuario desbloqueado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
+                    1,
+                    Modulo.Usuarios,
+                    usuario.UserName
+                )
+            );
         }
     }
 }
