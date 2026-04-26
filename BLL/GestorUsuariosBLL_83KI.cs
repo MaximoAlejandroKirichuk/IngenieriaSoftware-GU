@@ -33,20 +33,7 @@ namespace BLL
             if (_sessionManager.UsuarioActivo != null)
                 throw new UsuarioActivoActualmenteException_83KI();
   
-            var usuario = _dal.ObtenerPorUserName(userName);
-
-            if (usuario == null)
-            {
-                _bitacora.RegistrarEvento(
-                    new BitacoraEvento_83KI(
-                        $"Intento de login fallido: {userName} no existe",
-                        2,
-                        Modulo.Seguridad,
-                        userName
-                    )
-                );
-                throw new UsuarioNoExisteException_83KI();
-            }
+            var usuario = _dal.ObtenerPorUserName(userName) ?? throw new UsuarioNoExisteException_83KI();
 
             if (usuario.Bloqueado) 
                 throw new UsuarioBloqueadoException_83KI();
