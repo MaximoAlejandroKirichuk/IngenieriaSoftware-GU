@@ -9,7 +9,7 @@ namespace BLL.Interfaces
 {
     public interface IBitacoraManager_83KI
     {
-        void RegistrarEvento(string descripcion, int criticidad, Modulo modulo, string userName);
+        void RegistrarEvento(string descripcion, int criticidad, Modulo modulo, string userName, int dni);
 
         // metodo de consulta en GUI (últimos 3 días por defecto)
         IEnumerable<BitacoraEvento_83KI> ListarEventos(DateTime desde, DateTime hasta);

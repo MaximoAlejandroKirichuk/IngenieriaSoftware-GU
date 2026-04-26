@@ -57,8 +57,8 @@ namespace DAL
                 {
                     lista.Add(new BitacoraEvento_83KI
                     {
-                        Id = Convert.ToInt32(row["Id"]), // Si tenés el ID en la tabla
-                        DNI = Convert.ToInt64(row["DNI"]),
+                        Id = Convert.ToInt32(row["Id"]),
+                        DNI = Convert.ToInt32(row["DNI"]),
                         Fecha = Convert.ToDateTime(row["Fecha"]),
                         Descripcion = row["Descripcion"].ToString(),
                         Criticidad = Convert.ToInt32(row["Criticidad"]),

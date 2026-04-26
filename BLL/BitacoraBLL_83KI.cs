@@ -22,9 +22,9 @@ namespace BLL
             return _bitacoraDAL.Consultar(desde, hasta);
         }
 
-        public void RegistrarEvento(string descripcion, int criticidad, Modulo modulo, string userName)
+        public void RegistrarEvento(string descripcion, int criticidad, Modulo modulo, string userName, int dni)
         {
-            BitacoraEvento_83KI evento = new BitacoraEvento_83KI(descripcion, criticidad, modulo, userName);
+            BitacoraEvento_83KI evento = new BitacoraEvento_83KI(descripcion, criticidad, modulo, userName,dni);
             _bitacoraDAL.Registrar(evento);
         }
 
