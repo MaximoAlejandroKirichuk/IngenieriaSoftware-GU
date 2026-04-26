@@ -26,9 +26,6 @@ namespace UI
 
         private void Login_Load(object sender, EventArgs e)
         {
-            FrmCrearUsuario frmCrearusu = new FrmCrearUsuario(_gestor);
-            frmCrearusu.ShowDialog();
-
             LoginDesignConfig(pictureBox1);
             RedondearPanel(panelLogin);
             ButtonDesing(btnLogin);
@@ -42,6 +39,9 @@ namespace UI
                 var userName = txt_userName.Text;
                 var contrasena = txt_Contrasena.Text;
                 _gestor.Login(userName, contrasena);
+                var formPrincipal =new FrmPrincipal();
+                formPrincipal.ShowDialog();
+                this.Close();
             }
             catch(UsuarioActivoActualmenteException_83KI ex)
             {
