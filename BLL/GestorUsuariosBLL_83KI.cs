@@ -32,15 +32,17 @@ namespace BLL
         {
             if (_sessionManager.UsuarioActivo != null)
                 throw new UsuarioActivoActualmenteException_83KI();
-            
-            
+  
             var usuario = _dal.ObtenerPorUserName(userName);
 
             if (usuario == null)
             {
-                _bitacora.RegistrarEvento($"Intento de login fallido: {userName} no existe", 2, Modulo.Seguridad, userName);
+                _bitacora.RegistrarEvento($"Intento de login fallido: {userName} no existe", 2, Modulo.Seguridad, userName,usuario.DNI);
                 throw new UsuarioNoExisteException_83KI();
             }
+
+            if (usuario.Bloqueado) 
+                throw new UsuarioBloqueadoException_83KI();
 
             string hash = _encriptador.HashContrasena(contrasena);
 
@@ -61,7 +63,7 @@ namespace BLL
             usuario.Intentos = 0; // Reseteamos intentos
             _dal.ActualizarIntentos(usuario);
             //REGISTRO DE LOGIN(Criticidad 3)
-            _bitacora.RegistrarEvento($"Login exitoso: {usuario.UserName}", 3, Modulo.Usuarios, userName);
+            _bitacora.RegistrarEvento($"Login exitoso: {usuario.UserName}", 3, Modulo.Usuarios, userName, usuario.DNI);
         }
         public void Logout()
         {
@@ -69,7 +71,7 @@ namespace BLL
             if (usuario != null)
             {
                 _sessionManager.CerrarSesion();
-                _bitacora.RegistrarEvento($"Login exitoso: {usuario.UserName}", 3, Modulo.Usuarios, usuario.UserName);
+                _bitacora.RegistrarEvento($"Login exitoso: {usuario.UserName}", 3, Modulo.Usuarios, usuario.UserName,usuario.DNI);
             }
         }
 
@@ -88,14 +90,14 @@ namespace BLL
             usuario.Bloqueado = true;
             _dal.BloquearUsuario(usuario);
             // REGISTRO DE BLOQUEO (Criticidad 1)
-            _bitacora.RegistrarEvento($"Usuario bloqueado: {usuario.UserName}", 1, Modulo.Usuarios, usuario.UserName);
+            _bitacora.RegistrarEvento($"Usuario bloqueado: {usuario.UserName}", 1, Modulo.Usuarios, usuario.UserName, usuario.DNI);
             throw new UsuarioBloqueadoException_83KI();
         }
         
         public void CrearUsuario(Usuario_83KI usuario)
         {
             if (_dal.ExisteDni(usuario.DNI)) throw new DniRegistradoException_83KI();
-            //if (_dal.ExisteEmail(usuario.UserName)) throw new EmailRegistradoException_83KI(); //esto ya no hace falta
+            if (_dal.ExisteEmail(usuario.UserName)) throw new EmailRegistradoException_83KI();
 
             string contrasenaPorDefecto = EstablecerContrasenaPorDefecto(usuario.Nombre, usuario.DNI);
 
@@ -107,7 +109,8 @@ namespace BLL
                 $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
                 1,
                 Modulo.Usuarios,
-                usuario.UserName
+                usuario.UserName,
+                usuario.DNI
             );
         }
         private string EstablecerContrasenaPorDefecto(string nombre, int dni)
@@ -138,7 +141,8 @@ namespace BLL
                $"Usuario desbloqueado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
                1,
                Modulo.Usuarios,
-               usuario.UserName
+               usuario.UserName,
+               usuario.DNI
            );
         }
     }

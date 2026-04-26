@@ -15,6 +15,7 @@ namespace DAL.interfaces
         void CrearUsuario(Usuario_83KI usuario);
         bool ExisteDni(int dni);
         bool ExisteEmail(string email);
+        bool EstaBloqueado(int dni);
         void DesbloquearCuenta(Usuario_83KI usuario);
         IEnumerable<Usuario_83KI> ObtenerUsuarios();
     }

@@ -161,6 +161,25 @@ namespace DAL
             }; 
             _accesoDAL.Escribir(consulta, parametros);
         }
+
+        public bool EstaBloqueado(int dni)
+        {
+            string query = "SELECT COUNT(1) AS Total FROM Usuarios WHERE DNI = @dni";
+
+            var parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni",dni)
+            };
+
+            DataSet ds = _accesoDAL.Leer(query, parametros);
+
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                int total = Convert.ToInt32(ds.Tables[0].Rows[0]["Total"]);
+                return total > 0;
+            }
+            return false;
+        }
     }
 }
 
