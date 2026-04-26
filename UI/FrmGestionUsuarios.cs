@@ -15,11 +15,17 @@ namespace UI
 {
     public partial class FrmGestionUsuarios : Form
     {
-        public FrmGestionUsuarios()
+        private readonly IGestorUsuario_83KI _gestorUsuario;
+        public FrmGestionUsuarios(IGestorUsuario_83KI gestorUsuario)
         {
             InitializeComponent();
+            _gestorUsuario = gestorUsuario;
         }
-        private readonly IGestorUsuario_83KI _gestorUsuario;
+        private void FrmGestionUsuarios_Load(object sender, EventArgs e)
+        {
+            ActualizarDatos();
+
+        }
         private void btnCrearUsuario_Click(object sender, EventArgs e)
         {
             try
@@ -44,15 +50,24 @@ namespace UI
         {
             try
             {
-                Usuario_83KI usuarioElegido = (Usuario_83KI) dgvUsuarios.Rows[0].DataBoundItem; 
-                _gestorUsuario.DesbloquearCuenta(usuarioElegido);
-                ActualizarDatos();
+                if (dgvUsuarios.CurrentRow != null)
+                {
+                    Usuario_83KI usuarioElegido = (Usuario_83KI)dgvUsuarios.CurrentRow.DataBoundItem;
+                    _gestorUsuario.DesbloquearCuenta(usuarioElegido);
+                    ActualizarDatos();
+                    MessageBox.Show("Usuario desbloqueado con éxito.");
+                }
+                else
+                {
+                    MessageBox.Show("Por favor, seleccione un usuario de la lista.");
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                MessageBox.Show("Error al intentar desbloquear: " + ex.Message);
             }
         }
+
+
     }
 }

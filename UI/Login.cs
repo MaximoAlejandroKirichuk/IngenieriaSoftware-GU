@@ -39,11 +39,15 @@ namespace UI
                 var userName = txt_userName.Text;
                 var contrasena = txt_Contrasena.Text;
                 _gestor.Login(userName, contrasena);
-                var formPrincipal =new FrmPrincipal();
+                var formPrincipal =new FrmPrincipal(_gestor);
                 formPrincipal.ShowDialog();
                 this.Close();
             }
-            catch(UsuarioActivoActualmenteException_83KI ex)
+            catch (UsuarioNoExisteException_83KI ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            catch (UsuarioActivoActualmenteException_83KI ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }

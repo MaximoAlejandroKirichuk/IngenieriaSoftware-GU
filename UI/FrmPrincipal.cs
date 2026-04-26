@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BLL.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,9 +13,17 @@ namespace UI
 {
     public partial class FrmPrincipal : Form
     {
-        public FrmPrincipal()
+        private readonly IGestorUsuario_83KI _gestorUsuario;
+        public FrmPrincipal(IGestorUsuario_83KI gestorUsuario)
         {
             InitializeComponent();
+            _gestorUsuario = gestorUsuario;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var gestion = new FrmGestionUsuarios(_gestorUsuario);
+            gestion.Show();
         }
     }
 }

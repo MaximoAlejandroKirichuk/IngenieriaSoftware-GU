@@ -79,6 +79,7 @@
             this.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
             this.Name = "FrmGestionUsuarios";
             this.Text = "FrmGestionUsuarios";
+            this.Load += new System.EventHandler(this.FrmGestionUsuarios_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).EndInit();
             this.ResumeLayout(false);
 
