@@ -42,11 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitacoraBLL_83KI.cs" />
+    <Compile Include="Excepciones\CambiarContrasenaUsuario\Coincidir_Actual_Nueva_ContrasenaException.cs" />
     <Compile Include="Excepciones\CrearUsuario\DniRegistradoException_83KI.cs" />
     <Compile Include="Excepciones\CrearUsuario\EmailRegistradoException_83KI.cs" />
     <Compile Include="Excepciones\Login\UsuarioActivoActualmenteException_83KI.cs" />
     <Compile Include="Excepciones\Login\UsuarioBloqueadoException_83KI.cs" />
     <Compile Include="Excepciones\Login\ContrasenaInvalidaException_83KI.cs" />
+    <Compile Include="Excepciones\CambiarContrasenaUsuario\UsuarioNoAutenticadoException_83KI.cs" />
     <Compile Include="Excepciones\Login\UsuarioNoExisteException_83KI.cs" />
     <Compile Include="GestorUsuariosBLL_83KI.cs" />
     <Compile Include="Interfaces\IBitacoraManager_83KI.cs" />
