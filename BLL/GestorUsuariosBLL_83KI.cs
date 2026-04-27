@@ -11,6 +11,7 @@ using DAL;
 using BLL.Excepciones.Login;
 using Microsoft.Win32;
 using BLL.Excepciones.CrearUsuario;
+using System.Text.RegularExpressions;
 namespace BLL
 {
     public class GestorUsuarioBLL_83KI : IGestorUsuario_83KI
@@ -122,6 +123,45 @@ namespace BLL
             throw new NotImplementedException();
         }
 
+        public void ModificarUsuario(int dni, string email, RolUsuario rol)
+        {
+            var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
+
+            if (usuarioActivo.RolUsuario != RolUsuario.Admin)
+            {
+                throw new InvalidOperationException("Solo un administrador puede modificar usuarios.");
+            }
+           
+            if (_dal.ExisteEmailParaOtroUsuario(email, dni))
+            {
+                throw new EmailRegistradoException_83KI();
+            }
+
+            //una persona no puede modificarse a si misma el rol. 
+            //el email si
+            bool esAutoedicion = usuarioActivo.DNI == dni;
+            if (esAutoedicion && usuarioActivo.RolUsuario != rol)
+            {
+                throw new InvalidOperationException("No puede modificar su propio rol.");
+            }
+
+            _dal.ModificarUsuario(dni, email, rol);
+
+            if (esAutoedicion)
+            {
+                _sessionManager.UsuarioActivo.Email = email;
+            }
+
+            _bitacora.RegistrarEvento(
+                new BitacoraEvento_83KI(
+                    $"Usuario modificado: DNI {dni}. Email: {email}. Rol: {rol}. Actor: {usuarioActivo.UserName}",
+                    2,
+                    Modulo.Usuarios,
+                    usuarioActivo.UserName
+                )
+            );
+        }
+
         public void BloqueoCuentaUsuario(Usuario_83KI usuario)
         {
             usuario.Bloqueado = true;
@@ -141,7 +181,7 @@ namespace BLL
         public void CrearUsuario(Usuario_83KI usuario)
         {
             if (_dal.ExisteDni(usuario.DNI)) throw new DniRegistradoException_83KI();
-            if (_dal.ExisteEmail(usuario.UserName)) throw new EmailRegistradoException_83KI();
+            if (_dal.ExisteEmail(usuario.Email)) throw new EmailRegistradoException_83KI();
 
             string contrasenaPorDefecto = EstablecerContrasenaPorDefecto(usuario.Nombre, usuario.DNI);
 
