@@ -74,7 +74,7 @@ namespace BLL
                 _sessionManager.CerrarSesion();
                 _bitacora.RegistrarEvento(
                     new BitacoraEvento_83KI(
-                        $"Login exitoso: {usuario.UserName}",
+                        $"Logout exitoso: {usuario.UserName}",
                         3,
                         Modulo.Usuarios,
                         usuario.UserName
