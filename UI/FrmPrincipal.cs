@@ -25,5 +25,11 @@ namespace UI
             var gestion = new FrmGestionUsuarios(_gestorUsuario);
             gestion.Show();
         }
+
+        private void btnCambiarContrasena_Click(object sender, EventArgs e)
+        {
+            var cambiarContrasena = new FrmCambiarContrasena(_gestorUsuario);
+            cambiarContrasena.ShowDialog(this);
+        }
     }
 }
