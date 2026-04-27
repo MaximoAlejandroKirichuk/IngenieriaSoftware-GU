@@ -38,26 +38,43 @@ namespace UI
                 var userName = txt_userName.Text;
                 var contrasena = txt_Contrasena.Text;
                 _gestor.Login(userName, contrasena);
-                var formPrincipal =new FrmPrincipal(_gestor);
-                formPrincipal.ShowDialog();
-                this.Close();
+                Hide();
+
+                using (var formPrincipal = new FrmPrincipal(_gestor))
+                {
+                    var resultado = formPrincipal.ShowDialog(this);
+
+                    if (resultado == DialogResult.Retry)
+                    {
+                        txt_Contrasena.Clear();
+                        txt_Contrasena.Focus();
+                        Show();
+                        return;
+                    }
+                }
+
+                Close();
             }
             catch (UsuarioActivoActualmenteException_83KI ex)
             {
+                Show();
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (UsuarioNoExisteException_83KI ex)
             {
+                Show();
                 MessageBox.Show(ex.Message);
             }
 
             catch (UsuarioBloqueadoException_83KI ex)
             {
+                Show();
                 MessageBox.Show(ex.Message, "Seguridad", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
             
             catch (ContrasenaInvalidaException_83KI ex)
             {
+                Show();
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
