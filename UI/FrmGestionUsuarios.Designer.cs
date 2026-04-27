@@ -31,6 +31,7 @@
             this.dgvUsuarios = new System.Windows.Forms.DataGridView();
             this.btnCrearUsuario = new System.Windows.Forms.Button();
             this.btnDesbloquearusuario = new System.Windows.Forms.Button();
+            this.btnModificarUsuario = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).BeginInit();
             this.SuspendLayout();
             // 
@@ -40,6 +41,8 @@
             this.dgvUsuarios.Location = new System.Drawing.Point(44, 77);
             this.dgvUsuarios.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
             this.dgvUsuarios.Name = "dgvUsuarios";
+            this.dgvUsuarios.ReadOnly = true;
+            this.dgvUsuarios.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvUsuarios.Size = new System.Drawing.Size(900, 589);
             this.dgvUsuarios.TabIndex = 0;
             // 
@@ -65,12 +68,24 @@
             this.btnDesbloquearusuario.UseVisualStyleBackColor = true;
             this.btnDesbloquearusuario.Click += new System.EventHandler(this.btnDesbloquearusuario_Click);
             // 
+            // btnModificarUsuario
+            // 
+            this.btnModificarUsuario.Location = new System.Drawing.Point(1001, 320);
+            this.btnModificarUsuario.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            this.btnModificarUsuario.Name = "btnModificarUsuario";
+            this.btnModificarUsuario.Size = new System.Drawing.Size(312, 65);
+            this.btnModificarUsuario.TabIndex = 3;
+            this.btnModificarUsuario.Text = "Modificar usuario";
+            this.btnModificarUsuario.UseVisualStyleBackColor = true;
+            this.btnModificarUsuario.Click += new System.EventHandler(this.btnModificarUsuario_Click);
+            // 
             // FrmGestionUsuarios
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(15F, 37F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SteelBlue;
             this.ClientSize = new System.Drawing.Size(1372, 743);
+            this.Controls.Add(this.btnModificarUsuario);
             this.Controls.Add(this.btnDesbloquearusuario);
             this.Controls.Add(this.btnCrearUsuario);
             this.Controls.Add(this.dgvUsuarios);
@@ -90,5 +105,6 @@
         private System.Windows.Forms.DataGridView dgvUsuarios;
         private System.Windows.Forms.Button btnCrearUsuario;
         private System.Windows.Forms.Button btnDesbloquearusuario;
+        private System.Windows.Forms.Button btnModificarUsuario;
     }
 }
