@@ -30,7 +30,6 @@ namespace UI
             RedondearPanel(panelLogin);
             ButtonDesing(btnLogin);
 
-
         }
         private void btnLogin_Click(object sender, EventArgs e)
         {
@@ -43,14 +42,15 @@ namespace UI
                 formPrincipal.ShowDialog();
                 this.Close();
             }
-            catch (UsuarioNoExisteException_83KI ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
             catch (UsuarioActivoActualmenteException_83KI ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            catch (UsuarioNoExisteException_83KI ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
             catch (UsuarioBloqueadoException_83KI ex)
             {
                 MessageBox.Show(ex.Message, "Seguridad", MessageBoxButtons.OK, MessageBoxIcon.Stop);

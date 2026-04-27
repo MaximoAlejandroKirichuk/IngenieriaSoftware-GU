@@ -69,7 +69,7 @@ namespace DAL
         public void CrearUsuario(Usuario_83KI usuario)
         {
             // Nota: No incluimos ID si es Identity/Autonumérico en SQL
-            string consulta = @"INSERT INTO Usuarios (UserName, Nombre, Apellido, DNI, Email, Rol, Password) 
+            string consulta = @"INSERT INTO Usuarios (UserName, Nombre, Apellido, DNI, Email, Rol, Contrasena) 
                         VALUES (@userName ,@nombre, @apellido, @dni, @email, @rol, @pass)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
@@ -81,6 +81,19 @@ namespace DAL
                 new SqlParameter("@email", usuario.Email),
                 new SqlParameter("@rol", usuario.RolUsuario.ToString()), // Guardamos el nombre del Enum
                 new SqlParameter("@pass", usuario.Contrasena)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ActualizarContrasena(Usuario_83KI usuario)
+        {
+            string consulta = "UPDATE Usuarios SET Contrasena = @contrasena WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", usuario.DNI),
+                new SqlParameter("@contrasena", usuario.Contrasena)
             };
 
             _accesoDAL.Escribir(consulta, parametros);
