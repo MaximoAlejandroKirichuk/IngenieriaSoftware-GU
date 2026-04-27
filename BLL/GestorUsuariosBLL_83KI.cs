@@ -83,9 +83,38 @@ namespace BLL
             }
         }
 
-        public void CambioContrasena(string userName, string contrasenaActual, string nuevaContrasena)
+        public void CambiarContrasenaUsuarioActual(string contrasenaActual, string nuevaContrasena)
         {
-            throw new NotImplementedException();
+            var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
+            CambiarContrasena(usuarioActivo.UserName, contrasenaActual, nuevaContrasena);
+        }
+
+        private void CambiarContrasena(string userName, string contrasenaActual, string nuevaContrasena)
+        {
+            var usuario = _dal.ObtenerPorUserName(userName) ?? throw new UsuarioNoExisteException_83KI();
+            string hashContrasenaActual = _encriptador.HashContrasena(contrasenaActual);
+
+            if (usuario.Contrasena != hashContrasenaActual)
+            {
+                throw new ContrasenaInvalidaException_83KI("La contraseña actual ingresada no coincide con la registrada.");
+            }
+
+            usuario.Contrasena = _encriptador.HashContrasena(nuevaContrasena);
+            _dal.ActualizarContrasena(usuario);
+
+            if (_sessionManager.UsuarioActivo != null && _sessionManager.UsuarioActivo.UserName == usuario.UserName)
+            {
+                _sessionManager.UsuarioActivo.Contrasena = usuario.Contrasena;
+            }
+
+            _bitacora.RegistrarEvento(
+                new BitacoraEvento_83KI(
+                    $"Contraseña modificada: {usuario.UserName}",
+                    2,
+                    Modulo.Usuarios,
+                    usuario.UserName
+                )
+            );
         }
 
         public void ModificarRolUsuario(RolUsuario Rol)
