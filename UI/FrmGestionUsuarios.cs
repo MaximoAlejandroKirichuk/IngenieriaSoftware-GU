@@ -19,7 +19,39 @@ namespace UI
         private void FrmGestionUsuarios_Load(object sender, EventArgs e)
         {
             ActualizarDatos();
-            ActualizarBotonEstado();
+            ActualizarBotonesAccion();
+        }
+
+        private void ActualizarDatos()
+        {
+            dgvUsuarios.DataSource = null;
+            dgvUsuarios.DataSource = _gestorUsuario.ObtenerUsuarios();
+            ConfigurarGrilla();
+        }
+
+        private void ActualizarBotonesAccion()
+        {
+            Usuario_83KI usuarioSeleccionado = ObtenerUsuarioSeleccionado();
+            bool haySeleccion = usuarioSeleccionado != null;
+
+            btnCambiarEstadoUsuario.Enabled = haySeleccion;
+            btnDesbloquearUsuario.Enabled = haySeleccion && usuarioSeleccionado.Bloqueado;
+
+            if (!haySeleccion)
+            {
+                btnCambiarEstadoUsuario.Text = "Gestionar estado";
+                btnCambiarEstadoUsuario.BackColor = SystemColors.Control;
+                btnCambiarEstadoUsuario.ForeColor = SystemColors.ControlText;
+                btnDesbloquearUsuario.BackColor = SystemColors.Control;
+                btnDesbloquearUsuario.ForeColor = SystemColors.ControlText;
+                return;
+            }
+
+            btnCambiarEstadoUsuario.Text = usuarioSeleccionado.Activo ? "Deshabilitar usuario" : "Habilitar usuario";
+            btnCambiarEstadoUsuario.BackColor = usuarioSeleccionado.Activo ? Color.IndianRed : Color.DarkSeaGreen;
+            btnCambiarEstadoUsuario.ForeColor = Color.Black;
+            btnDesbloquearUsuario.BackColor = usuarioSeleccionado.Bloqueado ? Color.DarkSeaGreen : SystemColors.Control;
+            btnDesbloquearUsuario.ForeColor = Color.Black;
         }
 
         private void btnCrearUsuario_Click(object sender, EventArgs e)
@@ -31,6 +63,7 @@ namespace UI
                     if (frmCrearUsuario.ShowDialog(this) == DialogResult.OK)
                     {
                         ActualizarDatos();
+                        ActualizarBotonesAccion();
                     }
                 }
             }
@@ -38,13 +71,6 @@ namespace UI
             {
                 MessageBox.Show(ex.Message);
             }
-        }
-
-        private void ActualizarDatos()
-        {
-            dgvUsuarios.DataSource = null;
-            dgvUsuarios.DataSource = _gestorUsuario.ObtenerUsuarios();
-            ConfigurarGrilla();
         }
 
         private void ConfigurarGrilla()
@@ -103,6 +129,11 @@ namespace UI
             }
         }
 
+        private void dgvUsuarios_SelectionChanged(object sender, EventArgs e)
+        {
+            ActualizarBotonesAccion();
+        }
+
         private void btnCambiarEstadoUsuario_Click(object sender, EventArgs e)
         {
             try
@@ -125,21 +156,26 @@ namespace UI
                 if (usuarioElegido.Activo)
                 {
                     _gestorUsuario.DeshabilitarUsuario(usuarioElegido.DNI);
-                    MessageBox.Show("Usuario deshabilitado con éxito.");
+                    MessageBox.Show("Usuario deshabilitado con exito.");
                 }
                 else
                 {
                     _gestorUsuario.HabilitarUsuario(usuarioElegido.DNI);
-                    MessageBox.Show("Usuario habilitado con éxito.");
+                    MessageBox.Show("Usuario habilitado con exito.");
                 }
 
                 ActualizarDatos();
-                ActualizarBotonEstado();
+                ActualizarBotonesAccion();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error al intentar gestionar el estado: " + ex.Message);
             }
+        }
+
+        private Usuario_83KI ObtenerUsuarioSeleccionado()
+        {
+            return dgvUsuarios.CurrentRow?.DataBoundItem as Usuario_83KI;
         }
 
         private void btnModificarUsuario_Click(object sender, EventArgs e)
@@ -158,8 +194,8 @@ namespace UI
                     if (frmModificarUsuario.ShowDialog(this) == DialogResult.OK)
                     {
                         ActualizarDatos();
-                        ActualizarBotonEstado();
-                        MessageBox.Show("Usuario modificado con éxito.");
+                        ActualizarBotonesAccion();
+                        MessageBox.Show("Usuario modificado con exito.");
                     }
                 }
             }
@@ -169,34 +205,32 @@ namespace UI
             }
         }
 
-        private Usuario_83KI ObtenerUsuarioSeleccionado()
+        private void btnDesbloquearUsuario_Click(object sender, EventArgs e)
         {
-            return dgvUsuarios.CurrentRow?.DataBoundItem as Usuario_83KI;
-        }
-
-        private void dgvUsuarios_SelectionChanged(object sender, EventArgs e)
-        {
-            ActualizarBotonEstado();
-        }
-
-        private void ActualizarBotonEstado()
-        {
-            Usuario_83KI usuarioSeleccionado = ObtenerUsuarioSeleccionado();
-            bool haySeleccion = usuarioSeleccionado != null;
-
-            btnCambiarEstadoUsuario.Enabled = haySeleccion;
-
-            if (!haySeleccion)
+            try
             {
-                btnCambiarEstadoUsuario.Text = "Gestionar estado";
-                btnCambiarEstadoUsuario.BackColor = SystemColors.Control;
-                btnCambiarEstadoUsuario.ForeColor = SystemColors.ControlText;
-                return;
-            }
+                Usuario_83KI usuarioElegido = ObtenerUsuarioSeleccionado();
+                if (usuarioElegido == null)
+                {
+                    MessageBox.Show("Por favor, seleccione un usuario de la lista.");
+                    return;
+                }
 
-            btnCambiarEstadoUsuario.Text = usuarioSeleccionado.Activo ? "Deshabilitar usuario" : "Habilitar usuario";
-            btnCambiarEstadoUsuario.BackColor = usuarioSeleccionado.Activo ? Color.IndianRed : Color.DarkSeaGreen;
-            btnCambiarEstadoUsuario.ForeColor = Color.Black;
+                if (!usuarioElegido.Bloqueado)
+                {
+                    MessageBox.Show("El usuario seleccionado no se encuentra bloqueado.");
+                    return;
+                }
+
+                _gestorUsuario.DesbloquearCuenta(usuarioElegido);
+                ActualizarDatos();
+                ActualizarBotonesAccion();
+                MessageBox.Show("Usuario desbloqueado con exito.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al intentar desbloquear: " + ex.Message);
+            }
         }
     }
 }

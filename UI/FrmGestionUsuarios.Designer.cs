@@ -19,6 +19,7 @@ namespace UI
             this.btnCrearUsuario = new System.Windows.Forms.Button();
             this.btnCambiarEstadoUsuario = new System.Windows.Forms.Button();
             this.btnModificarUsuario = new System.Windows.Forms.Button();
+            this.btnDesbloquearUsuario = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).BeginInit();
             this.SuspendLayout();
             // 
@@ -68,12 +69,24 @@ namespace UI
             this.btnModificarUsuario.UseVisualStyleBackColor = true;
             this.btnModificarUsuario.Click += new System.EventHandler(this.btnModificarUsuario_Click);
             // 
+            // btnDesbloquearUsuario
+            // 
+            this.btnDesbloquearUsuario.Location = new System.Drawing.Point(1001, 480);
+            this.btnDesbloquearUsuario.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            this.btnDesbloquearUsuario.Name = "btnDesbloquearUsuario";
+            this.btnDesbloquearUsuario.Size = new System.Drawing.Size(312, 65);
+            this.btnDesbloquearUsuario.TabIndex = 4;
+            this.btnDesbloquearUsuario.Text = "Desbloquear usuario";
+            this.btnDesbloquearUsuario.UseVisualStyleBackColor = true;
+            this.btnDesbloquearUsuario.Click += new System.EventHandler(this.btnDesbloquearUsuario_Click);
+            // 
             // FrmGestionUsuarios
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(15F, 37F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SteelBlue;
             this.ClientSize = new System.Drawing.Size(1372, 743);
+            this.Controls.Add(this.btnDesbloquearUsuario);
             this.Controls.Add(this.btnModificarUsuario);
             this.Controls.Add(this.btnCambiarEstadoUsuario);
             this.Controls.Add(this.btnCrearUsuario);
@@ -92,5 +105,6 @@ namespace UI
         private System.Windows.Forms.Button btnCrearUsuario;
         private System.Windows.Forms.Button btnCambiarEstadoUsuario;
         private System.Windows.Forms.Button btnModificarUsuario;
+        private System.Windows.Forms.Button btnDesbloquearUsuario;
     }
 }
