@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BE
+namespace Service.Entidades
 {
     public class BitacoraEvento_83KI
     {
@@ -15,7 +15,7 @@ namespace BE
         public int Criticidad { get; set; } // 1 a 5 como en el Excel
         public Modulo Modulo { get; set; }    // "Usuario"
         public string Username { get; set; }
-        
+
         // Constructor vacío para la DAL
         public BitacoraEvento_83KI() { }
         // Constructor para crear eventos rápido desde la BLL

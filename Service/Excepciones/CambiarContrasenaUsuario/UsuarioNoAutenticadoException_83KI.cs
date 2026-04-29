@@ -1,6 +1,6 @@
 using System;
 
-namespace BLL.Excepciones.Login
+namespace Service.Excepciones.Login
 {
     public class UsuarioNoAutenticadoException_83KI : Exception
     {

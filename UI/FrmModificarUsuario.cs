@@ -1,5 +1,5 @@
-using BE;
-using BLL.Interfaces;
+using Service.Entidades;
+using Service.Interfaces;
 using System;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;

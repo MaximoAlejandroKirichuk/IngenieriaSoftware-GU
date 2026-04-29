@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.Excepciones.CambiarContrasenaUsuario
+namespace Service.Excepciones.CambiarContrasenaUsuario
 {
     public class Coincidir_Actual_Nueva_ContrasenaException : Exception
     {

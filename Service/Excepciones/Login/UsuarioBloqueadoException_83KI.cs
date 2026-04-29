@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.Excepciones
+namespace Service.Excepciones
 {
     public class UsuarioBloqueadoException_83KI : Exception
     {

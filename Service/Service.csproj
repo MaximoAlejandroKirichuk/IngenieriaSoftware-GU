@@ -41,24 +41,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entidades\BitacoraEvento_83KI.cs" />
     <Compile Include="Encriptador_83KI.cs" />
-    <Compile Include="ServiceFactory_83KI.cs" />
+    <Compile Include="Enums\Enums.cs" />
+    <Compile Include="Excepciones\CambiarContrasenaUsuario\Coincidir_Actual_Nueva_ContrasenaException.cs" />
+    <Compile Include="Excepciones\CambiarContrasenaUsuario\UsuarioNoAutenticadoException_83KI.cs" />
+    <Compile Include="Excepciones\CrearUsuario\DniRegistradoException_83KI.cs" />
+    <Compile Include="Excepciones\CrearUsuario\EmailRegistradoException_83KI.cs" />
+    <Compile Include="Excepciones\Login\ContrasenaInvalidaException_83KI.cs" />
+    <Compile Include="Excepciones\Login\UsuarioActivoActualmenteException_83KI.cs" />
+    <Compile Include="Excepciones\Login\UsuarioBloqueadoException_83KI.cs" />
+    <Compile Include="Excepciones\Login\UsuarioDeshabilitadoException_83KI.cs" />
+    <Compile Include="Excepciones\Login\UsuarioNoExisteException_83KI.cs" />
+    <Compile Include="Interfaces\IBitacoraManager_83KI.cs" />
+    <Compile Include="Interfaces\IEncriptador_83KI.cs" />
+    <Compile Include="Interfaces\IGestorUsuario_83KI.cs" />
+    <Compile Include="Interfaces\ISessionManager_83KI.cs" />
     <Compile Include="SessionManager_83KI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BE\BE.csproj">
-      <Project>{9102c2e0-46ed-4c66-b302-44604b73f7c3}</Project>
-      <Name>BE</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BLL\BLL.csproj">
-      <Project>{80f97d28-0cca-4999-ae9a-2c7d39563b51}</Project>
-      <Name>BLL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DAL\DAL.csproj">
-      <Project>{f2b240cb-f9bf-4d5b-8e03-33a327a00234}</Project>
-      <Name>DAL</Name>
-    </ProjectReference>
+    <Compile Include="Entidades\Usuario_83KI.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

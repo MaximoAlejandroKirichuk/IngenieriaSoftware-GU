@@ -1,11 +1,11 @@
-﻿using BE;
+﻿using Service.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.Interfaces
+namespace Service.Interfaces
 {
     public interface IBitacoraManager_83KI
     {

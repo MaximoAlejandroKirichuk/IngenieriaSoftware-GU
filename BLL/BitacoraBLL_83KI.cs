@@ -1,6 +1,7 @@
-﻿using BE;
-using BLL.Interfaces;
+﻿
 using DAL.interfaces;
+using Service.Entidades;
+using Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.Excepciones.CrearUsuario
+namespace Service.Excepciones.CrearUsuario
 {
     public class EmailRegistradoException_83KI : Exception
     {
