@@ -1,8 +1,8 @@
-using BE;
+using Service.Entidades;
 
 namespace Service.Interfaces
 {
-    internal interface ISessionManager_83KI
+    public interface ISessionManager_83KI
     {
         void IniciarSesion(Usuario_83KI usuario);
         void CerrarSesion();
