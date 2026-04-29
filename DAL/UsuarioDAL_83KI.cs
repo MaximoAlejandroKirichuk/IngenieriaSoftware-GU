@@ -32,8 +32,10 @@ namespace DAL
                 {
                     DNI = (int)Convert.ToInt64(row["DNI"]),
                     Nombre = row["Nombre"].ToString(),
+                    Apellido = row["Apellido"].ToString(),
                     Email = row["Email"].ToString(),
                     Contrasena = row["Contrasena"].ToString(),
+                    RolUsuario = ParsearRol(row["RolUsuario"]),
                     Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
                     Intentos = Convert.ToInt32(row["Intentos"])
                 };
@@ -68,8 +70,7 @@ namespace DAL
 
         public void CrearUsuario(Usuario_83KI usuario)
         {
-            // Nota: No incluimos ID si es Identity/Autonumérico en SQL
-            string consulta = @"INSERT INTO Usuarios (UserName, Nombre, Apellido, DNI, Email, Rol, Contrasena) 
+            string consulta = @"INSERT INTO Usuarios (UserName, Nombre, Apellido, DNI, Email, RolUsuario, Contrasena) 
                         VALUES (@userName ,@nombre, @apellido, @dni, @email, @rol, @pass)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
@@ -81,6 +82,20 @@ namespace DAL
                 new SqlParameter("@email", usuario.Email),
                 new SqlParameter("@rol", usuario.RolUsuario.ToString()), // Guardamos el nombre del Enum
                 new SqlParameter("@pass", usuario.Contrasena)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ModificarUsuario(int dni, string email, RolUsuario rol)
+        {
+            string consulta = "UPDATE Usuarios SET Email = @email, RolUsuario = @rol WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", dni),
+                new SqlParameter("@email", email),
+                new SqlParameter("@rol", rol.ToString())
             };
 
             _accesoDAL.Escribir(consulta, parametros);
@@ -139,6 +154,28 @@ namespace DAL
             return false;
         }
 
+        public bool ExisteEmailParaOtroUsuario(string email, int dni)
+        {
+            //dni distinto al que estoy mandando <>
+            string query = "SELECT COUNT(1) AS Total FROM Usuarios WHERE Email = @email AND DNI <> @dni";
+
+            var parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@email", email),
+                new SqlParameter("@dni", dni)
+            };
+
+            DataSet ds = _accesoDAL.Leer(query, parametros);
+
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                int total = Convert.ToInt32(ds.Tables[0].Rows[0]["Total"]);
+                return total > 0;
+            }
+
+            return false;
+        }
+
         public IEnumerable<Usuario_83KI> ObtenerUsuarios()
         {
             string query = "SELECT * FROM Usuarios";
@@ -155,6 +192,7 @@ namespace DAL
                         Nombre = row["Nombre"].ToString(),
                         Apellido = row["Apellido"].ToString(),
                         Email = row["Email"].ToString(),
+                        RolUsuario = ParsearRol(row["RolUsuario"]),
                         Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
                         Intentos = Convert.ToInt32(row["Intentos"])
                     });
@@ -192,6 +230,16 @@ namespace DAL
                 return total > 0;
             }
             return false;
+        }
+
+        private RolUsuario ParsearRol(object valorRol)
+        {
+            if (valorRol != null && Enum.TryParse(valorRol.ToString(), true, out RolUsuario rol))
+            {
+                return rol;
+            }
+
+            return RolUsuario.RolSimple;
         }
     }
 }

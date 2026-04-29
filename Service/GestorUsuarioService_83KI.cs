@@ -6,6 +6,7 @@ using BLL.Interfaces;
 using Service.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Service
 {
@@ -100,6 +101,56 @@ namespace Service
         public void ModificarRolUsuario(RolUsuario rol)
         {
             throw new NotImplementedException();
+        }
+
+        public void ModificarUsuario(int dni, string email, RolUsuario rol)
+        {
+            var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
+
+            if (usuarioActivo.RolUsuario != RolUsuario.Admin)
+            {
+                throw new InvalidOperationException("Solo un administrador puede modificar usuarios.");
+            }
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                throw new InvalidOperationException("El email es obligatorio.");
+            }
+
+            string patronEmail = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            string emailNormalizado = email.Trim();
+
+            if (!Regex.IsMatch(emailNormalizado, patronEmail))
+            {
+                throw new InvalidOperationException("El formato del email no es valido.");
+            }
+
+            if (_usuarioRepository.ExisteEmailParaOtroUsuario(emailNormalizado, dni))
+            {
+                throw new EmailRegistradoException_83KI();
+            }
+
+            bool esAutoedicion = usuarioActivo.DNI == dni;
+            if (esAutoedicion && usuarioActivo.RolUsuario != rol)
+            {
+                throw new InvalidOperationException("No puede modificar su propio rol.");
+            }
+
+            _usuarioRepository.ModificarUsuario(dni, emailNormalizado, rol);
+
+            if (esAutoedicion)
+            {
+                _sessionManager.UsuarioActivo.Email = emailNormalizado;
+            }
+
+            _bitacora.RegistrarEvento(
+                new BitacoraEvento_83KI(
+                    $"Usuario modificado: DNI {dni}. Email: {emailNormalizado}. Rol: {rol}. Actor: {usuarioActivo.UserName}",
+                    2,
+                    Modulo.Usuarios,
+                    usuarioActivo.UserName
+                )
+            );
         }
 
         public void BloqueoCuentaUsuario(Usuario_83KI usuario)

@@ -1,14 +1,6 @@
 ﻿using BE;
-using BLL;
 using BLL.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace UI
@@ -30,10 +22,13 @@ namespace UI
         {
             try
             {
-                IGestorUsuario_83KI gestorUsuario = Service.ServiceFactory_83KI.GetGestorUsuario();
-                FrmCrearUsuario frmCrearUsuario = new FrmCrearUsuario(gestorUsuario);
-                //todo: que pasa si no agrego nada? se actualice igual
-                ActualizarDatos();
+                using (FrmCrearUsuario frmCrearUsuario = new FrmCrearUsuario(_gestorUsuario))
+                {
+                    if (frmCrearUsuario.ShowDialog(this) == DialogResult.OK)
+                    {
+                        ActualizarDatos();
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -44,6 +39,46 @@ namespace UI
         {
             dgvUsuarios.DataSource = null;
             dgvUsuarios.DataSource = _gestorUsuario.ObtenerUsuarios();
+            ConfigurarGrilla();
+        }
+
+        private void ConfigurarGrilla()
+        {
+            if (dgvUsuarios.Columns["Contrasena"] != null)
+            {
+                dgvUsuarios.Columns["Contrasena"].Visible = false;
+            }
+
+            if (dgvUsuarios.Columns["UserName"] != null)
+            {
+                dgvUsuarios.Columns["UserName"].Visible = false;
+            }
+
+            if (dgvUsuarios.Columns["Nombre"] != null)
+            {
+                dgvUsuarios.Columns["Nombre"].DisplayIndex = 0;
+            }
+
+            if (dgvUsuarios.Columns["Apellido"] != null)
+            {
+                dgvUsuarios.Columns["Apellido"].DisplayIndex = 1;
+            }
+
+            if (dgvUsuarios.Columns["DNI"] != null)
+            {
+                dgvUsuarios.Columns["DNI"].DisplayIndex = 2;
+            }
+
+            if (dgvUsuarios.Columns["Email"] != null)
+            {
+                dgvUsuarios.Columns["Email"].DisplayIndex = 3;
+            }
+
+            if (dgvUsuarios.Columns["RolUsuario"] != null)
+            {
+                dgvUsuarios.Columns["RolUsuario"].HeaderText = "Rol";
+                dgvUsuarios.Columns["RolUsuario"].DisplayIndex = 4;
+            }
         }
 
         private void btnDesbloquearusuario_Click(object sender, EventArgs e)
@@ -68,6 +103,36 @@ namespace UI
             }
         }
 
+        private void btnModificarUsuario_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Usuario_83KI usuarioElegido = ObtenerUsuarioSeleccionado();
+                if (usuarioElegido == null)
+                {
+                    MessageBox.Show("Por favor, seleccione un usuario de la lista.");
+                    return;
+                }
+
+                using (FrmModificarUsuario frmModificarUsuario = new FrmModificarUsuario(_gestorUsuario, usuarioElegido))
+                {
+                    if (frmModificarUsuario.ShowDialog(this) == DialogResult.OK)
+                    {
+                        ActualizarDatos();
+                        MessageBox.Show("Usuario modificado con éxito.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al intentar modificar: " + ex.Message);
+            }
+        }
+
+        private Usuario_83KI ObtenerUsuarioSeleccionado()
+        {
+            return dgvUsuarios.CurrentRow?.DataBoundItem as Usuario_83KI;
+        }
 
     }
 }
