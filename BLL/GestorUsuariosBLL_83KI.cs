@@ -1,20 +1,20 @@
-﻿using BE;
-using BLL.Excepciones;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BLL.Interfaces;
+using Service.Interfaces;
 using DAL.interfaces;
 using DAL;
-using BLL.Excepciones.Login;
+using Service.Excepciones.Login;
 using Microsoft.Win32;
-using BLL.Excepciones.CrearUsuario;
+using Service.Excepciones.CrearUsuario;
 using System.Text.RegularExpressions;
+using Service.Excepciones;
+using Service.Entidades;
 namespace BLL
 {
-    public class GestorUsuarioBLL_83KI : IGestorUsuario_83KI
+    internal class GestorUsuarioBLL_83KI : IGestorUsuario_83KI
     {
         private readonly IUsuarioDAL_83KI _dal;
         private readonly IEncriptador_83KI _encriptador;

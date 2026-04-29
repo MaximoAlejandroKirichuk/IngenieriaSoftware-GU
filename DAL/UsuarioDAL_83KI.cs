@@ -1,4 +1,4 @@
-﻿using BE;
+﻿using Service.Entidades;
 using DAL.DAL;
 using DAL.interfaces;
 using System;
