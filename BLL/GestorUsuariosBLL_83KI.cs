@@ -36,6 +36,9 @@ namespace BLL
   
             var usuario = _dal.ObtenerPorUserName(userName) ?? throw new UsuarioNoExisteException_83KI();
 
+            if (!usuario.Activo)
+                throw new UsuarioDeshabilitadoException_83KI();
+
             if (usuario.Bloqueado) 
                 throw new UsuarioBloqueadoException_83KI();
 
@@ -228,6 +231,55 @@ namespace BLL
                     1,
                     Modulo.Usuarios,
                     usuario.UserName
+                )
+            );
+        }
+
+        public void HabilitarUsuario(int dni)
+        {
+            CambiarEstadoUsuario(dni, true);
+        }
+
+        public void DeshabilitarUsuario(int dni)
+        {
+            CambiarEstadoUsuario(dni, false);
+        }
+
+        private void CambiarEstadoUsuario(int dni, bool activo)
+        {
+            var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
+
+            if (usuarioActivo.RolUsuario != RolUsuario.Admin)
+            {
+                throw new InvalidOperationException("Solo un administrador puede gestionar usuarios.");
+            }
+
+            if (usuarioActivo.DNI == dni && !activo)
+            {
+                throw new InvalidOperationException("No puede deshabilitar su propio usuario.");
+            }
+
+            var usuarioGestionado = _dal.ObtenerPorDni(dni);
+            if (usuarioGestionado == null)
+            {
+                throw new UsuarioNoExisteException_83KI();
+            }
+
+            if (usuarioGestionado.Activo == activo)
+            {
+                string mensajeEstado = activo ? "ya esta habilitado." : "ya esta deshabilitado.";
+                throw new InvalidOperationException($"El usuario seleccionado {mensajeEstado}");
+            }
+
+            _dal.ActualizarEstadoActivo(dni, activo);
+
+            string accion = activo ? "habilitado" : "deshabilitado";
+            _bitacora.RegistrarEvento(
+                new BitacoraEvento_83KI(
+                    $"Usuario {accion}: DNI {dni}. Actor: {usuarioActivo.UserName}",
+                    2,
+                    Modulo.Usuarios,
+                    usuarioActivo.UserName
                 )
             );
         }

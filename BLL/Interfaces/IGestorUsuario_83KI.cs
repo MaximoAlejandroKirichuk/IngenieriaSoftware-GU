@@ -18,6 +18,8 @@ namespace BLL.Interfaces
         void ModificarRolUsuario(RolUsuario Rol);
         void BloqueoCuentaUsuario(Usuario_83KI usuario);
         void DesbloquearCuenta(Usuario_83KI usuario);
+        void HabilitarUsuario(int dni);
+        void DeshabilitarUsuario(int dni);
         IEnumerable<Usuario_83KI> ObtenerUsuarios();
     }
 }

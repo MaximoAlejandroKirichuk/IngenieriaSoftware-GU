@@ -71,6 +71,11 @@ namespace UI
                 Show();
                 MessageBox.Show(ex.Message, "Seguridad", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
+            catch (UsuarioDeshabilitadoException_83KI ex)
+            {
+                Show();
+                MessageBox.Show(ex.Message, "Usuarios", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
             
             catch (ContrasenaInvalidaException_83KI ex)
             {

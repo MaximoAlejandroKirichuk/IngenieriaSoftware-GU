@@ -1,6 +1,7 @@
-﻿using BE;
+using BE;
 using BLL.Interfaces;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace UI
@@ -8,16 +9,19 @@ namespace UI
     public partial class FrmGestionUsuarios : Form
     {
         private readonly IGestorUsuario_83KI _gestorUsuario;
+
         public FrmGestionUsuarios(IGestorUsuario_83KI gestorUsuario)
         {
             InitializeComponent();
             _gestorUsuario = gestorUsuario;
         }
+
         private void FrmGestionUsuarios_Load(object sender, EventArgs e)
         {
             ActualizarDatos();
-
+            ActualizarBotonEstado();
         }
+
         private void btnCrearUsuario_Click(object sender, EventArgs e)
         {
             try
@@ -35,6 +39,7 @@ namespace UI
                 MessageBox.Show(ex.Message);
             }
         }
+
         private void ActualizarDatos()
         {
             dgvUsuarios.DataSource = null;
@@ -79,27 +84,61 @@ namespace UI
                 dgvUsuarios.Columns["RolUsuario"].HeaderText = "Rol";
                 dgvUsuarios.Columns["RolUsuario"].DisplayIndex = 4;
             }
+
+            if (dgvUsuarios.Columns["Activo"] != null)
+            {
+                dgvUsuarios.Columns["Activo"].HeaderText = "Habilitado";
+                dgvUsuarios.Columns["Activo"].DisplayIndex = 5;
+            }
+
+            if (dgvUsuarios.Columns["Bloqueado"] != null)
+            {
+                dgvUsuarios.Columns["Bloqueado"].HeaderText = "Bloqueado";
+                dgvUsuarios.Columns["Bloqueado"].DisplayIndex = 6;
+            }
+
+            if (dgvUsuarios.Columns["Intentos"] != null)
+            {
+                dgvUsuarios.Columns["Intentos"].DisplayIndex = 7;
+            }
         }
 
-        private void btnDesbloquearusuario_Click(object sender, EventArgs e)
+        private void btnCambiarEstadoUsuario_Click(object sender, EventArgs e)
         {
             try
             {
-                if (dgvUsuarios.CurrentRow != null)
+                Usuario_83KI usuarioElegido = ObtenerUsuarioSeleccionado();
+                if (usuarioElegido == null)
                 {
-                    Usuario_83KI usuarioElegido = (Usuario_83KI)dgvUsuarios.CurrentRow.DataBoundItem;
-                    _gestorUsuario.DesbloquearCuenta(usuarioElegido);
-                    ActualizarDatos();
-                    MessageBox.Show("Usuario desbloqueado con éxito.");
+                    MessageBox.Show("Por favor, seleccione un usuario de la lista.");
+                    return;
+                }
+
+                using (FrmConfirmarEstadoUsuario frmConfirmacion = new FrmConfirmarEstadoUsuario(usuarioElegido))
+                {
+                    if (frmConfirmacion.ShowDialog(this) != DialogResult.OK)
+                    {
+                        return;
+                    }
+                }
+
+                if (usuarioElegido.Activo)
+                {
+                    _gestorUsuario.DeshabilitarUsuario(usuarioElegido.DNI);
+                    MessageBox.Show("Usuario deshabilitado con éxito.");
                 }
                 else
                 {
-                    MessageBox.Show("Por favor, seleccione un usuario de la lista.");
+                    _gestorUsuario.HabilitarUsuario(usuarioElegido.DNI);
+                    MessageBox.Show("Usuario habilitado con éxito.");
                 }
+
+                ActualizarDatos();
+                ActualizarBotonEstado();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al intentar desbloquear: " + ex.Message);
+                MessageBox.Show("Error al intentar gestionar el estado: " + ex.Message);
             }
         }
 
@@ -119,6 +158,7 @@ namespace UI
                     if (frmModificarUsuario.ShowDialog(this) == DialogResult.OK)
                     {
                         ActualizarDatos();
+                        ActualizarBotonEstado();
                         MessageBox.Show("Usuario modificado con éxito.");
                     }
                 }
@@ -134,5 +174,29 @@ namespace UI
             return dgvUsuarios.CurrentRow?.DataBoundItem as Usuario_83KI;
         }
 
+        private void dgvUsuarios_SelectionChanged(object sender, EventArgs e)
+        {
+            ActualizarBotonEstado();
+        }
+
+        private void ActualizarBotonEstado()
+        {
+            Usuario_83KI usuarioSeleccionado = ObtenerUsuarioSeleccionado();
+            bool haySeleccion = usuarioSeleccionado != null;
+
+            btnCambiarEstadoUsuario.Enabled = haySeleccion;
+
+            if (!haySeleccion)
+            {
+                btnCambiarEstadoUsuario.Text = "Gestionar estado";
+                btnCambiarEstadoUsuario.BackColor = SystemColors.Control;
+                btnCambiarEstadoUsuario.ForeColor = SystemColors.ControlText;
+                return;
+            }
+
+            btnCambiarEstadoUsuario.Text = usuarioSeleccionado.Activo ? "Deshabilitar usuario" : "Habilitar usuario";
+            btnCambiarEstadoUsuario.BackColor = usuarioSeleccionado.Activo ? Color.IndianRed : Color.DarkSeaGreen;
+            btnCambiarEstadoUsuario.ForeColor = Color.Black;
+        }
     }
 }
