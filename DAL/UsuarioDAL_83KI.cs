@@ -16,31 +16,22 @@ namespace DAL
     {
         private AccesoDAL_83KI _accesoDAL = new AccesoDAL_83KI();
 
+        public Usuario_83KI ObtenerPorDni(int dni)
+        {
+            string sql = "SELECT * FROM Usuarios WHERE DNI = @dni";
+            var parametros = new List<SqlParameter> { new SqlParameter("@dni", dni) };
+
+            DataSet ds = _accesoDAL.Leer(sql, parametros);
+            return MapearUsuario(ds);
+        }
+
         public Usuario_83KI ObtenerPorUserName(string userName)
         {
             string sql = "SELECT * FROM Usuarios WHERE UserName = @userName";
             var parametros = new List<SqlParameter> { new SqlParameter("@userName", userName) };
 
             DataSet ds = _accesoDAL.Leer(sql, parametros);
-
-            // Verificamos que el DataSet tenga tablas y que la primera tenga filas
-            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-            {
-                DataRow row = ds.Tables[0].Rows[0]; // Tomamos la primera fila de la primera tabla
-
-                return new Usuario_83KI
-                {
-                    DNI = (int)Convert.ToInt64(row["DNI"]),
-                    Nombre = row["Nombre"].ToString(),
-                    Apellido = row["Apellido"].ToString(),
-                    Email = row["Email"].ToString(),
-                    Contrasena = row["Contrasena"].ToString(),
-                    RolUsuario = ParsearRol(row["RolUsuario"]),
-                    Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
-                    Intentos = Convert.ToInt32(row["Intentos"])
-                };
-            }
-            return null;
+            return MapearUsuario(ds);
         }
 
         public void ActualizarIntentos(Usuario_83KI usuario)
@@ -70,8 +61,8 @@ namespace DAL
 
         public void CrearUsuario(Usuario_83KI usuario)
         {
-            string consulta = @"INSERT INTO Usuarios (UserName, Nombre, Apellido, DNI, Email, RolUsuario, Contrasena) 
-                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @rol, @pass)";
+            string consulta = @"INSERT INTO Usuarios (UserName, Nombre, Apellido, DNI, Email, RolUsuario, Contrasena, Activo) 
+                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @rol, @pass, @activo)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
@@ -81,7 +72,8 @@ namespace DAL
                 new SqlParameter("@dni",usuario.DNI),
                 new SqlParameter("@email", usuario.Email),
                 new SqlParameter("@rol", usuario.RolUsuario.ToString()), // Guardamos el nombre del Enum
-                new SqlParameter("@pass", usuario.Contrasena)
+                new SqlParameter("@pass", usuario.Contrasena),
+                new SqlParameter("@activo", usuario.Activo)
             };
 
             _accesoDAL.Escribir(consulta, parametros);
@@ -193,6 +185,7 @@ namespace DAL
                         Apellido = row["Apellido"].ToString(),
                         Email = row["Email"].ToString(),
                         RolUsuario = ParsearRol(row["RolUsuario"]),
+                        Activo = Convert.ToBoolean(row["Activo"]),
                         Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
                         Intentos = Convert.ToInt32(row["Intentos"])
                     });
@@ -210,6 +203,19 @@ namespace DAL
                 new SqlParameter("@dni", usuario.DNI),
                 new SqlParameter("@contrasena", usuario.Contrasena)
             }; 
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ActualizarEstadoActivo(int dni, bool activo)
+        {
+            string consulta = "UPDATE Usuarios SET Activo = @activo WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", dni),
+                new SqlParameter("@activo", activo)
+            };
+
             _accesoDAL.Escribir(consulta, parametros);
         }
 
@@ -240,6 +246,29 @@ namespace DAL
             }
 
             return RolUsuario.RolSimple;
+        }
+
+        private Usuario_83KI MapearUsuario(DataSet ds)
+        {
+            if (ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+            {
+                return null;
+            }
+
+            DataRow row = ds.Tables[0].Rows[0];
+
+            return new Usuario_83KI
+            {
+                DNI = (int)Convert.ToInt64(row["DNI"]),
+                Nombre = row["Nombre"].ToString(),
+                Apellido = row["Apellido"].ToString(),
+                Email = row["Email"].ToString(),
+                Contrasena = row["Contrasena"].ToString(),
+                RolUsuario = ParsearRol(row["RolUsuario"]),
+                Activo = Convert.ToBoolean(row["Activo"]),
+                Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
+                Intentos = Convert.ToInt32(row["Intentos"])
+            };
         }
     }
 }
