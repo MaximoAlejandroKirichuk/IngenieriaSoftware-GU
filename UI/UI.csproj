@@ -146,9 +146,9 @@
       <Project>{80f97d28-0cca-4999-ae9a-2c7d39563b51}</Project>
       <Name>BLL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Service\Services.csproj">
+    <ProjectReference Include="..\Service\Service.csproj">
       <Project>{e4575579-3219-49c0-aedf-7d9d8f9e59e4}</Project>
-      <Name>Services</Name>
+      <Name>Service</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

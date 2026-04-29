@@ -42,21 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitacoraBLL_83KI.cs" />
-    <Compile Include="Excepciones\CambiarContrasenaUsuario\Coincidir_Actual_Nueva_ContrasenaException.cs" />
-    <Compile Include="Excepciones\CrearUsuario\DniRegistradoException_83KI.cs" />
-    <Compile Include="Excepciones\CrearUsuario\EmailRegistradoException_83KI.cs" />
-    <Compile Include="Excepciones\Login\UsuarioActivoActualmenteException_83KI.cs" />
-    <Compile Include="Excepciones\Login\UsuarioDeshabilitadoException_83KI.cs" />
-    <Compile Include="Excepciones\Login\UsuarioBloqueadoException_83KI.cs" />
-    <Compile Include="Excepciones\Login\ContrasenaInvalidaException_83KI.cs" />
-    <Compile Include="Excepciones\CambiarContrasenaUsuario\UsuarioNoAutenticadoException_83KI.cs" />
-    <Compile Include="Excepciones\Login\UsuarioNoExisteException_83KI.cs" />
     <Compile Include="GestorUsuariosBLL_83KI.cs" />
-    <Compile Include="Interfaces\IBitacoraManager_83KI.cs" />
-    <Compile Include="Interfaces\IEncriptador_83KI.cs" />
-    <Compile Include="Interfaces\IGestorUsuario_83KI.cs" />
-    <Compile Include="Interfaces\ISessionManager_83KI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceFactory_83KI.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BE\BE.csproj">
@@ -66,6 +54,10 @@
     <ProjectReference Include="..\DAL\DAL.csproj">
       <Project>{f2b240cb-f9bf-4d5b-8e03-33a327a00234}</Project>
       <Name>DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service\Service.csproj">
+      <Project>{e4575579-3219-49c0-aedf-7d9d8f9e59e4}</Project>
+      <Name>Service</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

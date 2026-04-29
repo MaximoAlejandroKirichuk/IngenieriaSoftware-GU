@@ -1,4 +1,4 @@
-using BE;
+using Service.Entidades;
 using System;
 using System.Windows.Forms;
 

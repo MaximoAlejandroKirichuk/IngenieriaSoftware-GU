@@ -1,7 +1,4 @@
-﻿using BLL.Excepciones;
-using BLL.Excepciones.Login;
-using BLL.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using Service.Excepciones.Login;
+using Service.Interfaces;
+using Service.Excepciones;
 
 namespace UI
 {

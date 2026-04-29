@@ -1,5 +1,5 @@
-using BE;
-using BLL.Interfaces;
+using Service.Entidades;
+using Service.Interfaces;
 using System;
 using System.Drawing;
 using System.Windows.Forms;

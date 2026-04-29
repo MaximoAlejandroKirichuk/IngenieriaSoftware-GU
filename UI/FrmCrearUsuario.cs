@@ -1,7 +1,6 @@
-﻿using BE;
-using BLL.Excepciones.CrearUsuario;
-using BLL.Excepciones.Login;
-using BLL.Interfaces;
+﻿using Service.Entidades;
+using Service.Excepciones.CrearUsuario;
+using Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
