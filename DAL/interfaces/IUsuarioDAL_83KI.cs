@@ -9,6 +9,7 @@ namespace DAL.interfaces
 {
     public interface IUsuarioDAL_83KI
     {
+        Usuario_83KI ObtenerPorDni(int dni);
         Usuario_83KI ObtenerPorUserName(string userName);
         void ActualizarIntentos(Usuario_83KI usuario); // Incrementa o resetea a 0
         void BloquearUsuario(Usuario_83KI usuario);
@@ -19,6 +20,7 @@ namespace DAL.interfaces
         bool ExisteEmail(string email);
         bool ExisteEmailParaOtroUsuario(string email, int dni);
         bool EstaBloqueado(int dni);
+        void ActualizarEstadoActivo(int dni, bool activo);
         void DesbloquearCuenta(Usuario_83KI usuario);
         IEnumerable<Usuario_83KI> ObtenerUsuarios();
     }
