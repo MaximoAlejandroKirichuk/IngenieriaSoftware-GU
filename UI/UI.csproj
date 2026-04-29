@@ -50,6 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FrmConfirmarEstadoUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmConfirmarEstadoUsuario.Designer.cs">
+      <DependentUpon>FrmConfirmarEstadoUsuario.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmCrearUsuario.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -88,6 +94,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FrmConfirmarEstadoUsuario.resx">
+      <DependentUpon>FrmConfirmarEstadoUsuario.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmCrearUsuario.resx">
       <DependentUpon>FrmCrearUsuario.cs</DependentUpon>
     </EmbeddedResource>

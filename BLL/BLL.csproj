@@ -46,6 +46,7 @@
     <Compile Include="Excepciones\CrearUsuario\DniRegistradoException_83KI.cs" />
     <Compile Include="Excepciones\CrearUsuario\EmailRegistradoException_83KI.cs" />
     <Compile Include="Excepciones\Login\UsuarioActivoActualmenteException_83KI.cs" />
+    <Compile Include="Excepciones\Login\UsuarioDeshabilitadoException_83KI.cs" />
     <Compile Include="Excepciones\Login\UsuarioBloqueadoException_83KI.cs" />
     <Compile Include="Excepciones\Login\ContrasenaInvalidaException_83KI.cs" />
     <Compile Include="Excepciones\CambiarContrasenaUsuario\UsuarioNoAutenticadoException_83KI.cs" />
