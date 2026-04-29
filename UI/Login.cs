@@ -35,8 +35,8 @@ namespace UI
         {
             try
             {
-                var userName = txt_userName.Text;
-                var contrasena = txt_Contrasena.Text;
+                var userName = txt_userName.Text.Trim();
+                var contrasena = txt_Contrasena.Text.Trim();
                 _gestor.Login(userName, contrasena);
                 Hide();
 
