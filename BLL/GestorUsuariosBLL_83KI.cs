@@ -218,7 +218,7 @@ namespace BLL
 
         public void DesbloquearCuenta(Usuario_83KI usuario)
         {
-            //asi se resetea el estado del usuario.
+            //todo: preguntar si asi se resetea el estado del usuario.
             usuario.Intentos = 0;
             usuario.Bloqueado = false;
 
