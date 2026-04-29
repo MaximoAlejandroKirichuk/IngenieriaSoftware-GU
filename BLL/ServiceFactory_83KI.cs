@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using DAL;
 using BLL;
-using BLL.Interfaces;
+using Service.Interfaces;
 using DAL.interfaces;
+
 
 namespace Service
 {

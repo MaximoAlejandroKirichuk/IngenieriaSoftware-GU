@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Login));
             this.btnLogin = new System.Windows.Forms.Button();
-            this.txt_email = new System.Windows.Forms.TextBox();
+            this.txt_userName = new System.Windows.Forms.TextBox();
             this.txt_Contrasena = new System.Windows.Forms.TextBox();
             this.lbl_Email = new System.Windows.Forms.Label();
             this.lbl_Contrasena = new System.Windows.Forms.Label();
@@ -55,13 +55,13 @@
             this.btnLogin.UseVisualStyleBackColor = true;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 
-            // txt_email
+            // txt_userName
             // 
-            this.txt_email.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txt_email.Location = new System.Drawing.Point(55, 203);
-            this.txt_email.Name = "txt_email";
-            this.txt_email.Size = new System.Drawing.Size(263, 33);
-            this.txt_email.TabIndex = 1;
+            this.txt_userName.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txt_userName.Location = new System.Drawing.Point(55, 203);
+            this.txt_userName.Name = "txt_userName";
+            this.txt_userName.Size = new System.Drawing.Size(263, 33);
+            this.txt_userName.TabIndex = 1;
             // 
             // txt_Contrasena
             // 
@@ -77,9 +77,9 @@
             this.lbl_Email.Font = new System.Drawing.Font("Segoe UI", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_Email.Location = new System.Drawing.Point(49, 163);
             this.lbl_Email.Name = "lbl_Email";
-            this.lbl_Email.Size = new System.Drawing.Size(87, 37);
+            this.lbl_Email.Size = new System.Drawing.Size(146, 37);
             this.lbl_Email.TabIndex = 3;
-            this.lbl_Email.Text = "Email";
+            this.lbl_Email.Text = "Username";
             // 
             // lbl_Contrasena
             // 
@@ -101,7 +101,7 @@
             this.panelLogin.Controls.Add(this.lbl_Contrasena);
             this.panelLogin.Controls.Add(this.txt_Contrasena);
             this.panelLogin.Controls.Add(this.btnLogin);
-            this.panelLogin.Controls.Add(this.txt_email);
+            this.panelLogin.Controls.Add(this.txt_userName);
             this.panelLogin.Controls.Add(this.lbl_Email);
             this.panelLogin.Location = new System.Drawing.Point(79, 52);
             this.panelLogin.Name = "panelLogin";
@@ -110,7 +110,6 @@
             // 
             // pictureBox3
             // 
-            this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
             this.pictureBox3.Location = new System.Drawing.Point(7, 314);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(42, 33);
@@ -120,7 +119,7 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+
             this.pictureBox2.Location = new System.Drawing.Point(7, 203);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(42, 33);
@@ -131,7 +130,6 @@
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.White;
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.InitialImage = null;
             this.pictureBox1.Location = new System.Drawing.Point(111, 9);
             this.pictureBox1.Name = "pictureBox1";
@@ -162,7 +160,7 @@
         #endregion
 
         private System.Windows.Forms.Button btnLogin;
-        private System.Windows.Forms.TextBox txt_email;
+        private System.Windows.Forms.TextBox txt_userName;
         private System.Windows.Forms.TextBox txt_Contrasena;
         private System.Windows.Forms.Label lbl_Email;
         private System.Windows.Forms.Label lbl_Contrasena;

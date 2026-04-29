@@ -1,7 +1,4 @@
-﻿using BLL.Excepciones;
-using BLL.Excepciones.Login;
-using BLL.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using Service.Excepciones.Login;
+using Service.Interfaces;
+using Service.Excepciones;
 
 namespace UI
 {
@@ -26,34 +26,60 @@ namespace UI
 
         private void Login_Load(object sender, EventArgs e)
         {
-            FrmCrearUsuario frmCrearusu = new FrmCrearUsuario(_gestor);
-            frmCrearusu.ShowDialog();
-
             LoginDesignConfig(pictureBox1);
             RedondearPanel(panelLogin);
             ButtonDesing(btnLogin);
-
 
         }
         private void btnLogin_Click(object sender, EventArgs e)
         {
             try
             {
-                var email = txt_email.Text;
-                var contrasena = txt_Contrasena.Text;
-                _gestor.Login(email, contrasena);
+                var userName = txt_userName.Text.Trim();
+                var contrasena = txt_Contrasena.Text.Trim();
+                _gestor.Login(userName, contrasena);
+                Hide();
+
+                using (var formPrincipal = new FrmPrincipal(_gestor))
+                {
+                    var resultado = formPrincipal.ShowDialog(this);
+
+                    if (resultado == DialogResult.Retry)
+                    {
+                        txt_Contrasena.Clear();
+                        txt_Contrasena.Focus();
+                        Show();
+                        return;
+                    }
+                }
+
+                Close();
             }
-            catch(UsuarioActivoActualmenteException_83KI ex)
+            catch (UsuarioActivoActualmenteException_83KI ex)
             {
+                Show();
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            catch (UsuarioNoExisteException_83KI ex)
+            {
+                Show();
+                MessageBox.Show(ex.Message);
+            }
+
             catch (UsuarioBloqueadoException_83KI ex)
             {
+                Show();
                 MessageBox.Show(ex.Message, "Seguridad", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
+            catch (UsuarioDeshabilitadoException_83KI ex)
+            {
+                Show();
+                MessageBox.Show(ex.Message, "Usuarios", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
             
             catch (ContrasenaInvalidaException_83KI ex)
             {
+                Show();
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -61,7 +87,7 @@ namespace UI
         public void LoginDesignConfig(PictureBox pic)  //diseño de la interfaz
         {
             BackColor = Color.FromArgb(70, 130, 180);
-            txt_email.BackColor = Color.FromArgb(240, 240, 240);
+            txt_userName.BackColor = Color.FromArgb(240, 240, 240);
             txt_Contrasena.BackColor = Color.FromArgb(240, 240, 240);
             //diseño imagen
             GraphicsPath path = new GraphicsPath();

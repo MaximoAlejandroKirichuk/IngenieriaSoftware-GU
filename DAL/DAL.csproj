@@ -53,6 +53,10 @@
       <Project>{9102c2e0-46ed-4c66-b302-44604b73f7c3}</Project>
       <Name>BE</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Service\Service.csproj">
+      <Project>{e4575579-3219-49c0-aedf-7d9d8f9e59e4}</Project>
+      <Name>Service</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

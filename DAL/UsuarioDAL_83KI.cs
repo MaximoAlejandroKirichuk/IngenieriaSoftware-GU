@@ -1,4 +1,4 @@
-﻿using BE;
+﻿using Service.Entidades;
 using DAL.DAL;
 using DAL.interfaces;
 using System;
@@ -16,28 +16,22 @@ namespace DAL
     {
         private AccesoDAL_83KI _accesoDAL = new AccesoDAL_83KI();
 
-        public Usuario_83KI ObtenerPorMail(string mail)
+        public Usuario_83KI ObtenerPorDni(int dni)
         {
-            string sql = "SELECT * FROM Usuarios WHERE Email = @mail";
-            var parametros = new List<SqlParameter> { new SqlParameter("@mail", mail) };
+            string sql = "SELECT * FROM Usuarios WHERE DNI = @dni";
+            var parametros = new List<SqlParameter> { new SqlParameter("@dni", dni) };
 
             DataSet ds = _accesoDAL.Leer(sql, parametros);
+            return MapearUsuario(ds);
+        }
 
-            // Verificamos que el DataSet tenga tablas y que la primera tenga filas
-            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-            {
-                DataRow row = ds.Tables[0].Rows[0]; // Tomamos la primera fila de la primera tabla
+        public Usuario_83KI ObtenerPorUserName(string userName)
+        {
+            string sql = "SELECT * FROM Usuarios WHERE UserName = @userName";
+            var parametros = new List<SqlParameter> { new SqlParameter("@userName", userName) };
 
-                return new Usuario_83KI
-                {
-                    DNI = (int)Convert.ToInt64(row["DNI"]),
-                    Email = row["Email"].ToString(),
-                    Contrasena = row["Contrasena"].ToString(),
-                    Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
-                    Intentos = Convert.ToInt32(row["Intentos"])
-                };
-            }
-            return null;
+            DataSet ds = _accesoDAL.Leer(sql, parametros);
+            return MapearUsuario(ds);
         }
 
         public void ActualizarIntentos(Usuario_83KI usuario)
@@ -67,18 +61,46 @@ namespace DAL
 
         public void CrearUsuario(Usuario_83KI usuario)
         {
-            // Nota: No incluimos ID si es Identity/Autonumérico en SQL
-            string consulta = @"INSERT INTO Usuarios (Nombre, Apellido, DNI, Email, Rol, Password) 
-                        VALUES (@nombre, @apellido, @dni, @email, @rol, @pass)";
+            string consulta = @"INSERT INTO Usuarios (UserName, Nombre, Apellido, DNI, Email, RolUsuario, Contrasena, Activo) 
+                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @rol, @pass, @activo)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
+                new SqlParameter("@username", usuario.UserName),
                 new SqlParameter("@nombre", usuario.Nombre),
                 new SqlParameter("@apellido", usuario.Apellido),
                 new SqlParameter("@dni",usuario.DNI),
                 new SqlParameter("@email", usuario.Email),
                 new SqlParameter("@rol", usuario.RolUsuario.ToString()), // Guardamos el nombre del Enum
-                new SqlParameter("@pass", usuario.Contrasena)
+                new SqlParameter("@pass", usuario.Contrasena),
+                new SqlParameter("@activo", usuario.Activo)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ModificarUsuario(int dni, string email, RolUsuario rol)
+        {
+            string consulta = "UPDATE Usuarios SET Email = @email, RolUsuario = @rol WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", dni),
+                new SqlParameter("@email", email),
+                new SqlParameter("@rol", rol.ToString())
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ActualizarContrasena(Usuario_83KI usuario)
+        {
+            string consulta = "UPDATE Usuarios SET Contrasena = @contrasena WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", usuario.DNI),
+                new SqlParameter("@contrasena", usuario.Contrasena)
             };
 
             _accesoDAL.Escribir(consulta, parametros);
@@ -111,7 +133,7 @@ namespace DAL
 
             var parametros = new List<SqlParameter>
             {
-                new SqlParameter("@dni",email)
+                new SqlParameter("@email",email)
             };
 
             DataSet ds = _accesoDAL.Leer(query, parametros);
@@ -121,6 +143,28 @@ namespace DAL
                 int total = Convert.ToInt32(ds.Tables[0].Rows[0]["Total"]);
                 return total > 0;
             }
+            return false;
+        }
+
+        public bool ExisteEmailParaOtroUsuario(string email, int dni)
+        {
+            //dni distinto al que estoy mandando <>
+            string query = "SELECT COUNT(1) AS Total FROM Usuarios WHERE Email = @email AND DNI <> @dni";
+
+            var parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@email", email),
+                new SqlParameter("@dni", dni)
+            };
+
+            DataSet ds = _accesoDAL.Leer(query, parametros);
+
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                int total = Convert.ToInt32(ds.Tables[0].Rows[0]["Total"]);
+                return total > 0;
+            }
+
             return false;
         }
 
@@ -140,12 +184,91 @@ namespace DAL
                         Nombre = row["Nombre"].ToString(),
                         Apellido = row["Apellido"].ToString(),
                         Email = row["Email"].ToString(),
+                        RolUsuario = ParsearRol(row["RolUsuario"]),
+                        Activo = Convert.ToBoolean(row["Activo"]),
                         Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
                         Intentos = Convert.ToInt32(row["Intentos"])
                     });
                 }
             }
             return listaTemporal;
+        }
+
+        public void DesbloquearCuenta(Usuario_83KI usuario)
+        {
+            string consulta = "UPDATE Usuarios SET Bloqueado = 0, Intentos = 0, Contrasena = @contrasena WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", usuario.DNI),
+                new SqlParameter("@contrasena", usuario.Contrasena)
+            }; 
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ActualizarEstadoActivo(int dni, bool activo)
+        {
+            string consulta = "UPDATE Usuarios SET Activo = @activo WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", dni),
+                new SqlParameter("@activo", activo)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public bool EstaBloqueado(int dni)
+        {
+            string query = "SELECT COUNT(1) AS Total FROM Usuarios WHERE DNI = @dni";
+
+            var parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni",dni)
+            };
+
+            DataSet ds = _accesoDAL.Leer(query, parametros);
+
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                int total = Convert.ToInt32(ds.Tables[0].Rows[0]["Total"]);
+                return total > 0;
+            }
+            return false;
+        }
+
+        private RolUsuario ParsearRol(object valorRol)
+        {
+            if (valorRol != null && Enum.TryParse(valorRol.ToString(), true, out RolUsuario rol))
+            {
+                return rol;
+            }
+
+            return RolUsuario.RolSimple;
+        }
+
+        private Usuario_83KI MapearUsuario(DataSet ds)
+        {
+            if (ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+            {
+                return null;
+            }
+
+            DataRow row = ds.Tables[0].Rows[0];
+
+            return new Usuario_83KI
+            {
+                DNI = (int)Convert.ToInt64(row["DNI"]),
+                Nombre = row["Nombre"].ToString(),
+                Apellido = row["Apellido"].ToString(),
+                Email = row["Email"].ToString(),
+                Contrasena = row["Contrasena"].ToString(),
+                RolUsuario = ParsearRol(row["RolUsuario"]),
+                Activo = Convert.ToBoolean(row["Activo"]),
+                Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
+                Intentos = Convert.ToInt32(row["Intentos"])
+            };
         }
     }
 }
