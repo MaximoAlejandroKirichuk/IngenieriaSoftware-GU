@@ -49,7 +49,7 @@ namespace DAL
 
         public void BloquearUsuario(Usuario_83KI usuario)
         {
-            string consulta = "UPDATE Usuarios SET Bloqueado = 1, Intentos = 3 WHERE DNI = @dni";
+            string consulta = "UPDATE Usuarios SET Bloqueado = 1 WHERE DNI = @dni";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {

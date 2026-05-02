@@ -15,7 +15,6 @@ namespace BLL
         private readonly IEncriptador_83KI _encriptador;
         private readonly ISessionManager_83KI _sessionManager;
         private readonly IBitacoraManager_83KI _bitacora;
-        private const int NumeroIntentos = 3;
 
         public GestorUsuarioBLL_83KI(IUsuarioDAL_83KI dal, IEncriptador_83KI encriptador, ISessionManager_83KI sessionManager, IBitacoraManager_83KI bitacora)
         {
@@ -48,19 +47,10 @@ namespace BLL
 
             if (usuario.Contrasena != hash)
             {
-                usuario.RegistrarIntentoFallido();
-                if (usuario.Intentos >= NumeroIntentos)
-                {
-                    BloquearCuentaUsuario(usuario);
-                }
-
-                _dal.ActualizarIntentos(usuario);
-                throw new ContrasenaInvalidaException_83KI($"Intento {usuario.Intentos} de {NumeroIntentos}.");
+                throw new ContrasenaInvalidaException_83KI("Credenciales invalidas.");
             }
 
             _sessionManager.IniciarSesion(usuario);
-            usuario.ReiniciarIntentos();
-            _dal.ActualizarIntentos(usuario);
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
                     $"Login exitoso: {usuario.UserName}",
@@ -86,6 +76,27 @@ namespace BLL
                     )
                 );
             }
+        }
+
+        public void BloquearUsuarioPorUserName(string userName)
+        {
+            var usuario = _dal.ObtenerPorUserName(userName) ?? throw new UsuarioNoExisteException_83KI();
+
+            if (usuario.Bloqueado)
+            {
+                throw new UsuarioBloqueadoException_83KI();
+            }
+
+            usuario.Bloquear();
+            _dal.BloquearUsuario(usuario);
+            _bitacora.RegistrarEvento(
+                BitacoraEvento_83KI.CrearNuevo(
+                    $"Usuario bloqueado: {usuario.UserName}",
+                    1,
+                    Modulo.Usuarios,
+                    usuario.UserName
+                )
+            );
         }
 
         public void CambiarContrasenaUsuarioActual(string contrasenaActual, string nuevaContrasena)
@@ -192,21 +203,6 @@ namespace BLL
                     usuario.UserName
                 )
             );
-        }
-
-        private void BloquearCuentaUsuario(Usuario_83KI usuario)
-        {
-            usuario.Bloquear();
-            _dal.BloquearUsuario(usuario);
-            _bitacora.RegistrarEvento(
-                BitacoraEvento_83KI.CrearNuevo(
-                    $"Usuario bloqueado: {usuario.UserName}",
-                    1,
-                    Modulo.Usuarios,
-                    usuario.UserName
-                )
-            );
-            throw new UsuarioBloqueadoException_83KI();
         }
 
         public IEnumerable<Usuario_83KI> ObtenerUsuarios()

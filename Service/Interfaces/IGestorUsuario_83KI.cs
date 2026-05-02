@@ -12,6 +12,7 @@ namespace Service.Interfaces
     {
         void Login(string email, string contrasena);
         void Logout();
+        void BloquearUsuarioPorUserName(string userName);
         void CrearUsuario(string nombre, string apellido, int dni, string email, RolUsuario rol);
         void ModificarUsuario(int dni, string email, RolUsuario rol);
         void CambiarContrasenaUsuarioActual(string contrasenaActual, string nuevaContrasena);
