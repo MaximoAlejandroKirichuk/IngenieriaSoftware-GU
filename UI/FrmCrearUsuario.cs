@@ -30,8 +30,7 @@ namespace UI
             if (!ValidarDatosFormato()) return;
             try
             {
-                var nuevoUsuario = ObtenerDatos();
-                _usuarioService.CrearUsuario(nuevoUsuario);
+                CrearUsuarioDesdeFormulario();
                 MessageBox.Show("Usuario registrado con éxito.");
                 this.DialogResult = DialogResult.OK;
             }
@@ -49,20 +48,21 @@ namespace UI
                 MessageBox.Show(ex.Message);
             }
         }
-        private Usuario_83KI ObtenerDatos()
+        private void CrearUsuarioDesdeFormulario()
         {
             int.TryParse(txt_Dni.Text, out int dni);
-
-            Enum.TryParse(comboBox1.SelectedItem?.ToString(), true, out RolUsuario rol);
-
-            return new Usuario_83KI
+            if (!Enum.TryParse(comboBox1.SelectedItem?.ToString(), true, out RolUsuario rol))
             {
-                Nombre = txtNombre.Text.Trim(),
-                Apellido = txtApellido.Text.Trim(),
-                DNI = dni,
-                Email = txtEmail.Text.Trim(),
-                RolUsuario = rol
-            };
+                throw new InvalidOperationException("El rol seleccionado no es valido.");
+            }
+
+            _usuarioService.CrearUsuario(
+                txtNombre.Text,
+                txtApellido.Text,
+                dni,
+                txtEmail.Text,
+                rol
+            );
         }
 
 
@@ -86,6 +86,12 @@ namespace UI
             if (!long.TryParse(txt_Dni.Text, out _) || txt_Dni.Text.Length < 7)
             {
                 MessageBox.Show("El DNI debe ser un número válido.");
+                return false;
+            }
+
+            if (comboBox1.SelectedItem == null)
+            {
+                MessageBox.Show("Debe seleccionar un rol.");
                 return false;
             }
 

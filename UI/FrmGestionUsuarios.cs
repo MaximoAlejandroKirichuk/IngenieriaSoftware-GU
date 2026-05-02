@@ -222,7 +222,7 @@ namespace UI
                     return;
                 }
 
-                _gestorUsuario.DesbloquearCuenta(usuarioElegido);
+                _gestorUsuario.DesbloquearCuenta(usuarioElegido.DNI);
                 ActualizarDatos();
                 ActualizarBotonesAccion();
                 MessageBox.Show("Usuario desbloqueado con exito.");

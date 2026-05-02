@@ -49,7 +49,7 @@ namespace DAL
 
         public void BloquearUsuario(Usuario_83KI usuario)
         {
-            string consulta = "UPDATE Usuarios SET Bloqueado = 1, Intentos = 3 WHERE DNI = @dni";
+            string consulta = "UPDATE Usuarios SET Bloqueado = 1 WHERE DNI = @dni";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
@@ -178,17 +178,7 @@ namespace DAL
             {
                 foreach (DataRow row in ds.Tables[0].Rows)
                 {
-                    listaTemporal.Add(new Usuario_83KI
-                    {
-                        DNI = Convert.ToInt32(row["DNI"]),
-                        Nombre = row["Nombre"].ToString(),
-                        Apellido = row["Apellido"].ToString(),
-                        Email = row["Email"].ToString(),
-                        RolUsuario = ParsearRol(row["RolUsuario"]),
-                        Activo = Convert.ToBoolean(row["Activo"]),
-                        Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
-                        Intentos = Convert.ToInt32(row["Intentos"])
-                    });
+                    listaTemporal.Add(MapearUsuario(row));
                 }
             }
             return listaTemporal;
@@ -255,20 +245,32 @@ namespace DAL
                 return null;
             }
 
-            DataRow row = ds.Tables[0].Rows[0];
+            return MapearUsuario(ds.Tables[0].Rows[0]);
+        }
 
-            return new Usuario_83KI
+        private Usuario_83KI MapearUsuario(DataRow row)
+        {
+            return Usuario_83KI.ReconstruirDesdePersistencia(
+                (int)Convert.ToInt64(row["DNI"]),
+                ObtenerTexto(row, "Nombre"),
+                ObtenerTexto(row, "Apellido"),
+                ObtenerTexto(row, "Email"),
+                ObtenerTexto(row, "Contrasena"),
+                ParsearRol(row["RolUsuario"]),
+                Convert.ToBoolean(row["Activo"]),
+                Convert.ToBoolean(row["Bloqueado"]),
+                Convert.ToInt32(row["Intentos"])
+            );
+        }
+
+        private string ObtenerTexto(DataRow row, string columna)
+        {
+            if (!row.Table.Columns.Contains(columna) || row[columna] == DBNull.Value)
             {
-                DNI = (int)Convert.ToInt64(row["DNI"]),
-                Nombre = row["Nombre"].ToString(),
-                Apellido = row["Apellido"].ToString(),
-                Email = row["Email"].ToString(),
-                Contrasena = row["Contrasena"].ToString(),
-                RolUsuario = ParsearRol(row["RolUsuario"]),
-                Activo = Convert.ToBoolean(row["Activo"]),
-                Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
-                Intentos = Convert.ToInt32(row["Intentos"])
-            };
+                return string.Empty;
+            }
+
+            return row[columna].ToString();
         }
     }
 }

@@ -22,7 +22,7 @@ namespace DAL
                 new SqlParameter("@crit", evento.Criticidad),
                 new SqlParameter("@desc", evento.Descripcion),
                 new SqlParameter("@fecha", evento.Fecha),
-                new SqlParameter("@mod", evento.Modulo),
+                new SqlParameter("@mod", evento.Modulo.ToString()),
                 new SqlParameter("@username", evento.Username)
 
             };
@@ -47,25 +47,50 @@ namespace DAL
                 parametros.Add(new SqlParameter("@mod", modulo));
             }
 
+            if (criticidad.HasValue)
+            {
+                consultaBase += " AND Criticidad = @criticidad";
+                parametros.Add(new SqlParameter("@criticidad", criticidad.Value));
+            }
+
             DataSet ds = _acceso.Leer(consultaBase, parametros);
 
             if (ds.Tables.Count > 0)
             {
                 foreach (DataRow row in ds.Tables[0].Rows)
                 {
-                    lista.Add(new BitacoraEvento_83KI
-                    {
-                        Id = Convert.ToInt32(row["Id"]),
-                        Fecha = Convert.ToDateTime(row["Fecha"]),
-                        Descripcion = row["Descripcion"].ToString(),
-                        Criticidad = Convert.ToInt32(row["Criticidad"]),
-                        //es un enum
-                        //Modulo = row["Modulo"].ToString()
-                    });
+                    lista.Add(BitacoraEvento_83KI.ReconstruirDesdePersistencia(
+                        Convert.ToInt32(row["Id"]),
+                        Convert.ToDateTime(row["Fecha"]),
+                        ObtenerTexto(row, "Descripcion"),
+                        Convert.ToInt32(row["Criticidad"]),
+                        ParsearModulo(row["Modulo"]),
+                        ObtenerTexto(row, "Username")
+                    ));
                 }
             }
 
             return lista;
+        }
+
+        private Modulo ParsearModulo(object valorModulo)
+        {
+            if (valorModulo != null && valorModulo != DBNull.Value && Enum.TryParse(valorModulo.ToString(), true, out Modulo modulo))
+            {
+                return modulo;
+            }
+
+            return Modulo.Usuarios;
+        }
+
+        private string ObtenerTexto(DataRow row, string columna)
+        {
+            if (!row.Table.Columns.Contains(columna) || row[columna] == DBNull.Value)
+            {
+                return string.Empty;
+            }
+
+            return row[columna].ToString();
         }
     }
 }
