@@ -16,7 +16,10 @@ namespace UI
 {
     public partial class Login : Form
     {
+        private const int MaxIntentosLogin = 3;
         private readonly IGestorUsuario_83KI _gestor;
+        private int _intentosFallidosLogin;
+
         public Login()
         {
             _gestor = Service.ServiceFactory_83KI.GetGestorUsuario();
@@ -33,11 +36,13 @@ namespace UI
         }
         private void btnLogin_Click(object sender, EventArgs e)
         {
+            var userName = txt_userName.Text.Trim();
+            var contrasena = txt_Contrasena.Text.Trim();
+
             try
             {
-                var userName = txt_userName.Text.Trim();
-                var contrasena = txt_Contrasena.Text.Trim();
                 _gestor.Login(userName, contrasena);
+                _intentosFallidosLogin = 0;
                 Hide();
 
                 using (var formPrincipal = new FrmPrincipal(_gestor))
@@ -77,10 +82,19 @@ namespace UI
                 MessageBox.Show(ex.Message, "Usuarios", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
             
-            catch (ContrasenaInvalidaException_83KI ex)
+            catch (ContrasenaInvalidaException_83KI)
             {
                 Show();
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                _intentosFallidosLogin++;
+
+                if (_intentosFallidosLogin >= MaxIntentosLogin)
+                {
+                    _gestor.BloquearUsuarioPorUserName(userName);
+                    MessageBox.Show("Usuario bloqueado por superar la cantidad maxima de intentos.", "Seguridad", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
+                }
+
+                MessageBox.Show($"La contraseña es invalida. Intento {_intentosFallidosLogin} de {MaxIntentosLogin}.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
