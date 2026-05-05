@@ -11,7 +11,6 @@ namespace DAL.interfaces
     {
         Usuario_83KI ObtenerPorDni(int dni);
         Usuario_83KI ObtenerPorUserName(string userName);
-        void ActualizarIntentos(Usuario_83KI usuario); // Incrementa o resetea a 0
         void BloquearUsuario(Usuario_83KI usuario);
         void CrearUsuario(Usuario_83KI usuario);
         void ModificarUsuario(int dni, string email, RolUsuario rol);

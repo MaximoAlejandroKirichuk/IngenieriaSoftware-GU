@@ -103,6 +103,7 @@ namespace UI
             if (dgvUsuarios.Columns["Email"] != null)
             {
                 dgvUsuarios.Columns["Email"].DisplayIndex = 3;
+
             }
 
             if (dgvUsuarios.Columns["RolUsuario"] != null)
@@ -123,10 +124,8 @@ namespace UI
                 dgvUsuarios.Columns["Bloqueado"].DisplayIndex = 6;
             }
 
-            if (dgvUsuarios.Columns["Intentos"] != null)
-            {
-                dgvUsuarios.Columns["Intentos"].DisplayIndex = 7;
-            }
+           
+
         }
 
         private void dgvUsuarios_SelectionChanged(object sender, EventArgs e)

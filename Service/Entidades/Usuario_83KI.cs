@@ -16,7 +16,6 @@ namespace Service.Entidades
         public string Contrasena { get; private set; }
         public bool Activo { get; private set; }
         public bool Bloqueado { get; private set; }
-        public int Intentos { get; private set; }
         public string Email { get; private set; }
 
         public string UserName => $"{DNI}{Nombre}";
@@ -37,7 +36,6 @@ namespace Service.Entidades
                 Contrasena = ValidarContrasena(contrasenaHash),
                 Activo = true,
                 Bloqueado = false,
-                Intentos = 0
             };
         }
 
@@ -49,13 +47,9 @@ namespace Service.Entidades
             string contrasenaHash,
             RolUsuario rolUsuario,
             bool activo,
-            bool bloqueado,
-            int intentos)
+            bool bloqueado
+            )
         {
-            if (intentos < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(intentos), "Los intentos no pueden ser negativos.");
-            }
 
             return new Usuario_83KI
             {
@@ -67,18 +61,7 @@ namespace Service.Entidades
                 RolUsuario = ValidarRol(rolUsuario),
                 Activo = activo,
                 Bloqueado = bloqueado,
-                Intentos = intentos
             };
-        }
-
-        public void RegistrarIntentoFallido()
-        {
-            Intentos++;
-        }
-
-        public void ReiniciarIntentos()
-        {
-            Intentos = 0;
         }
 
         public void Bloquear()
@@ -90,7 +73,6 @@ namespace Service.Entidades
         {
             CambiarContrasena(contrasenaHash);
             Bloqueado = false;
-            ReiniciarIntentos();
         }
 
         public static string EstablecerContrasenaPorDefecto(string apellido, int dni)

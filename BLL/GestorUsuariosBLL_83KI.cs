@@ -31,7 +31,7 @@ namespace BLL
                 throw new UsuarioActivoActualmenteException_83KI();
             }
 
-            var usuario = _dal.ObtenerPorUserName(userName) ?? throw new UsuarioNoExisteException_83KI();
+            var usuario = _dal.ObtenerPorUserName(userName) ?? throw new UsuarioNoExisteException_83KI() ;
 
             if (!usuario.Activo)
             {

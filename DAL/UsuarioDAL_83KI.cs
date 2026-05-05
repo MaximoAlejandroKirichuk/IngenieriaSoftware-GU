@@ -34,18 +34,7 @@ namespace DAL
             return MapearUsuario(ds);
         }
 
-        public void ActualizarIntentos(Usuario_83KI usuario)
-        {
-            string consulta = "UPDATE Usuarios SET Intentos = @intentos WHERE DNI = @dni";
 
-            List<SqlParameter> parametros = new List<SqlParameter>
-            {
-                new SqlParameter("@intentos", usuario.Intentos),
-                new SqlParameter("@dni", usuario.DNI)
-            };
-
-            _accesoDAL.Escribir(consulta, parametros);
-        }
 
         public void BloquearUsuario(Usuario_83KI usuario)
         {
@@ -186,7 +175,7 @@ namespace DAL
 
         public void DesbloquearCuenta(Usuario_83KI usuario)
         {
-            string consulta = "UPDATE Usuarios SET Bloqueado = 0, Intentos = 0, Contrasena = @contrasena WHERE DNI = @dni";
+            string consulta = "UPDATE Usuarios SET Bloqueado = 0, Contrasena = @contrasena WHERE DNI = @dni";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
@@ -258,8 +247,7 @@ namespace DAL
                 ObtenerTexto(row, "Contrasena"),
                 ParsearRol(row["RolUsuario"]),
                 Convert.ToBoolean(row["Activo"]),
-                Convert.ToBoolean(row["Bloqueado"]),
-                Convert.ToInt32(row["Intentos"])
+                Convert.ToBoolean(row["Bloqueado"])
             );
         }
 
