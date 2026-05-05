@@ -84,7 +84,7 @@ namespace UI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(15F, 37F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.SteelBlue;
+            this.BackColor = System.Drawing.Color.CornflowerBlue;
             this.ClientSize = new System.Drawing.Size(1372, 743);
             this.Controls.Add(this.btnDesbloquearUsuario);
             this.Controls.Add(this.btnModificarUsuario);
@@ -99,6 +99,7 @@ namespace UI
             this.Load += new System.EventHandler(this.FrmGestionUsuarios_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).EndInit();
             this.ResumeLayout(false);
+
         }
 
         private System.Windows.Forms.DataGridView dgvUsuarios;

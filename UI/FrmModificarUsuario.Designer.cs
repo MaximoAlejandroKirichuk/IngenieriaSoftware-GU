@@ -153,6 +153,7 @@ namespace UI
             this.AcceptButton = this.btnGuardar;
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.CornflowerBlue;
             this.CancelButton = this.btnCancelar;
             this.ClientSize = new System.Drawing.Size(422, 473);
             this.Controls.Add(this.btnCancelar);

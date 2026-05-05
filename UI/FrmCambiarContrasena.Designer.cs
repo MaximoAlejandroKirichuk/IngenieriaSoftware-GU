@@ -43,7 +43,7 @@ namespace UI
             this.lblContrasenaActual.AutoSize = true;
             this.lblContrasenaActual.Location = new System.Drawing.Point(33, 34);
             this.lblContrasenaActual.Name = "lblContrasenaActual";
-            this.lblContrasenaActual.Size = new System.Drawing.Size(166, 25);
+            this.lblContrasenaActual.Size = new System.Drawing.Size(164, 25);
             this.lblContrasenaActual.TabIndex = 0;
             this.lblContrasenaActual.Text = "Contraseña actual";
             // 
@@ -52,7 +52,7 @@ namespace UI
             this.lblNuevaContrasena.AutoSize = true;
             this.lblNuevaContrasena.Location = new System.Drawing.Point(33, 109);
             this.lblNuevaContrasena.Name = "lblNuevaContrasena";
-            this.lblNuevaContrasena.Size = new System.Drawing.Size(168, 25);
+            this.lblNuevaContrasena.Size = new System.Drawing.Size(164, 25);
             this.lblNuevaContrasena.TabIndex = 1;
             this.lblNuevaContrasena.Text = "Nueva contraseña";
             // 
@@ -61,7 +61,7 @@ namespace UI
             this.lblConfirmarContrasena.AutoSize = true;
             this.lblConfirmarContrasena.Location = new System.Drawing.Point(33, 184);
             this.lblConfirmarContrasena.Name = "lblConfirmarContrasena";
-            this.lblConfirmarContrasena.Size = new System.Drawing.Size(209, 25);
+            this.lblConfirmarContrasena.Size = new System.Drawing.Size(195, 25);
             this.lblConfirmarContrasena.TabIndex = 2;
             this.lblConfirmarContrasena.Text = "Confirmar contraseña";
             // 
@@ -111,8 +111,9 @@ namespace UI
             // 
             // FrmCambiarContrasena
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.CornflowerBlue;
             this.ClientSize = new System.Drawing.Size(422, 353);
             this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.btnCambiarContrasena);
@@ -131,6 +132,7 @@ namespace UI
             this.Text = "Cambiar contraseña";
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         #endregion

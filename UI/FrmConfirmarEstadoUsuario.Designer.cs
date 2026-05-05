@@ -36,7 +36,7 @@ namespace UI
             this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold);
             this.lblTitulo.Location = new System.Drawing.Point(28, 19);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(233, 25);
+            this.lblTitulo.Size = new System.Drawing.Size(246, 25);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "Confirmar gestion usuario";
             // 
@@ -45,7 +45,7 @@ namespace UI
             this.lblNombre.AutoSize = true;
             this.lblNombre.Location = new System.Drawing.Point(28, 73);
             this.lblNombre.Name = "lblNombre";
-            this.lblNombre.Size = new System.Drawing.Size(73, 21);
+            this.lblNombre.Size = new System.Drawing.Size(68, 21);
             this.lblNombre.TabIndex = 1;
             this.lblNombre.Text = "Nombre";
             // 
@@ -54,7 +54,7 @@ namespace UI
             this.lblApellido.AutoSize = true;
             this.lblApellido.Location = new System.Drawing.Point(28, 123);
             this.lblApellido.Name = "lblApellido";
-            this.lblApellido.Size = new System.Drawing.Size(74, 21);
+            this.lblApellido.Size = new System.Drawing.Size(67, 21);
             this.lblApellido.TabIndex = 2;
             this.lblApellido.Text = "Apellido";
             // 
@@ -72,7 +72,7 @@ namespace UI
             this.lblEmail.AutoSize = true;
             this.lblEmail.Location = new System.Drawing.Point(28, 223);
             this.lblEmail.Name = "lblEmail";
-            this.lblEmail.Size = new System.Drawing.Size(51, 21);
+            this.lblEmail.Size = new System.Drawing.Size(48, 21);
             this.lblEmail.TabIndex = 4;
             this.lblEmail.Text = "Email";
             // 
@@ -81,7 +81,7 @@ namespace UI
             this.lblRol.AutoSize = true;
             this.lblRol.Location = new System.Drawing.Point(28, 273);
             this.lblRol.Name = "lblRol";
-            this.lblRol.Size = new System.Drawing.Size(35, 21);
+            this.lblRol.Size = new System.Drawing.Size(33, 21);
             this.lblRol.TabIndex = 5;
             this.lblRol.Text = "Rol";
             // 
@@ -149,6 +149,7 @@ namespace UI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.CornflowerBlue;
             this.ClientSize = new System.Drawing.Size(501, 402);
             this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.btnConfirmar);
@@ -172,6 +173,7 @@ namespace UI
             this.Text = "Gestionar usuario";
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         private System.Windows.Forms.Label lblTitulo;
