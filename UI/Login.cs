@@ -29,7 +29,7 @@ namespace UI
 
         private void Login_Load(object sender, EventArgs e)
         {
-            LoginDesignConfig(pictureBox1);
+            LoginDesignConfig();
             RedondearPanel(panelLogin);
             ButtonDesing(btnLogin);
 
@@ -98,15 +98,13 @@ namespace UI
             }
         }
 
-        public void LoginDesignConfig(PictureBox pic)  //diseño de la interfaz
+        public void LoginDesignConfig()  //diseño de la interfaz
         {
             BackColor = Color.FromArgb(70, 130, 180);
             txt_userName.BackColor = Color.FromArgb(240, 240, 240);
             txt_Contrasena.BackColor = Color.FromArgb(240, 240, 240);
             //diseño imagen
             GraphicsPath path = new GraphicsPath();
-            path.AddEllipse(0, 0, pic.Width, pic.Height);
-            pic.Region = new Region(path);
         }
         private void RedondearPanel(Panel panel) //diseño del panel
         {

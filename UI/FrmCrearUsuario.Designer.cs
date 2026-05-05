@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmCrearUsuario));
             this.txtNombre = new System.Windows.Forms.TextBox();
             this.txtApellido = new System.Windows.Forms.TextBox();
             this.txtEmail = new System.Windows.Forms.TextBox();
@@ -41,9 +40,7 @@
             this.frm_lbl_dni = new System.Windows.Forms.Label();
             this.frm_lbl_rol = new System.Windows.Forms.Label();
             this.panelCrearUsu = new System.Windows.Forms.Panel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panelCrearUsu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // txtNombre
@@ -152,7 +149,6 @@
             // 
             this.panelCrearUsu.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.panelCrearUsu.BackColor = System.Drawing.Color.White;
-            this.panelCrearUsu.Controls.Add(this.pictureBox1);
             this.panelCrearUsu.Controls.Add(this.btnCrearUsuario);
             this.panelCrearUsu.Controls.Add(this.frm_lbl_nombre);
             this.panelCrearUsu.Controls.Add(this.frm_lbl_rol);
@@ -169,18 +165,6 @@
             this.panelCrearUsu.Size = new System.Drawing.Size(542, 735);
             this.panelCrearUsu.TabIndex = 11;
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BackColor = System.Drawing.Color.White;
-            //this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.InitialImage = null;
-            this.pictureBox1.Location = new System.Drawing.Point(192, 20);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(158, 121);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 5;
-            this.pictureBox1.TabStop = false;
-            // 
             // FrmCrearUsuario
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(15F, 37F);
@@ -195,7 +179,6 @@
             this.Load += new System.EventHandler(this.FrmCrearUsuario_Load);
             this.panelCrearUsu.ResumeLayout(false);
             this.panelCrearUsu.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -214,6 +197,5 @@
         private System.Windows.Forms.Label frm_lbl_dni;
         private System.Windows.Forms.Label frm_lbl_rol;
         private System.Windows.Forms.Panel panelCrearUsu;
-        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
