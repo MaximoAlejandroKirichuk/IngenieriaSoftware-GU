@@ -21,7 +21,6 @@ namespace UI
             {
                 return;
             }
-
             try
             {
                 _gestorUsuario.CambiarContrasenaUsuarioActual(txtContrasenaActual.Text, txtNuevaContrasena.Text);

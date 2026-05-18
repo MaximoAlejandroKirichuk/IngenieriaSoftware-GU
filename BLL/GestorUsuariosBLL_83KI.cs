@@ -175,22 +175,23 @@ namespace BLL
 
         public void CrearUsuario(string nombre, string apellido, int dni, string email, Rol_83KI rol)
         {
-            string contrasenaPorDefecto = Usuario_83KI.EstablecerContrasenaPorDefecto(apellido, dni);
-            string contrasenaHash = _encriptador.HashContrasena(contrasenaPorDefecto);
-            
-            Usuario_83KI usuario = Usuario_83KI.CrearNuevo(nombre, apellido, dni, email, rol, contrasenaHash);
-
-            if (_dal.ExisteDni(usuario.DNI))
+            if (_dal.ExisteDni(dni))
             {
                 throw new DniRegistradoException_83KI();
             }
 
-            if (_dal.ExisteEmail(usuario.Email))
+            if (_dal.ExisteEmail(email))
             {
                 throw new EmailRegistradoException_83KI();
             }
 
+            string contrasenaPorDefecto = Usuario_83KI.EstablecerContrasenaPorDefecto(apellido, dni);
+            string contrasenaHash = _encriptador.HashContrasena(contrasenaPorDefecto);
+
+            Usuario_83KI usuario = Usuario_83KI.CrearNuevo(nombre, apellido, dni, email, rol, contrasenaHash);
+
             _dal.CrearUsuario(usuario);
+
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
                     $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.Rol})",

@@ -75,7 +75,7 @@ namespace Service.Entidades
             Bloqueado = false;
         }
 
-        public static string EstablecerContrasenaPorDefecto(string apellido, int dni)
+        public static string    EstablecerContrasenaPorDefecto(string apellido, int dni)
         {
             string apellidoNormalizado = ValidarTextoObligatorio(apellido, nameof(apellido));
             int dniValidado = ValidarDni(dni);
