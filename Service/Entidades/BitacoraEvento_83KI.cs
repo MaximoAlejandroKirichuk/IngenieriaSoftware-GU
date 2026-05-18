@@ -7,7 +7,7 @@ namespace Service.Entidades
         public int Id { get; private set; }
         public DateTime Fecha { get; private set; }
         public string Descripcion { get; private set; }
-        public int Criticidad { get; private set; } // 1 a 5 como en el Excel
+        public Criticidad Criticidad { get; private set; }
         public Modulo Modulo { get; private set; }    // "Usuario"
         public string Username { get; private set; }
 
@@ -15,7 +15,7 @@ namespace Service.Entidades
         {
         }
 
-        public static BitacoraEvento_83KI CrearNuevo(string descripcion, int criticidad, Modulo modulo, string username)
+        public static BitacoraEvento_83KI CrearNuevo(string descripcion, Criticidad criticidad, Modulo modulo, string username)
         {
             return new BitacoraEvento_83KI
             {
@@ -31,7 +31,7 @@ namespace Service.Entidades
             int id,
             DateTime fecha,
             string descripcion,
-            int criticidad,
+            Criticidad criticidad,
             Modulo modulo,
             string username)
         {
@@ -61,11 +61,11 @@ namespace Service.Entidades
             return valor.Trim();
         }
 
-        private static int ValidarCriticidad(int criticidad)
+        private static Criticidad ValidarCriticidad(Criticidad criticidad)
         {
-            if (criticidad < 1 || criticidad > 5)
+            if (!Enum.IsDefined(typeof(Criticidad), criticidad))
             {
-                throw new ArgumentOutOfRangeException(nameof(criticidad), "La criticidad debe estar entre 1 y 5.");
+                throw new ArgumentException("La criticidad no es valida.", nameof(criticidad));
             }
 
             return criticidad;
