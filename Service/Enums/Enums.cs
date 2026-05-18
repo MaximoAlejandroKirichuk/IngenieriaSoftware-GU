@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace Service.Entidades
 {
-    public enum RolUsuario
-    {
-        Admin,
-        RolSimple,
-    }
     public enum Modulo
     {
         Usuarios,

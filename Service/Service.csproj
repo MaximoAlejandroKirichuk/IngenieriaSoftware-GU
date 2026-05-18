@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entidades\BitacoraEvento_83KI.cs" />
+    <Compile Include="Entidades\Rol_83KI.cs" />
     <Compile Include="Encriptador_83KI.cs" />
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Excepciones\CambiarContrasenaUsuario\Coincidir_Actual_Nueva_ContrasenaException.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Excepciones\Login\UsuarioNoExisteException_83KI.cs" />
     <Compile Include="Interfaces\IBitacoraManager_83KI.cs" />
     <Compile Include="Interfaces\IEncriptador_83KI.cs" />
+    <Compile Include="Interfaces\IGestorRol_83KI.cs" />
     <Compile Include="Interfaces\IGestorUsuario_83KI.cs" />
     <Compile Include="Interfaces\ISessionManager_83KI.cs" />
     <Compile Include="SessionManager_83KI.cs" />

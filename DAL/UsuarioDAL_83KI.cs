@@ -18,7 +18,7 @@ namespace DAL
 
         public Usuario_83KI ObtenerPorDni(int dni)
         {
-            string sql = "SELECT * FROM Usuarios WHERE DNI = @dni";
+            string sql = ConsultaUsuariosConRoles() + " WHERE u.DNI = @dni";
             var parametros = new List<SqlParameter> { new SqlParameter("@dni", dni) };
 
             DataSet ds = _accesoDAL.Leer(sql, parametros);
@@ -27,7 +27,7 @@ namespace DAL
 
         public Usuario_83KI ObtenerPorUserName(string userName)
         {
-            string sql = "SELECT * FROM Usuarios WHERE UserName = @userName";
+            string sql = ConsultaUsuariosConRoles() + " WHERE u.Username = @userName";
             var parametros = new List<SqlParameter> { new SqlParameter("@userName", userName) };
 
             DataSet ds = _accesoDAL.Leer(sql, parametros);
@@ -50,8 +50,8 @@ namespace DAL
 
         public void CrearUsuario(Usuario_83KI usuario)
         {
-            string consulta = @"INSERT INTO Usuarios (UserName, Nombre, Apellido, DNI, Email, RolUsuario, Contrasena, Activo) 
-                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @rol, @pass, @activo)";
+            string consulta = @"INSERT INTO Usuarios (Username, Nombre, Apellido, DNI, Email, CodigoRol, Contrasena, Activo, Bloqueado) 
+                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @codigoRol, @pass, @activo, @bloqueado)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
@@ -60,23 +60,24 @@ namespace DAL
                 new SqlParameter("@apellido", usuario.Apellido),
                 new SqlParameter("@dni",usuario.DNI),
                 new SqlParameter("@email", usuario.Email),
-                new SqlParameter("@rol", usuario.RolUsuario.ToString()), // Guardamos el nombre del Enum
+                new SqlParameter("@codigoRol", usuario.Rol.CodigoRol),
                 new SqlParameter("@pass", usuario.Contrasena),
-                new SqlParameter("@activo", usuario.Activo)
+                new SqlParameter("@activo", usuario.Activo),
+                new SqlParameter("@bloqueado", usuario.Bloqueado)
             };
 
             _accesoDAL.Escribir(consulta, parametros);
         }
 
-        public void ModificarUsuario(int dni, string email, RolUsuario rol)
+        public void ModificarUsuario(int dni, string email, Rol_83KI rol)
         {
-            string consulta = "UPDATE Usuarios SET Email = @email, RolUsuario = @rol WHERE DNI = @dni";
+            string consulta = "UPDATE Usuarios SET Email = @email, CodigoRol = @codigoRol WHERE DNI = @dni";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
                 new SqlParameter("@dni", dni),
                 new SqlParameter("@email", email),
-                new SqlParameter("@rol", rol.ToString())
+                new SqlParameter("@codigoRol", rol.CodigoRol)
             };
 
             _accesoDAL.Escribir(consulta, parametros);
@@ -159,7 +160,7 @@ namespace DAL
 
         public IEnumerable<Usuario_83KI> ObtenerUsuarios()
         {
-            string query = "SELECT * FROM Usuarios";
+            string query = ConsultaUsuariosConRoles();
             DataSet ds = _accesoDAL.Leer(query);
             List<Usuario_83KI> listaTemporal = new List<Usuario_83KI>();
 
@@ -217,14 +218,20 @@ namespace DAL
             return false;
         }
 
-        private RolUsuario ParsearRol(object valorRol)
+        private string ConsultaUsuariosConRoles()
         {
-            if (valorRol != null && Enum.TryParse(valorRol.ToString(), true, out RolUsuario rol))
-            {
-                return rol;
-            }
-
-            return RolUsuario.RolSimple;
+            return @"SELECT u.Username AS UserName,
+                            u.Nombre,
+                            u.Apellido,
+                            u.DNI,
+                            u.Email,
+                            u.Contrasena,
+                            u.Activo,
+                            u.Bloqueado,
+                            u.CodigoRol,
+                            r.Nombre AS NombreRol
+                     FROM Usuarios u
+                     INNER JOIN Roles r ON r.CodigoRol = u.CodigoRol";
         }
 
         private Usuario_83KI MapearUsuario(DataSet ds)
@@ -245,9 +252,17 @@ namespace DAL
                 ObtenerTexto(row, "Apellido"),
                 ObtenerTexto(row, "Email"),
                 ObtenerTexto(row, "Contrasena"),
-                ParsearRol(row["RolUsuario"]),
+                MapearRolDesdeUsuario(row),
                 Convert.ToBoolean(row["Activo"]),
                 Convert.ToBoolean(row["Bloqueado"])
+            );
+        }
+
+        private Rol_83KI MapearRolDesdeUsuario(DataRow row)
+        {
+            return new Rol_83KI(
+                Convert.ToInt32(row["CodigoRol"]),
+                ObtenerTexto(row, "NombreRol")
             );
         }
 

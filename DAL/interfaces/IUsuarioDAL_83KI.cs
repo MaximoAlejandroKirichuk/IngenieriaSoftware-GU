@@ -13,7 +13,7 @@ namespace DAL.interfaces
         Usuario_83KI ObtenerPorUserName(string userName);
         void BloquearUsuario(Usuario_83KI usuario);
         void CrearUsuario(Usuario_83KI usuario);
-        void ModificarUsuario(int dni, string email, RolUsuario rol);
+        void ModificarUsuario(int dni, string email, Rol_83KI rol);
         void ActualizarContrasena(Usuario_83KI usuario);
         bool ExisteDni(int dni);
         bool ExisteEmail(string email);
