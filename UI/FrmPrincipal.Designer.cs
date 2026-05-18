@@ -57,12 +57,13 @@
             // menuSesion
             // 
             this.menuSesion.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuCerrarSesion,
             this.iniciarSesionToolStripMenuItem,
+            this.menuCerrarSesion,
             this.cambiarContraseñaToolStripMenuItem});
             this.menuSesion.Name = "menuSesion";
             this.menuSesion.Size = new System.Drawing.Size(128, 41);
             this.menuSesion.Text = "Usuario";
+            this.menuSesion.Click += new System.EventHandler(this.menuSesion_Click);
             // 
             // menuCerrarSesion
             // 
@@ -76,6 +77,7 @@
             this.iniciarSesionToolStripMenuItem.Name = "iniciarSesionToolStripMenuItem";
             this.iniciarSesionToolStripMenuItem.Size = new System.Drawing.Size(350, 42);
             this.iniciarSesionToolStripMenuItem.Text = "Iniciar sesion";
+            this.iniciarSesionToolStripMenuItem.Click += new System.EventHandler(this.iniciarSesionToolStripMenuItem_Click);
             // 
             // cambiarContraseñaToolStripMenuItem
             // 
@@ -105,6 +107,7 @@
             this.bitacoraEventosToolStripMenuItem.Name = "bitacoraEventosToolStripMenuItem";
             this.bitacoraEventosToolStripMenuItem.Size = new System.Drawing.Size(345, 42);
             this.bitacoraEventosToolStripMenuItem.Text = "Bitacora eventos";
+            this.bitacoraEventosToolStripMenuItem.Click += new System.EventHandler(this.bitacoraEventosToolStripMenuItem_Click);
             // 
             // reToolStripMenuItem
             // 

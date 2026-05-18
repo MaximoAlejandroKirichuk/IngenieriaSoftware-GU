@@ -9,11 +9,13 @@ namespace UI
     public partial class FrmGestionUsuarios : Form
     {
         private readonly IGestorUsuario_83KI _gestorUsuario;
+        private readonly IGestorRol_83KI _gestorRol;
 
-        public FrmGestionUsuarios(IGestorUsuario_83KI gestorUsuario)
+        public FrmGestionUsuarios(IGestorUsuario_83KI gestorUsuario, IGestorRol_83KI gestorRol)
         {
             InitializeComponent();
             _gestorUsuario = gestorUsuario;
+            _gestorRol = gestorRol;
         }
 
         private void FrmGestionUsuarios_Load(object sender, EventArgs e)
@@ -58,7 +60,7 @@ namespace UI
         {
             try
             {
-                using (FrmCrearUsuario frmCrearUsuario = new FrmCrearUsuario(_gestorUsuario))
+                using (FrmCrearUsuario frmCrearUsuario = new FrmCrearUsuario(_gestorUsuario, _gestorRol))
                 {
                     if (frmCrearUsuario.ShowDialog(this) == DialogResult.OK)
                     {
@@ -106,10 +108,10 @@ namespace UI
 
             }
 
-            if (dgvUsuarios.Columns["RolUsuario"] != null)
+            if (dgvUsuarios.Columns["Rol"] != null)
             {
-                dgvUsuarios.Columns["RolUsuario"].HeaderText = "Rol";
-                dgvUsuarios.Columns["RolUsuario"].DisplayIndex = 4;
+                dgvUsuarios.Columns["Rol"].HeaderText = "Rol";
+                dgvUsuarios.Columns["Rol"].DisplayIndex = 4;
             }
 
             if (dgvUsuarios.Columns["Activo"] != null)
@@ -188,7 +190,7 @@ namespace UI
                     return;
                 }
 
-                using (FrmModificarUsuario frmModificarUsuario = new FrmModificarUsuario(_gestorUsuario, usuarioElegido))
+                using (FrmModificarUsuario frmModificarUsuario = new FrmModificarUsuario(_gestorUsuario, _gestorRol, usuarioElegido))
                 {
                     if (frmModificarUsuario.ShowDialog(this) == DialogResult.OK)
                     {

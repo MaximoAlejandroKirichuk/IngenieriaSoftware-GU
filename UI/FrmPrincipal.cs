@@ -1,4 +1,5 @@
-﻿using Service.Interfaces;
+﻿using Service;
+using Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,20 +15,22 @@ namespace UI
     public partial class FrmPrincipal : Form
     {
         private readonly IGestorUsuario_83KI _gestorUsuario;
+        private readonly IGestorRol_83KI _gestorRol;
         private bool _logoutConfirmado;
 
-        public FrmPrincipal(IGestorUsuario_83KI gestorUsuario)
+        public FrmPrincipal(IGestorUsuario_83KI gestorUsuario, IGestorRol_83KI gestorRol)
         {
             InitializeComponent();
+            AplicarPermisos();
             _gestorUsuario = gestorUsuario;
+            _gestorRol = gestorRol;
         }
 
-
-        private void btnCambiarContrasena_Click(object sender, EventArgs e)
+        private void AplicarPermisos()
         {
-
+            var usuario = SessionManager_83KI.Instancia.UsuarioActivo;
+            adminToolStripMenuItem.Visible = usuario.Rol.PuedeGestionarAdmin;
         }
-
         private void menuCerrarSesion_Click(object sender, EventArgs e)
         {
             ConfirmarLogoutYCerrar();
@@ -68,7 +71,7 @@ namespace UI
 
         private void gestionDeUsuariosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var gestion = new FrmGestionUsuarios(_gestorUsuario);
+            var gestion = new FrmGestionUsuarios(_gestorUsuario, _gestorRol);
             gestion.Show();
         }
 
@@ -76,6 +79,21 @@ namespace UI
         {
             var cambiarContrasena = new FrmCambiarContrasena(_gestorUsuario);
             cambiarContrasena.ShowDialog(this);
+        }
+
+        private void iniciarSesionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //todo: aca agregar el form de login de nuevo porque el profe quiere verificar que es una unica instancia activa
+        }
+
+        private void menuSesion_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bitacoraEventosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

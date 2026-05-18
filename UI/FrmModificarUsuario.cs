@@ -10,11 +10,13 @@ namespace UI
     public partial class FrmModificarUsuario : Form
     {
         private readonly IGestorUsuario_83KI _gestorUsuario;
+        private readonly IGestorRol_83KI _gestorRol;
         private readonly Usuario_83KI _usuarioOriginal;
 
-        public FrmModificarUsuario(IGestorUsuario_83KI gestorUsuario, Usuario_83KI usuario)
+        public FrmModificarUsuario(IGestorUsuario_83KI gestorUsuario, IGestorRol_83KI gestorRol, Usuario_83KI usuario)
         {
             _gestorUsuario = gestorUsuario ?? throw new ArgumentNullException(nameof(gestorUsuario));
+            _gestorRol = gestorRol ?? throw new ArgumentNullException(nameof(gestorRol));
             _usuarioOriginal = usuario ?? throw new ArgumentNullException(nameof(usuario));
 
             InitializeComponent();
@@ -24,8 +26,10 @@ namespace UI
 
         private void CargarRoles()
         {
-            cmbRol.Items.Clear();
-            cmbRol.Items.AddRange(Enum.GetNames(typeof(RolUsuario)));
+            cmbRol.DataSource = null;
+            cmbRol.DisplayMember = nameof(Rol_83KI.Nombre);
+            cmbRol.ValueMember = nameof(Rol_83KI.CodigoRol);
+            cmbRol.DataSource = _gestorRol.ObtenerRoles();
         }
 
         private void CargarDatos()
@@ -34,7 +38,7 @@ namespace UI
             txtApellido.Text = _usuarioOriginal.Apellido;
             txtDni.Text = _usuarioOriginal.DNI.ToString();
             txtEmail.Text = _usuarioOriginal.Email;
-            cmbRol.SelectedItem = _usuarioOriginal.RolUsuario.ToString();
+            cmbRol.SelectedValue = _usuarioOriginal.Rol.CodigoRol;
         }
 
         private void btnGuardar_Click(object sender, EventArgs e)
@@ -59,14 +63,13 @@ namespace UI
             Close();
         }
 
-        private RolUsuario ObtenerRolSeleccionado()
+        private Rol_83KI ObtenerRolSeleccionado()
         {
-            if (Enum.TryParse(cmbRol.SelectedItem?.ToString(), true, out RolUsuario rol))
+            if (cmbRol.SelectedItem is Rol_83KI rol)
             {
                 return rol;
             }
-
-            return _usuarioOriginal.RolUsuario;
+            return _usuarioOriginal.Rol;
         }
         private void ValidarDatos(string emailNormalizado)
         {
