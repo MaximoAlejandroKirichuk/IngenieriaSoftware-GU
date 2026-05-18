@@ -133,16 +133,11 @@ namespace BLL
             );
         }
 
-        public void ModificarRolUsuario(RolUsuario Rol)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ModificarUsuario(int dni, string email, RolUsuario rol)
+        public void ModificarUsuario(int dni, string email, Rol_83KI rol)
         {
             var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
 
-            if (usuarioActivo.RolUsuario != RolUsuario.Admin)
+            if (!usuarioActivo.Rol.EsAdministrador)
             {
                 throw new InvalidOperationException("Solo un administrador puede modificar usuarios.");
             }
@@ -156,12 +151,12 @@ namespace BLL
             }
 
             bool esAutoedicion = usuarioActivo.DNI == usuarioModificado.DNI;
-            if (esAutoedicion && usuarioActivo.RolUsuario != usuarioModificado.RolUsuario)
+            if (esAutoedicion && usuarioActivo.Rol.CodigoRol != usuarioModificado.Rol.CodigoRol)
             {
                 throw new InvalidOperationException("No puede modificar su propio rol.");
             }
 
-            _dal.ModificarUsuario(usuarioModificado.DNI, usuarioModificado.Email, usuarioModificado.RolUsuario);
+            _dal.ModificarUsuario(usuarioModificado.DNI, usuarioModificado.Email, usuarioModificado.Rol);
 
             if (esAutoedicion)
             {
@@ -170,7 +165,7 @@ namespace BLL
 
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
-                    $"Usuario modificado: DNI {usuarioModificado.DNI}. Email: {usuarioModificado.Email}. Rol: {usuarioModificado.RolUsuario}. Actor: {usuarioActivo.UserName}",
+                    $"Usuario modificado: DNI {usuarioModificado.DNI}. Email: {usuarioModificado.Email}. Rol: {usuarioModificado.Rol}. Actor: {usuarioActivo.UserName}",
                     2,
                     Modulo.Usuarios,
                     usuarioActivo.UserName
@@ -178,10 +173,11 @@ namespace BLL
             );
         }
 
-        public void CrearUsuario(string nombre, string apellido, int dni, string email, RolUsuario rol)
+        public void CrearUsuario(string nombre, string apellido, int dni, string email, Rol_83KI rol)
         {
             string contrasenaPorDefecto = Usuario_83KI.EstablecerContrasenaPorDefecto(apellido, dni);
             string contrasenaHash = _encriptador.HashContrasena(contrasenaPorDefecto);
+            
             Usuario_83KI usuario = Usuario_83KI.CrearNuevo(nombre, apellido, dni, email, rol, contrasenaHash);
 
             if (_dal.ExisteDni(usuario.DNI))
@@ -197,7 +193,7 @@ namespace BLL
             _dal.CrearUsuario(usuario);
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
-                    $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
+                    $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.Rol})",
                     1,
                     Modulo.Usuarios,
                     usuario.UserName
@@ -218,7 +214,7 @@ namespace BLL
             _dal.DesbloquearCuenta(usuario);
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
-                    $"Usuario desbloqueado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
+                    $"Usuario desbloqueado: {usuario.UserName} (Rol: {usuario.Rol})",
                     1,
                     Modulo.Usuarios,
                     usuario.UserName
@@ -240,7 +236,7 @@ namespace BLL
         {
             var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
 
-            if (usuarioActivo.RolUsuario != RolUsuario.Admin)
+            if (!usuarioActivo.Rol.EsAdministrador)
             {
                 throw new InvalidOperationException("Solo un administrador puede gestionar usuarios.");
             }
@@ -283,5 +279,6 @@ namespace BLL
                 )
             );
         }
+
     }
 }

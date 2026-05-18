@@ -98,16 +98,11 @@ namespace Service
             throw new NotImplementedException();
         }
 
-        public void ModificarRolUsuario(RolUsuario rol)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ModificarUsuario(int dni, string email, RolUsuario rol)
+        public void ModificarUsuario(int dni, string email, Rol_83KI rol)
         {
             var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
 
-            if (usuarioActivo.RolUsuario != RolUsuario.Admin)
+            if (!usuarioActivo.Rol.EsAdministrador)
             {
                 throw new InvalidOperationException("Solo un administrador puede modificar usuarios.");
             }
@@ -131,7 +126,7 @@ namespace Service
             }
 
             bool esAutoedicion = usuarioActivo.DNI == dni;
-            if (esAutoedicion && usuarioActivo.RolUsuario != rol)
+            if (esAutoedicion && usuarioActivo.Rol.CodigoRol != rol.CodigoRol)
             {
                 throw new InvalidOperationException("No puede modificar su propio rol.");
             }
@@ -186,7 +181,7 @@ namespace Service
             _usuarioRepository.CrearUsuario(usuario);
             _bitacora.RegistrarEvento(
                 new BitacoraEvento_83KI(
-                    $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
+                    $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.Rol})",
                     1,
                     Modulo.Usuarios,
                     usuario.UserName
@@ -209,7 +204,7 @@ namespace Service
             _usuarioRepository.DesbloquearCuenta(usuario);
             _bitacora.RegistrarEvento(
                 new BitacoraEvento_83KI(
-                    $"Usuario desbloqueado: {usuario.UserName} (Rol: {usuario.RolUsuario})",
+                    $"Usuario desbloqueado: {usuario.UserName} (Rol: {usuario.Rol})",
                     1,
                     Modulo.Usuarios,
                     usuario.UserName
@@ -221,5 +216,6 @@ namespace Service
         {
             return $"{nombre}{dni % 1000:D3}";
         }
+
     }
 }

@@ -1,4 +1,4 @@
-using BE;
+using Service.Entidades;
 using System.Collections.Generic;
 
 namespace Service.Interfaces
@@ -9,7 +9,7 @@ namespace Service.Interfaces
         void ActualizarIntentos(Usuario_83KI usuario);
         void BloquearUsuario(Usuario_83KI usuario);
         void CrearUsuario(Usuario_83KI usuario);
-        void ModificarUsuario(int dni, string email, RolUsuario rol);
+        void ModificarUsuario(int dni, string email, Rol_83KI rol);
         bool ExisteDni(int dni);
         bool ExisteEmail(string email);
         bool ExisteEmailParaOtroUsuario(string email, int dni);

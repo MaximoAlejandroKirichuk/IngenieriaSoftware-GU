@@ -13,8 +13,9 @@ namespace Service
 {
     public static class ServiceFactory_83KI
     {
-        // Usamos Lazy para crear los objetos solo cuando se necesitan
+        // Usamos para crear los objetos solo cuando se necesitan
         private static IGestorUsuario_83KI _gestorUsuario;
+        private static IGestorRol_83KI _gestorRol;
 
         public static IGestorUsuario_83KI GetGestorUsuario()
         {
@@ -34,6 +35,15 @@ namespace Service
             return _gestorUsuario;
         }
 
-        
+        public static IGestorRol_83KI GetGestorRol()
+        {
+            if (_gestorRol == null)
+            {
+                IRolDAL_83KI rolDal = new RolDAL_83KI();
+                _gestorRol = new GestorRolBLL_83KI(rolDal);
+            }
+
+            return _gestorRol;
+        }
     }
 }
