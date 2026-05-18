@@ -12,7 +12,7 @@ namespace Service.Entidades
         public int DNI { get; private set; }
         public string Apellido { get; private set; }
         public string Nombre { get; private set; }
-        public RolUsuario RolUsuario { get; private set; }
+        public Rol_83KI Rol { get; private set; }
         public string Contrasena { get; private set; }
         public bool Activo { get; private set; }
         public bool Bloqueado { get; private set; }
@@ -24,7 +24,7 @@ namespace Service.Entidades
         {
         }
 
-        public static Usuario_83KI CrearNuevo(string nombre, string apellido, int dni, string email, RolUsuario rolUsuario, string contrasenaHash)
+        public static Usuario_83KI CrearNuevo(string nombre, string apellido, int dni, string email, Rol_83KI rol, string contrasenaHash)
         {
             return new Usuario_83KI
             {
@@ -32,7 +32,7 @@ namespace Service.Entidades
                 Nombre = ValidarTextoObligatorio(nombre, nameof(nombre)),
                 Apellido = ValidarTextoObligatorio(apellido, nameof(apellido)),
                 Email = ValidarEmail(email),
-                RolUsuario = ValidarRol(rolUsuario),
+                Rol = ValidarRol(rol),
                 Contrasena = ValidarContrasena(contrasenaHash),
                 Activo = true,
                 Bloqueado = false,
@@ -45,7 +45,7 @@ namespace Service.Entidades
             string apellido,
             string email,
             string contrasenaHash,
-            RolUsuario rolUsuario,
+            Rol_83KI rol,
             bool activo,
             bool bloqueado
             )
@@ -58,7 +58,7 @@ namespace Service.Entidades
                 Apellido = ValidarTextoObligatorio(apellido, nameof(apellido)),
                 Email = ValidarEmail(email),
                 Contrasena = ValidarContrasena(contrasenaHash),
-                RolUsuario = ValidarRol(rolUsuario),
+                Rol = ValidarRol(rol),
                 Activo = activo,
                 Bloqueado = bloqueado,
             };
@@ -88,10 +88,10 @@ namespace Service.Entidades
             Contrasena = ValidarContrasena(contrasenaHash);
         }
 
-        public void ModificarEmailYRol(string email, RolUsuario rolUsuario)
+        public void ModificarEmailYRol(string email, Rol_83KI rol)
         {
             Email = ValidarEmail(email);
-            RolUsuario = ValidarRol(rolUsuario);
+            Rol = ValidarRol(rol);
         }
 
         public void ModificarEmail(string email)
@@ -147,14 +147,15 @@ namespace Service.Entidades
             return ValidarTextoObligatorio(contrasenaHash, nameof(contrasenaHash));
         }
 
-        private static RolUsuario ValidarRol(RolUsuario rolUsuario)
+        private static Rol_83KI ValidarRol(Rol_83KI rol)
         {
-            if (!Enum.IsDefined(typeof(RolUsuario), rolUsuario))
+            if (rol == null)
             {
-                throw new ArgumentException("El rol de usuario no es valido.", nameof(rolUsuario));
+                throw new ArgumentException("El rol de usuario no es valido.", nameof(rol));
             }
-
-            return rolUsuario;
+            if (rol.CodigoRol <= 0) 
+                throw new ArgumentException("El codigo de rol del usuario tiene que ser valido");
+            return rol;
         }
     }
 }

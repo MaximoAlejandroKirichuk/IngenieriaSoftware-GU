@@ -21,7 +21,7 @@ namespace UI
             txtApellido.Text = _usuario.Apellido;
             txtDni.Text = _usuario.DNI.ToString();
             txtEmail.Text = _usuario.Email;
-            txtRol.Text = _usuario.RolUsuario.ToString();
+            txtRol.Text = _usuario.Rol.ToString();
             lblTitulo.Text = _usuario.Activo ? "Confirmar deshabilitacion de usuario" : "Confirmar habilitacion de usuario";
             btnConfirmar.Text = _usuario.Activo ? "Confirmar deshabilitacion" : "Confirmar habilitacion";
         }

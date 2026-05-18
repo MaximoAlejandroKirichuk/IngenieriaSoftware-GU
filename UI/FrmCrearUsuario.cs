@@ -18,12 +18,23 @@ namespace UI
     public partial class FrmCrearUsuario : Form
     {
         private readonly IGestorUsuario_83KI _usuarioService;
-        public FrmCrearUsuario(IGestorUsuario_83KI gestorUsuario)
+        private readonly IGestorRol_83KI _gestorRol;
+
+        public FrmCrearUsuario(IGestorUsuario_83KI gestorUsuario, IGestorRol_83KI gestorRol)
         {
             InitializeComponent();
             _usuarioService = gestorUsuario;
+            _gestorRol = gestorRol;
+            CargarRoles();
         }
 
+        private void CargarRoles()
+        {
+            comboBox1.DataSource = null;
+            comboBox1.DisplayMember = nameof(Rol_83KI.Nombre);
+            comboBox1.ValueMember = nameof(Rol_83KI.CodigoRol);
+            comboBox1.DataSource = _gestorRol.ObtenerRoles();
+        }
 
         private void btnCrearUsuario_Click(object sender, EventArgs e)
         {
@@ -51,7 +62,7 @@ namespace UI
         private void CrearUsuarioDesdeFormulario()
         {
             int.TryParse(txt_Dni.Text, out int dni);
-            if (!Enum.TryParse(comboBox1.SelectedItem?.ToString(), true, out RolUsuario rol))
+            if (!(comboBox1.SelectedItem is Rol_83KI rol))
             {
                 throw new InvalidOperationException("El rol seleccionado no es valido.");
             }
