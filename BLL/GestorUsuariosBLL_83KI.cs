@@ -54,7 +54,7 @@ namespace BLL
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
                     $"Login exitoso: {usuario.UserName}",
-                    3,
+                    Criticidad.Bajo,
                     Modulo.Usuarios,
                     userName
                 )
@@ -70,7 +70,7 @@ namespace BLL
                 _bitacora.RegistrarEvento(
                     BitacoraEvento_83KI.CrearNuevo(
                         $"Logout exitoso: {usuario.UserName}",
-                        3,
+                        Criticidad.Bajo,
                         Modulo.Usuarios,
                         usuario.UserName
                     )
@@ -92,7 +92,7 @@ namespace BLL
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
                     $"Usuario bloqueado: {usuario.UserName}",
-                    1,
+                    Criticidad.Alto,
                     Modulo.Usuarios,
                     usuario.UserName
                 )
@@ -126,7 +126,7 @@ namespace BLL
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
                     $"Contraseña modificada: {usuario.UserName}",
-                    2,
+                    Criticidad.Alto,
                     Modulo.Usuarios,
                     usuario.UserName
                 )
@@ -166,7 +166,7 @@ namespace BLL
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
                     $"Usuario modificado: DNI {usuarioModificado.DNI}. Email: {usuarioModificado.Email}. Rol: {usuarioModificado.Rol}. Actor: {usuarioActivo.UserName}",
-                    2,
+                    Criticidad.Alto,
                     Modulo.Usuarios,
                     usuarioActivo.UserName
                 )
@@ -194,7 +194,7 @@ namespace BLL
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
                     $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.Rol})",
-                    1,
+                    Criticidad.Alto,
                     Modulo.Usuarios,
                     usuario.UserName
                 )
@@ -215,7 +215,7 @@ namespace BLL
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
                     $"Usuario desbloqueado: {usuario.UserName} (Rol: {usuario.Rol})",
-                    1,
+                    Criticidad.Alto,
                     Modulo.Usuarios,
                     usuario.UserName
                 )
@@ -273,7 +273,7 @@ namespace BLL
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
                     $"Usuario {accion}: DNI {dni}. Actor: {usuarioActivo.UserName}",
-                    2,
+                    Criticidad.Alto,
                     Modulo.Usuarios,
                     usuarioActivo.UserName
                 )

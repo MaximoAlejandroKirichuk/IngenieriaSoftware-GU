@@ -11,4 +11,11 @@ namespace Service.Entidades
         Usuarios,
         Seguridad
     }
+
+    public enum Criticidad
+    {
+        Alto = 1,
+        Medio = 2,
+        Bajo = 3
+    }
 }
