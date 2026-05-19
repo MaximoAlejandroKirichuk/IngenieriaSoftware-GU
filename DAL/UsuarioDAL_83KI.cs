@@ -38,11 +38,13 @@ namespace DAL
 
         public void BloquearUsuario(Usuario_83KI usuario)
         {
-            string consulta = "UPDATE Usuarios SET Bloqueado = 1 WHERE DNI = @dni";
+            string consulta = "UPDATE Usuarios SET Bloqueado = 1, IntentosRealizados = @intentosRealizados, FechaUltimoIntento = @fechaUltimoIntento WHERE DNI = @dni";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
-                new SqlParameter("@dni", usuario.DNI)
+                new SqlParameter("@dni", usuario.DNI),
+                new SqlParameter("@intentosRealizados", usuario.IntentosRealizados),
+                new SqlParameter("@fechaUltimoIntento", (object)usuario.FechaUltimoIntento ?? DBNull.Value)
             };
 
             _accesoDAL.Escribir(consulta, parametros);
@@ -50,8 +52,8 @@ namespace DAL
 
         public void CrearUsuario(Usuario_83KI usuario)
         {
-            string consulta = @"INSERT INTO Usuarios (Username, Nombre, Apellido, DNI, Email, CodigoRol, Contrasena, Activo, Bloqueado) 
-                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @codigoRol, @pass, @activo, @bloqueado)";
+            string consulta = @"INSERT INTO Usuarios (Username, Nombre, Apellido, DNI, Email, CodigoRol, Contrasena, Activo, Bloqueado, IntentosRealizados, FechaUltimoIntento) 
+                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @codigoRol, @pass, @activo, @bloqueado, @intentosRealizados, @fechaUltimoIntento)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
@@ -63,7 +65,9 @@ namespace DAL
                 new SqlParameter("@codigoRol", usuario.Rol.CodigoRol),
                 new SqlParameter("@pass", usuario.Contrasena),
                 new SqlParameter("@activo", usuario.Activo),
-                new SqlParameter("@bloqueado", usuario.Bloqueado)
+                new SqlParameter("@bloqueado", usuario.Bloqueado),
+                new SqlParameter("@intentosRealizados", usuario.IntentosRealizados),
+                new SqlParameter("@fechaUltimoIntento", (object)usuario.FechaUltimoIntento ?? DBNull.Value)
             };
 
             _accesoDAL.Escribir(consulta, parametros);
@@ -176,13 +180,44 @@ namespace DAL
 
         public void DesbloquearCuenta(Usuario_83KI usuario)
         {
-            string consulta = "UPDATE Usuarios SET Bloqueado = 0, Contrasena = @contrasena WHERE DNI = @dni";
+            string consulta = @"UPDATE Usuarios
+                                SET Bloqueado = 0,
+                                    Contrasena = @contrasena,
+                                    IntentosRealizados = 0,
+                                    FechaUltimoIntento = NULL
+                                WHERE DNI = @dni";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
                 new SqlParameter("@dni", usuario.DNI),
                 new SqlParameter("@contrasena", usuario.Contrasena)
             }; 
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ActualizarIntentosFallidos(Usuario_83KI usuario)
+        {
+            string consulta = "UPDATE Usuarios SET IntentosRealizados = @intentosRealizados, FechaUltimoIntento = @fechaUltimoIntento WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", usuario.DNI),
+                new SqlParameter("@intentosRealizados", usuario.IntentosRealizados),
+                new SqlParameter("@fechaUltimoIntento", (object)usuario.FechaUltimoIntento ?? DBNull.Value)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ReiniciarIntentosFallidos(Usuario_83KI usuario)
+        {
+            string consulta = "UPDATE Usuarios SET IntentosRealizados = 0, FechaUltimoIntento = NULL WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", usuario.DNI)
+            };
+
             _accesoDAL.Escribir(consulta, parametros);
         }
 
@@ -228,6 +263,8 @@ namespace DAL
                             u.Contrasena,
                             u.Activo,
                             u.Bloqueado,
+                            u.IntentosRealizados,
+                            u.FechaUltimoIntento,
                             u.CodigoRol,
                             r.Nombre AS NombreRol
                      FROM Usuarios u
@@ -254,7 +291,9 @@ namespace DAL
                 ObtenerTexto(row, "Contrasena"),
                 MapearRolDesdeUsuario(row),
                 Convert.ToBoolean(row["Activo"]),
-                Convert.ToBoolean(row["Bloqueado"])
+                Convert.ToBoolean(row["Bloqueado"]),
+                ObtenerEntero(row, "IntentosRealizados"),
+                ObtenerFechaNullable(row, "FechaUltimoIntento")
             );
         }
 
@@ -274,6 +313,26 @@ namespace DAL
             }
 
             return row[columna].ToString();
+        }
+
+        private int ObtenerEntero(DataRow row, string columna)
+        {
+            if (!row.Table.Columns.Contains(columna) || row[columna] == DBNull.Value)
+            {
+                return 0;
+            }
+
+            return Convert.ToInt32(row[columna]);
+        }
+
+        private DateTime? ObtenerFechaNullable(DataRow row, string columna)
+        {
+            if (!row.Table.Columns.Contains(columna) || row[columna] == DBNull.Value)
+            {
+                return null;
+            }
+
+            return Convert.ToDateTime(row[columna]);
         }
     }
 }

@@ -17,6 +17,8 @@ namespace Service.Entidades
         public bool Activo { get; private set; }
         public bool Bloqueado { get; private set; }
         public string Email { get; private set; }
+        public int IntentosRealizados { get; private set; }
+        public DateTime? FechaUltimoIntento { get; private set; }
 
         public string UserName => $"{DNI}{Nombre}";
 
@@ -36,6 +38,8 @@ namespace Service.Entidades
                 Contrasena = ValidarContrasena(contrasenaHash),
                 Activo = true,
                 Bloqueado = false,
+                IntentosRealizados = 0,
+                FechaUltimoIntento = null,
             };
         }
 
@@ -47,7 +51,9 @@ namespace Service.Entidades
             string contrasenaHash,
             Rol_83KI rol,
             bool activo,
-            bool bloqueado
+            bool bloqueado,
+            int intentosRealizados,
+            DateTime? fechaUltimoIntento
             )
         {
 
@@ -61,6 +67,8 @@ namespace Service.Entidades
                 Rol = ValidarRol(rol),
                 Activo = activo,
                 Bloqueado = bloqueado,
+                IntentosRealizados = ValidarIntentosRealizados(intentosRealizados),
+                FechaUltimoIntento = fechaUltimoIntento,
             };
         }
 
@@ -73,6 +81,19 @@ namespace Service.Entidades
         {
             CambiarContrasena(contrasenaHash);
             Bloqueado = false;
+            ReiniciarIntentosFallidos();
+        }
+
+        public void RegistrarIntentoFallido(DateTime fecha)
+        {
+            IntentosRealizados++;
+            FechaUltimoIntento = fecha;
+        }
+
+        public void ReiniciarIntentosFallidos()
+        {
+            IntentosRealizados = 0;
+            FechaUltimoIntento = null;
         }
 
         public static string    EstablecerContrasenaPorDefecto(string apellido, int dni)
@@ -80,7 +101,7 @@ namespace Service.Entidades
             string apellidoNormalizado = ValidarTextoObligatorio(apellido, nameof(apellido));
             int dniValidado = ValidarDni(dni);
 
-            return $"{dniValidado}{apellidoNormalizado}";
+            return $"{apellidoNormalizado}{dniValidado}";
         }
 
         public void CambiarContrasena(string contrasenaHash)
@@ -156,6 +177,16 @@ namespace Service.Entidades
             if (rol.CodigoRol <= 0) 
                 throw new ArgumentException("El codigo de rol del usuario tiene que ser valido");
             return rol;
+        }
+
+        private static int ValidarIntentosRealizados(int intentosRealizados)
+        {
+            if (intentosRealizados < 0)
+            {
+                throw new ArgumentException("La cantidad de intentos realizados no puede ser negativa.", nameof(intentosRealizados));
+            }
+
+            return intentosRealizados;
         }
     }
 }
