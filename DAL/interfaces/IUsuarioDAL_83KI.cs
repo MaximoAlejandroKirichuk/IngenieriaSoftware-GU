@@ -19,6 +19,8 @@ namespace DAL.interfaces
         bool ExisteEmail(string email);
         bool ExisteEmailParaOtroUsuario(string email, int dni);
         bool EstaBloqueado(int dni);
+        void ActualizarIntentosFallidos(Usuario_83KI usuario);
+        void ReiniciarIntentosFallidos(Usuario_83KI usuario);
         void ActualizarEstadoActivo(int dni, bool activo);
         void DesbloquearCuenta(Usuario_83KI usuario);
         IEnumerable<Usuario_83KI> ObtenerUsuarios();

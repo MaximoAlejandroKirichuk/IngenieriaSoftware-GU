@@ -11,6 +11,9 @@ namespace BLL
 {
     internal class GestorUsuarioBLL_83KI : IGestorUsuario_83KI
     {
+        private const int IntentosPermitidos = 3;
+        private const int MinutosParaReiniciarIntentos = 30;
+
         private readonly IUsuarioDAL_83KI _dal;
         private readonly IEncriptador_83KI _encriptador;
         private readonly ISessionManager_83KI _sessionManager;
@@ -43,14 +46,25 @@ namespace BLL
                 throw new UsuarioBloqueadoException_83KI();
             }
 
+            ReiniciarIntentosSiCorresponde(usuario);
+
             string hash = _encriptador.HashContrasena(contrasena);
 
             if (usuario.Contrasena != hash)
             {
-                throw new ContrasenaInvalidaException_83KI("Credenciales invalidas.");
+                RegistrarIntentoFallido(usuario);
+
+                if (SuperoIntentosPermitidos(usuario))
+                {
+                    BloquearPorIntentosFallidos(usuario);
+                    throw new UsuarioBloqueadoException_83KI();
+                }
+
+                throw new ContrasenaInvalidaException_83KI($"Intento {usuario.IntentosRealizados} de {IntentosPermitidos}.");
             }
 
             _sessionManager.IniciarSesion(usuario);
+            ReiniciarIntentosFallidos(usuario);
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
                     $"Login exitoso: {usuario.UserName}",
@@ -59,6 +73,52 @@ namespace BLL
                     userName
                 )
             );
+        }
+
+        private void ReiniciarIntentosSiCorresponde(Usuario_83KI usuario)
+        {
+            if (!usuario.FechaUltimoIntento.HasValue)
+            {
+                return;
+            }
+
+            TimeSpan tiempoDesdeUltimoIntento = DateTime.Now - usuario.FechaUltimoIntento.Value;
+
+            if (tiempoDesdeUltimoIntento.TotalMinutes >= MinutosParaReiniciarIntentos)
+            {
+                ReiniciarIntentosFallidos(usuario);
+            }
+        }
+
+        private void RegistrarIntentoFallido(Usuario_83KI usuario)
+        {
+            usuario.RegistrarIntentoFallido(DateTime.Now);
+            _dal.ActualizarIntentosFallidos(usuario);
+        }
+
+        private bool SuperoIntentosPermitidos(Usuario_83KI usuario)
+        {
+            return usuario.IntentosRealizados > IntentosPermitidos;
+        }
+
+        private void BloquearPorIntentosFallidos(Usuario_83KI usuario)
+        {
+            usuario.Bloquear();
+            _dal.BloquearUsuario(usuario);
+            _bitacora.RegistrarEvento(
+                BitacoraEvento_83KI.CrearNuevo(
+                    $"Usuario bloqueado por intentos fallidos: {usuario.UserName}",
+                    Criticidad.Alto,
+                    Modulo.Usuarios,
+                    usuario.UserName
+                )
+            );
+        }
+
+        private void ReiniciarIntentosFallidos(Usuario_83KI usuario)
+        {
+            usuario.ReiniciarIntentosFallidos();
+            _dal.ReiniciarIntentosFallidos(usuario);
         }
 
         public void Logout()
@@ -235,6 +295,7 @@ namespace BLL
 
         private void CambiarEstadoUsuario(int dni, bool activo)
         {
+            //ACA VALIDO QUE NO ME PUEDO DESHABILITAR A MI MISMO.
             var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
 
             if (!usuarioActivo.Rol.EsAdministrador)
