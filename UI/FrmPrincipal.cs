@@ -84,6 +84,8 @@ namespace UI
         private void iniciarSesionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //todo: aca agregar el form de login de nuevo porque el profe quiere verificar que es una unica instancia activa
+            Login login = new Login();
+            login.Show();
         }
 
         private void menuSesion_Click(object sender, EventArgs e)

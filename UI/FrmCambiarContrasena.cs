@@ -64,6 +64,11 @@ namespace UI
                 MessageBox.Show("La nueva contraseña y su confirmación deben coincidir.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
+            if (txtNuevaContrasena.Text == txtContrasenaActual.Text)
+            {
+                MessageBox.Show("La nueva contraseña y la anterior no deben coincidir.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
 
             return true;
         }
