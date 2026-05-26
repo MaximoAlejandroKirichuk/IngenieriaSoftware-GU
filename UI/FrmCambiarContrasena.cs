@@ -17,16 +17,17 @@ namespace UI
 
         private void btnCambiarContrasena_Click(object sender, EventArgs e)
         {
-            if (!ValidarFormulario())
+            bool formularioValido = ValidarFormulario();
+            if (formularioValido == false)
             {
                 return;
             }
             try
             {
                 _gestorUsuario.CambiarContrasenaUsuarioActual(txtContrasenaActual.Text, txtNuevaContrasena.Text);
-                MessageBox.Show("Contraseña modificada exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                 DialogResult = DialogResult.OK;
-                Close();
+                this.Close();
             }
             catch (ContrasenaInvalidaException_83KI ex)
             {
@@ -35,7 +36,7 @@ namespace UI
             catch (UsuarioNoAutenticadoException_83KI ex)
             {
                 MessageBox.Show(ex.Message, "Sesión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Close();
+                this.Close();
             }
             catch (Exception ex)
             {

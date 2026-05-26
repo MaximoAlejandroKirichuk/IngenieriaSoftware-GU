@@ -13,8 +13,9 @@ namespace DAL
         internal class AccesoDAL_83KI
         {
 
-            private readonly string _stringConnection = "Data Source=.;Initial Catalog=GestionUsuarios;Integrated Security=True;";
-
+            //private readonly string _stringConnection = "Data Source=.;Initial Catalog=GestionUsuarios;Integrated Security=True;";
+            //luki:
+            private readonly string _stringConnection = @"Data Source=localhost\SQLEXPRESS01;Initial Catalog=GestionUsuarios;Integrated Security=True;";
             public DataSet Leer(string consulta, List<SqlParameter> parametros = null)
             {
                 DataSet ds = new DataSet();
