@@ -45,7 +45,16 @@ namespace UI
 
             if (e.CloseReason == CloseReason.UserClosing)
             {
-                e.Cancel = !ConfirmarLogoutYCerrar();
+                bool logoutAprobado = ConfirmarLogoutYCerrar();
+
+                if (logoutAprobado == false)
+                {
+                    e.Cancel = true;
+                }
+                else
+                {
+                    e.Cancel = false;
+                }
             }
         }
 
@@ -78,12 +87,30 @@ namespace UI
         private void cambiarContraseñaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var cambiarContrasena = new FrmCambiarContrasena(_gestorUsuario);
-            cambiarContrasena.ShowDialog(this);
+            DialogResult resultado = cambiarContrasena.ShowDialog(this);
+
+            if(resultado == DialogResult.OK)
+            {
+                ForzarLogout(); 
+            }
+        }
+
+        private void ForzarLogout()
+        {
+            MessageBox.Show(
+                "Contraseña modificada correctamente. Por seguridad, la sesión se cerrará.",
+                "Cambio de Contraseña",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+
+            _gestorUsuario.Logout();
+            _logoutConfirmado = true;
+            DialogResult = DialogResult.Retry;
+            this.Close();
         }
 
         private void iniciarSesionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //todo: aca agregar el form de login de nuevo porque el profe quiere verificar que es una unica instancia activa
             Login login = new Login();
             login.Show();
         }
