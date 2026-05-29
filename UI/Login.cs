@@ -42,6 +42,22 @@ namespace UI
             try
             {
                 _gestor.Login(userName, contrasena);
+
+                var usuarioActivo = Service.SessionManager_83KI.Instancia.UsuarioActivo;
+
+                if (usuarioActivo != null)
+                {
+                    //aca se hace la contraseña base para compararla
+                    string contrasenaPorDefecto = Service.Entidades.Usuario_83KI.EstablecerContrasenaPorDefecto(usuarioActivo.Apellido, usuarioActivo.DNI);
+
+                    bool usaContrasenaPorDefecto = (contrasena == contrasenaPorDefecto);
+
+                    if (usaContrasenaPorDefecto == true)
+                    {
+                        MostrarAdvertenciaYForzarCambio();
+                    }
+                }
+
                 Hide();
 
                 using (var formPrincipal = new FrmPrincipal(_gestor, _gestorRol))
@@ -56,7 +72,6 @@ namespace UI
                         return;
                     }
                 }
-
                 Close();
             }
             catch (UsuarioActivoActualmenteException_83KI ex)
@@ -69,7 +84,6 @@ namespace UI
                 Show();
                 MessageBox.Show(ex.Message);
             }
-
             catch (UsuarioBloqueadoException_83KI ex)
             {
                 Show();
@@ -80,13 +94,32 @@ namespace UI
                 Show();
                 MessageBox.Show(ex.Message, "Usuarios", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
-            
             catch (ContrasenaInvalidaException_83KI ex)
             {
                 Show();
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+        private void MostrarAdvertenciaYForzarCambio()
+        {
+            MessageBox.Show(
+                "El sistema detectó que está utilizando la contraseña generada por defecto. Por su seguridad, recomendamos cambiarla ahora mismo.",
+                "Advertencia de Seguridad",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+
+            using (var frmCambio = new FrmCambiarContrasena(_gestor))
+            {
+                var resultadoCambio = frmCambio.ShowDialog(this);
+
+                if (resultadoCambio == DialogResult.OK)
+                {
+                    MessageBox.Show("Contraseña actualizada con éxito.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
 
         public void LoginDesignConfig()  //diseño de la interfaz
         {
