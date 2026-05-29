@@ -42,6 +42,7 @@ namespace DAL
                 }
                 return ds;
             }
+
             public object LeerEscalar(string consulta, List<SqlParameter> parametros = null)
             {
                 using (SqlConnection conn = new SqlConnection(_stringConnection))

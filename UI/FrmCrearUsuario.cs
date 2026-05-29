@@ -66,7 +66,6 @@ namespace UI
             {
                 throw new InvalidOperationException("El rol seleccionado no es valido.");
             }
-
             _usuarioService.CrearUsuario(
                 txtNombre.Text,
                 txtApellido.Text,

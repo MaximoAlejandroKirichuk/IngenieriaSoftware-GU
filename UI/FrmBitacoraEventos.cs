@@ -12,6 +12,7 @@ namespace UI
     public partial class FrmBitacoraEventos : Form
     {
         private const string OpcionTodos = "Todos";
+        private const string OpcionCualquiera = "Cualquiera";
         private readonly IConsultaBitacoraEventos_83KI _consultaBitacoraEventos;
         private readonly IBitacoraEventosExporter_83KI _exporter;
         private readonly List<BitacoraEventoVista_83KI> _eventosVisibles = new List<BitacoraEventoVista_83KI>();
@@ -50,9 +51,8 @@ namespace UI
             cmbModulo.Items.Add(Modulo.Usuarios);
             cmbModulo.SelectedIndex = 0;
             CargarEventosPorModulo();
-
             cmbCriticidad.Items.Clear();
-            cmbCriticidad.Items.Add(string.Empty);
+            cmbCriticidad.Items.Add(OpcionCualquiera);
             foreach (Criticidad criticidad in Enum.GetValues(typeof(Criticidad)))
             {
                 cmbCriticidad.Items.Add(criticidad);
@@ -68,7 +68,6 @@ namespace UI
             cmbModulo.SelectedIndex = 0;
             cmbEvento.SelectedIndex = 0;
             cmbCriticidad.SelectedIndex = 0;
-
             dtpFechaInicio.Value = DateTime.Today.AddDays(-3);
             dtpFechaFin.Value = DateTime.Today;
         }
@@ -108,10 +107,7 @@ namespace UI
 
             _eventosVisibles.Clear();
             _eventosVisibles.AddRange(_consultaBitacoraEventos.Consultar(filtro));
-
-            
-            ActualizarDataGridView();
-            
+            ActualizarDataGridView();    
         }
 
         private FiltroBitacoraEventos_83KI ObtenerFiltroDesdeUI()
@@ -138,7 +134,6 @@ namespace UI
             {
                 return string.Empty;
             }
-
             return combo.SelectedItem.ToString();
         }
 
