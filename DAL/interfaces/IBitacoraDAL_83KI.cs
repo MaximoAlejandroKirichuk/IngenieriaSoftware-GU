@@ -1,12 +1,6 @@
-﻿using BE;
-using DAL.DAL;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using Service.Entidades;
 namespace DAL.interfaces
 {
     public interface IBitacoraDAL_83KI
@@ -14,6 +8,9 @@ namespace DAL.interfaces
         void Registrar(BitacoraEvento_83KI evento);
 
         // Para la interfaz de Auditoría con el filtro de 3 días
-        IEnumerable<BitacoraEvento_83KI> Consultar(DateTime desde, DateTime hasta, string modulo = null, int? criticidad = null);
+        IEnumerable<BitacoraEvento_83KI> Consultar(DateTime desde, DateTime hasta);
+        IEnumerable<BitacoraEvento_83KI> ConsultarPorModulo(DateTime desde, DateTime hasta, Modulo modulo);
+        IEnumerable<BitacoraEvento_83KI> ConsultarPorCriticidad(DateTime desde, DateTime hasta, Criticidad criticidad);
+        IEnumerable<BitacoraEvento_83KI> ConsultarPorModuloYCriticidad(DateTime desde, DateTime hasta, Modulo modulo, Criticidad criticidad);
     }
 }

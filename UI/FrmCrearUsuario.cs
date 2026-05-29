@@ -1,6 +1,6 @@
-﻿using BE;
-using BLL.Excepciones.CrearUsuario;
-using BLL.Interfaces;
+﻿using Service.Entidades;
+using Service.Excepciones.CrearUsuario;
+using Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,23 +18,34 @@ namespace UI
     public partial class FrmCrearUsuario : Form
     {
         private readonly IGestorUsuario_83KI _usuarioService;
-        public FrmCrearUsuario(IGestorUsuario_83KI gestorUsuario)
+        private readonly IGestorRol_83KI _gestorRol;
+
+        public FrmCrearUsuario(IGestorUsuario_83KI gestorUsuario, IGestorRol_83KI gestorRol)
         {
             InitializeComponent();
             _usuarioService = gestorUsuario;
+            _gestorRol = gestorRol;
+            CargarRoles();
         }
 
+        private void CargarRoles()
+        {
+            comboBox1.DataSource = null;
+            comboBox1.DisplayMember = nameof(Rol_83KI.Nombre);
+            comboBox1.ValueMember = nameof(Rol_83KI.CodigoRol);
+            comboBox1.DataSource = _gestorRol.ObtenerRoles();
+        }
 
         private void btnCrearUsuario_Click(object sender, EventArgs e)
         {
             if (!ValidarDatosFormato()) return;
             try
             {
-                var nuevoUsuario = ObtenerDatos();
-                _usuarioService.CrearUsuario(nuevoUsuario);
+                CrearUsuarioDesdeFormulario();
                 MessageBox.Show("Usuario registrado con éxito.");
                 this.DialogResult = DialogResult.OK;
             }
+
             catch (DniRegistradoException_83KI ex)
             {
                 MessageBox.Show(ex.Message);
@@ -48,26 +59,25 @@ namespace UI
                 MessageBox.Show(ex.Message);
             }
         }
-        private Usuario_83KI ObtenerDatos()
+        private void CrearUsuarioDesdeFormulario()
         {
             int.TryParse(txt_Dni.Text, out int dni);
-
-            Enum.TryParse(comboBox1.SelectedItem?.ToString(), true, out RolUsuario rol);
-
-            return new Usuario_83KI
+            if (!(comboBox1.SelectedItem is Rol_83KI rol))
             {
-                Nombre = txtNombre.Text.Trim(),
-                Apellido = txtApellido.Text.Trim(),
-                DNI = dni,
-                Email = txtEmail.Text.Trim(),
-                RolUsuario = rol
-            };
+                throw new InvalidOperationException("El rol seleccionado no es valido.");
+            }
+            _usuarioService.CrearUsuario(
+                txtNombre.Text,
+                txtApellido.Text,
+                dni,
+                txtEmail.Text,
+                rol
+            );
         }
 
 
         private bool ValidarDatosFormato()
         {
-            
             if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
                 string.IsNullOrWhiteSpace(txtApellido.Text) ||
                 string.IsNullOrWhiteSpace(txt_Dni.Text))
@@ -86,6 +96,12 @@ namespace UI
             if (!long.TryParse(txt_Dni.Text, out _) || txt_Dni.Text.Length < 7)
             {
                 MessageBox.Show("El DNI debe ser un número válido.");
+                return false;
+            }
+
+            if (comboBox1.SelectedItem == null)
+            {
+                MessageBox.Show("Debe seleccionar un rol.");
                 return false;
             }
 

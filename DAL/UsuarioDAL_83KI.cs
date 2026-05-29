@@ -1,4 +1,4 @@
-﻿using BE;
+﻿using Service.Entidades;
 using DAL.DAL;
 using DAL.interfaces;
 using System;
@@ -16,50 +16,35 @@ namespace DAL
     {
         private AccesoDAL_83KI _accesoDAL = new AccesoDAL_83KI();
 
-        public Usuario_83KI ObtenerPorMail(string mail)
+        public Usuario_83KI ObtenerPorDni(int dni)
         {
-            string sql = "SELECT * FROM Usuarios WHERE Email = @mail";
-            var parametros = new List<SqlParameter> { new SqlParameter("@mail", mail) };
+            string sql = ConsultaUsuariosConRoles() + " WHERE u.DNI = @dni";
+            var parametros = new List<SqlParameter> { new SqlParameter("@dni", dni) };
 
             DataSet ds = _accesoDAL.Leer(sql, parametros);
-
-            // Verificamos que el DataSet tenga tablas y que la primera tenga filas
-            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-            {
-                DataRow row = ds.Tables[0].Rows[0]; // Tomamos la primera fila de la primera tabla
-
-                return new Usuario_83KI
-                {
-                    DNI = (int)Convert.ToInt64(row["DNI"]),
-                    Email = row["Email"].ToString(),
-                    Contrasena = row["Contrasena"].ToString(),
-                    Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
-                    Intentos = Convert.ToInt32(row["Intentos"])
-                };
-            }
-            return null;
+            return MapearUsuario(ds);
         }
 
-        public void ActualizarIntentos(Usuario_83KI usuario)
+        public Usuario_83KI ObtenerPorUserName(string userName)
         {
-            string consulta = "UPDATE Usuarios SET Intentos = @intentos WHERE DNI = @dni";
+            string sql = ConsultaUsuariosConRoles() + " WHERE u.Username = @userName";
+            var parametros = new List<SqlParameter> { new SqlParameter("@userName", userName) };
 
-            List<SqlParameter> parametros = new List<SqlParameter>
-            {
-                new SqlParameter("@intentos", usuario.Intentos),
-                new SqlParameter("@dni", usuario.DNI)
-            };
-
-            _accesoDAL.Escribir(consulta, parametros);
+            DataSet ds = _accesoDAL.Leer(sql, parametros);
+            return MapearUsuario(ds);
         }
+
+
 
         public void BloquearUsuario(Usuario_83KI usuario)
         {
-            string consulta = "UPDATE Usuarios SET Bloqueado = 1, Intentos = 3 WHERE DNI = @dni";
+            string consulta = "UPDATE Usuarios SET Bloqueado = 1, IntentosRealizados = @intentosRealizados, FechaUltimoIntento = @fechaUltimoIntento WHERE DNI = @dni";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
-                new SqlParameter("@dni", usuario.DNI)
+                new SqlParameter("@dni", usuario.DNI),
+                new SqlParameter("@intentosRealizados", usuario.IntentosRealizados),
+                new SqlParameter("@fechaUltimoIntento", (object)usuario.FechaUltimoIntento ?? DBNull.Value)
             };
 
             _accesoDAL.Escribir(consulta, parametros);
@@ -67,18 +52,49 @@ namespace DAL
 
         public void CrearUsuario(Usuario_83KI usuario)
         {
-            // Nota: No incluimos ID si es Identity/Autonumérico en SQL
-            string consulta = @"INSERT INTO Usuarios (Nombre, Apellido, DNI, Email, Rol, Password) 
-                        VALUES (@nombre, @apellido, @dni, @email, @rol, @pass)";
+            string consulta = @"INSERT INTO Usuarios (Username, Nombre, Apellido, DNI, Email, CodigoRol, Contrasena, Activo, Bloqueado, IntentosRealizados, FechaUltimoIntento) 
+                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @codigoRol, @pass, @activo, @bloqueado, @intentosRealizados, @fechaUltimoIntento)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
+                new SqlParameter("@username", usuario.UserName),
                 new SqlParameter("@nombre", usuario.Nombre),
                 new SqlParameter("@apellido", usuario.Apellido),
                 new SqlParameter("@dni",usuario.DNI),
                 new SqlParameter("@email", usuario.Email),
-                new SqlParameter("@rol", usuario.RolUsuario.ToString()), // Guardamos el nombre del Enum
-                new SqlParameter("@pass", usuario.Contrasena)
+                new SqlParameter("@codigoRol", usuario.Rol.CodigoRol),
+                new SqlParameter("@pass", usuario.Contrasena),
+                new SqlParameter("@activo", usuario.Activo),
+                new SqlParameter("@bloqueado", usuario.Bloqueado),
+                new SqlParameter("@intentosRealizados", usuario.IntentosRealizados),
+                new SqlParameter("@fechaUltimoIntento", (object)usuario.FechaUltimoIntento ?? DBNull.Value)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ModificarUsuario(int dni, string email, Rol_83KI rol)
+        {
+            string consulta = "UPDATE Usuarios SET Email = @email, CodigoRol = @codigoRol WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", dni),
+                new SqlParameter("@email", email),
+                new SqlParameter("@codigoRol", rol.CodigoRol)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ActualizarContrasena(Usuario_83KI usuario)
+        {
+            string consulta = "UPDATE Usuarios SET Contrasena = @contrasena WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", usuario.DNI),
+                new SqlParameter("@contrasena", usuario.Contrasena)
             };
 
             _accesoDAL.Escribir(consulta, parametros);
@@ -111,7 +127,7 @@ namespace DAL
 
             var parametros = new List<SqlParameter>
             {
-                new SqlParameter("@dni",email)
+                new SqlParameter("@email",email)
             };
 
             DataSet ds = _accesoDAL.Leer(query, parametros);
@@ -124,9 +140,31 @@ namespace DAL
             return false;
         }
 
+        public bool ExisteEmailParaOtroUsuario(string email, int dni)
+        {
+            //dni distinto al que estoy mandando <>
+            string query = "SELECT COUNT(1) AS Total FROM Usuarios WHERE Email = @email AND DNI <> @dni";
+
+            var parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@email", email),
+                new SqlParameter("@dni", dni)
+            };
+
+            DataSet ds = _accesoDAL.Leer(query, parametros);
+
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                int total = Convert.ToInt32(ds.Tables[0].Rows[0]["Total"]);
+                return total > 0;
+            }
+
+            return false;
+        }
+
         public IEnumerable<Usuario_83KI> ObtenerUsuarios()
         {
-            string query = "SELECT * FROM Usuarios";
+            string query = ConsultaUsuariosConRoles();
             DataSet ds = _accesoDAL.Leer(query);
             List<Usuario_83KI> listaTemporal = new List<Usuario_83KI>();
 
@@ -134,18 +172,167 @@ namespace DAL
             {
                 foreach (DataRow row in ds.Tables[0].Rows)
                 {
-                    listaTemporal.Add(new Usuario_83KI
-                    {
-                        DNI = Convert.ToInt32(row["DNI"]),
-                        Nombre = row["Nombre"].ToString(),
-                        Apellido = row["Apellido"].ToString(),
-                        Email = row["Email"].ToString(),
-                        Bloqueado = Convert.ToBoolean(row["Bloqueado"]),
-                        Intentos = Convert.ToInt32(row["Intentos"])
-                    });
+                    listaTemporal.Add(MapearUsuario(row));
                 }
             }
             return listaTemporal;
+        }
+
+        public void DesbloquearCuenta(Usuario_83KI usuario)
+        {
+            string consulta = @"UPDATE Usuarios
+                                SET Bloqueado = 0,
+                                    Contrasena = @contrasena,
+                                    IntentosRealizados = 0,
+                                    FechaUltimoIntento = NULL
+                                WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", usuario.DNI),
+                new SqlParameter("@contrasena", usuario.Contrasena)
+            }; 
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ActualizarIntentosFallidos(Usuario_83KI usuario)
+        {
+            string consulta = "UPDATE Usuarios SET IntentosRealizados = @intentosRealizados, FechaUltimoIntento = @fechaUltimoIntento WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", usuario.DNI),
+                new SqlParameter("@intentosRealizados", usuario.IntentosRealizados),
+                new SqlParameter("@fechaUltimoIntento", (object)usuario.FechaUltimoIntento ?? DBNull.Value)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ReiniciarIntentosFallidos(Usuario_83KI usuario)
+        {
+            string consulta = "UPDATE Usuarios SET IntentosRealizados = 0, FechaUltimoIntento = NULL WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", usuario.DNI)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ActualizarEstadoActivo(int dni, bool activo)
+        {
+            string consulta = "UPDATE Usuarios SET Activo = @activo WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", dni),
+                new SqlParameter("@activo", activo)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public bool EstaBloqueado(int dni)
+        {
+            string query = "SELECT COUNT(1) AS Total FROM Usuarios WHERE DNI = @dni";
+
+            var parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni",dni)
+            };
+
+            DataSet ds = _accesoDAL.Leer(query, parametros);
+
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                int total = Convert.ToInt32(ds.Tables[0].Rows[0]["Total"]);
+                return total > 0;
+            }
+            return false;
+        }
+
+        private string ConsultaUsuariosConRoles()
+        {
+            return @"SELECT u.Username AS UserName,
+                            u.Nombre,
+                            u.Apellido,
+                            u.DNI,
+                            u.Email,
+                            u.Contrasena,
+                            u.Activo,
+                            u.Bloqueado,
+                            u.IntentosRealizados,
+                            u.FechaUltimoIntento,
+                            u.CodigoRol,
+                            r.Nombre AS NombreRol
+                     FROM Usuarios u
+                     INNER JOIN Roles r ON r.CodigoRol = u.CodigoRol";
+        }
+
+        private Usuario_83KI MapearUsuario(DataSet ds)
+        {
+            if (ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+            {
+                return null;
+            }
+
+            return MapearUsuario(ds.Tables[0].Rows[0]);
+        }
+
+        private Usuario_83KI MapearUsuario(DataRow row)
+        {
+            return Usuario_83KI.ReconstruirDesdePersistencia(
+                (int)Convert.ToInt64(row["DNI"]),
+                ObtenerTexto(row, "Nombre"),
+                ObtenerTexto(row, "Apellido"),
+                ObtenerTexto(row, "Email"),
+                ObtenerTexto(row, "Contrasena"),
+                MapearRolDesdeUsuario(row),
+                Convert.ToBoolean(row["Activo"]),
+                Convert.ToBoolean(row["Bloqueado"]),
+                ObtenerEntero(row, "IntentosRealizados"),
+                ObtenerFechaNullable(row, "FechaUltimoIntento")
+            );
+        }
+
+        private Rol_83KI MapearRolDesdeUsuario(DataRow row)
+        {
+            return new Rol_83KI(
+                Convert.ToInt32(row["CodigoRol"]),
+                ObtenerTexto(row, "NombreRol")
+            );
+        }
+
+        private string ObtenerTexto(DataRow row, string columna)
+        {
+            if (!row.Table.Columns.Contains(columna) || row[columna] == DBNull.Value)
+            {
+                return string.Empty;
+            }
+
+            return row[columna].ToString();
+        }
+
+        private int ObtenerEntero(DataRow row, string columna)
+        {
+            if (!row.Table.Columns.Contains(columna) || row[columna] == DBNull.Value)
+            {
+                return 0;
+            }
+
+            return Convert.ToInt32(row[columna]);
+        }
+
+        private DateTime? ObtenerFechaNullable(DataRow row, string columna)
+        {
+            if (!row.Table.Columns.Contains(columna) || row[columna] == DBNull.Value)
+            {
+                return null;
+            }
+
+            return Convert.ToDateTime(row[columna]);
         }
     }
 }

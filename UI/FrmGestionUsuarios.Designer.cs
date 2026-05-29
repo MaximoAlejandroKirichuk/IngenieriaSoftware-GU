@@ -1,16 +1,9 @@
-﻿namespace UI
+namespace UI
 {
     partial class FrmGestionUsuarios
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -20,67 +13,99 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             this.dgvUsuarios = new System.Windows.Forms.DataGridView();
             this.btnCrearUsuario = new System.Windows.Forms.Button();
-            this.btnDesbloquearusuario = new System.Windows.Forms.Button();
+            this.btnCambiarEstadoUsuario = new System.Windows.Forms.Button();
+            this.btnModificarUsuario = new System.Windows.Forms.Button();
+            this.btnDesbloquearUsuario = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).BeginInit();
             this.SuspendLayout();
             // 
             // dgvUsuarios
             // 
             this.dgvUsuarios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvUsuarios.Location = new System.Drawing.Point(64, 111);
+            this.dgvUsuarios.Location = new System.Drawing.Point(26, 44);
+            this.dgvUsuarios.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.dgvUsuarios.MultiSelect = false;
             this.dgvUsuarios.Name = "dgvUsuarios";
-            this.dgvUsuarios.Size = new System.Drawing.Size(360, 207);
+            this.dgvUsuarios.ReadOnly = true;
+            this.dgvUsuarios.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvUsuarios.Size = new System.Drawing.Size(540, 334);
             this.dgvUsuarios.TabIndex = 0;
+            this.dgvUsuarios.SelectionChanged += new System.EventHandler(this.dgvUsuarios_SelectionChanged);
             // 
             // btnCrearUsuario
             // 
-            this.btnCrearUsuario.Location = new System.Drawing.Point(554, 141);
+            this.btnCrearUsuario.Location = new System.Drawing.Point(601, 136);
+            this.btnCrearUsuario.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.btnCrearUsuario.Name = "btnCrearUsuario";
-            this.btnCrearUsuario.Size = new System.Drawing.Size(125, 23);
+            this.btnCrearUsuario.Size = new System.Drawing.Size(187, 37);
             this.btnCrearUsuario.TabIndex = 1;
             this.btnCrearUsuario.Text = "Crear usuario";
             this.btnCrearUsuario.UseVisualStyleBackColor = true;
             this.btnCrearUsuario.Click += new System.EventHandler(this.btnCrearUsuario_Click);
             // 
-            // btnDesbloquearusuario
+            // btnCambiarEstadoUsuario
             // 
-            this.btnDesbloquearusuario.Location = new System.Drawing.Point(554, 196);
-            this.btnDesbloquearusuario.Name = "btnDesbloquearusuario";
-            this.btnDesbloquearusuario.Size = new System.Drawing.Size(125, 23);
-            this.btnDesbloquearusuario.TabIndex = 2;
-            this.btnDesbloquearusuario.Text = "Desbloquear usuario";
-            this.btnDesbloquearusuario.UseVisualStyleBackColor = true;
-            this.btnDesbloquearusuario.Click += new System.EventHandler(this.btnDesbloquearusuario_Click);
+            this.btnCambiarEstadoUsuario.Location = new System.Drawing.Point(601, 227);
+            this.btnCambiarEstadoUsuario.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.btnCambiarEstadoUsuario.Name = "btnCambiarEstadoUsuario";
+            this.btnCambiarEstadoUsuario.Size = new System.Drawing.Size(187, 37);
+            this.btnCambiarEstadoUsuario.TabIndex = 2;
+            this.btnCambiarEstadoUsuario.Text = "Gestionar estado";
+            this.btnCambiarEstadoUsuario.UseVisualStyleBackColor = true;
+            this.btnCambiarEstadoUsuario.Click += new System.EventHandler(this.btnCambiarEstadoUsuario_Click);
+            // 
+            // btnModificarUsuario
+            // 
+            this.btnModificarUsuario.Location = new System.Drawing.Point(601, 182);
+            this.btnModificarUsuario.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.btnModificarUsuario.Name = "btnModificarUsuario";
+            this.btnModificarUsuario.Size = new System.Drawing.Size(187, 37);
+            this.btnModificarUsuario.TabIndex = 3;
+            this.btnModificarUsuario.Text = "Modificar usuario";
+            this.btnModificarUsuario.UseVisualStyleBackColor = true;
+            this.btnModificarUsuario.Click += new System.EventHandler(this.btnModificarUsuario_Click);
+            // 
+            // btnDesbloquearUsuario
+            // 
+            this.btnDesbloquearUsuario.Location = new System.Drawing.Point(601, 272);
+            this.btnDesbloquearUsuario.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.btnDesbloquearUsuario.Name = "btnDesbloquearUsuario";
+            this.btnDesbloquearUsuario.Size = new System.Drawing.Size(187, 37);
+            this.btnDesbloquearUsuario.TabIndex = 4;
+            this.btnDesbloquearUsuario.Text = "Desbloquear usuario";
+            this.btnDesbloquearUsuario.UseVisualStyleBackColor = true;
+            this.btnDesbloquearUsuario.Click += new System.EventHandler(this.btnDesbloquearUsuario_Click);
             // 
             // FrmGestionUsuarios
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.btnDesbloquearusuario);
+            this.BackColor = System.Drawing.Color.CornflowerBlue;
+            this.ClientSize = new System.Drawing.Size(823, 422);
+            this.Controls.Add(this.btnDesbloquearUsuario);
+            this.Controls.Add(this.btnModificarUsuario);
+            this.Controls.Add(this.btnCambiarEstadoUsuario);
             this.Controls.Add(this.btnCrearUsuario);
             this.Controls.Add(this.dgvUsuarios);
+            this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ForeColor = System.Drawing.Color.Black;
+            this.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.Name = "FrmGestionUsuarios";
             this.Text = "FrmGestionUsuarios";
+            this.Load += new System.EventHandler(this.FrmGestionUsuarios_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).EndInit();
             this.ResumeLayout(false);
 
         }
 
-        #endregion
-
         private System.Windows.Forms.DataGridView dgvUsuarios;
         private System.Windows.Forms.Button btnCrearUsuario;
-        private System.Windows.Forms.Button btnDesbloquearusuario;
+        private System.Windows.Forms.Button btnCambiarEstadoUsuario;
+        private System.Windows.Forms.Button btnModificarUsuario;
+        private System.Windows.Forms.Button btnDesbloquearUsuario;
     }
 }

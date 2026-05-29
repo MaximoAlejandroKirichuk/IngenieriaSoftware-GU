@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Service.Interfaces;
+using Service.Entidades;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BE;
-using BLL.Interfaces;
+
 namespace Service
 {
     public class SessionManager_83KI : ISessionManager_83KI

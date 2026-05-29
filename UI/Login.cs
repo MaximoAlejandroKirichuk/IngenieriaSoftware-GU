@@ -1,7 +1,4 @@
-﻿using BLL.Excepciones;
-using BLL.Excepciones.Login;
-using BLL.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,62 +8,126 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using Service.Excepciones.Login;
+using Service.Interfaces;
+using Service.Excepciones;
 
 namespace UI
 {
     public partial class Login : Form
     {
         private readonly IGestorUsuario_83KI _gestor;
+        private readonly IGestorRol_83KI _gestorRol;
+
         public Login()
         {
             _gestor = Service.ServiceFactory_83KI.GetGestorUsuario();
+            _gestorRol = Service.ServiceFactory_83KI.GetGestorRol();
             InitializeComponent();
         }
 
 
         private void Login_Load(object sender, EventArgs e)
         {
-            FrmCrearUsuario frmCrearusu = new FrmCrearUsuario(_gestor);
-            frmCrearusu.ShowDialog();
-
-            LoginDesignConfig(pictureBox1);
+            LoginDesignConfig();
             RedondearPanel(panelLogin);
             ButtonDesing(btnLogin);
-
 
         }
         private void btnLogin_Click(object sender, EventArgs e)
         {
+            var userName = txt_userName.Text.Trim();
+            var contrasena = txt_Contrasena.Text.Trim();
+
             try
             {
-                var email = txt_email.Text;
-                var contrasena = txt_Contrasena.Text;
-                _gestor.Login(email, contrasena);
+                _gestor.Login(userName, contrasena);
+
+                var usuarioActivo = Service.SessionManager_83KI.Instancia.UsuarioActivo;
+
+                if (usuarioActivo != null)
+                {
+                    //aca se hace la contraseña base para compararla
+                    string contrasenaPorDefecto = Service.Entidades.Usuario_83KI.EstablecerContrasenaPorDefecto(usuarioActivo.Apellido, usuarioActivo.DNI);
+
+                    bool usaContrasenaPorDefecto = (contrasena == contrasenaPorDefecto);
+
+                    if (usaContrasenaPorDefecto == true)
+                    {
+                        MostrarAdvertenciaYForzarCambio();
+                    }
+                }
+
+                Hide();
+
+                using (var formPrincipal = new FrmPrincipal(_gestor, _gestorRol))
+                {
+                    var resultado = formPrincipal.ShowDialog(this);
+
+                    if (resultado == DialogResult.Retry)
+                    {
+                        txt_Contrasena.Clear();
+                        txt_Contrasena.Focus();
+                        Show();
+                        return;
+                    }
+                }
+                Close();
             }
-            catch(UsuarioActivoActualmenteException_83KI ex)
+            catch (UsuarioActivoActualmenteException_83KI ex)
             {
+                Show();
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (UsuarioNoExisteException_83KI ex)
+            {
+                Show();
+                MessageBox.Show(ex.Message);
             }
             catch (UsuarioBloqueadoException_83KI ex)
             {
+                Show();
                 MessageBox.Show(ex.Message, "Seguridad", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
-            
+            catch (UsuarioDeshabilitadoException_83KI ex)
+            {
+                Show();
+                MessageBox.Show(ex.Message, "Usuarios", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
             catch (ContrasenaInvalidaException_83KI ex)
             {
+                Show();
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
-        public void LoginDesignConfig(PictureBox pic)  //diseño de la interfaz
+        private void MostrarAdvertenciaYForzarCambio()
+        {
+            MessageBox.Show(
+                "El sistema detectó que está utilizando la contraseña generada por defecto. Por su seguridad, recomendamos cambiarla ahora mismo.",
+                "Advertencia de Seguridad",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+
+            using (var frmCambio = new FrmCambiarContrasena(_gestor))
+            {
+                var resultadoCambio = frmCambio.ShowDialog(this);
+
+                if (resultadoCambio == DialogResult.OK)
+                {
+                    MessageBox.Show("Contraseña actualizada con éxito.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+
+        public void LoginDesignConfig()  //diseño de la interfaz
         {
             BackColor = Color.FromArgb(70, 130, 180);
-            txt_email.BackColor = Color.FromArgb(240, 240, 240);
+            txt_userName.BackColor = Color.FromArgb(240, 240, 240);
             txt_Contrasena.BackColor = Color.FromArgb(240, 240, 240);
             //diseño imagen
             GraphicsPath path = new GraphicsPath();
-            path.AddEllipse(0, 0, pic.Width, pic.Height);
-            pic.Region = new Region(path);
         }
         private void RedondearPanel(Panel panel) //diseño del panel
         {
