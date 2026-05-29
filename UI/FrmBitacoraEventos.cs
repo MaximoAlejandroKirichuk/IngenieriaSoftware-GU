@@ -12,6 +12,7 @@ namespace UI
     public partial class FrmBitacoraEventos : Form
     {
         private const string OpcionTodos = "Todos";
+        private const string OpcionCualquiera = "Cualquiera";
         private readonly IConsultaBitacoraEventos_83KI _consultaBitacoraEventos;
         private readonly IBitacoraEventosExporter_83KI _exporter;
         private readonly List<BitacoraEventoVista_83KI> _eventosVisibles = new List<BitacoraEventoVista_83KI>();
@@ -51,7 +52,7 @@ namespace UI
             cmbModulo.SelectedIndex = 0;
             CargarEventosPorModulo();
             cmbCriticidad.Items.Clear();
-            cmbCriticidad.Items.Add(string.Empty);
+            cmbCriticidad.Items.Add(OpcionCualquiera);
             foreach (Criticidad criticidad in Enum.GetValues(typeof(Criticidad)))
             {
                 cmbCriticidad.Items.Add(criticidad);
