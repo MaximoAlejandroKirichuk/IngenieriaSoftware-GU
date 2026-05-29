@@ -47,7 +47,6 @@ namespace DAL
                 new SqlParameter("@desde", desde),
                 new SqlParameter("@hasta", hasta)
             };
-
             return ConsultarConParametros("SELECT * FROM BitacoraEventos WHERE Fecha BETWEEN @desde AND @hasta", parametros);
         }
 
@@ -128,7 +127,6 @@ namespace DAL
             {
                 lista.Add(MapearBitacora(row));
             }
-
             return lista;
         }
 
@@ -150,7 +148,6 @@ namespace DAL
             {
                 return modulo;
             }
-
             return Modulo.Usuarios;
         }
 
@@ -160,7 +157,6 @@ namespace DAL
             {
                 return string.Empty;
             }
-
             return row[columna].ToString();
         }
     }
