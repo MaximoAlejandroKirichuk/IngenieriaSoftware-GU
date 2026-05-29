@@ -56,7 +56,7 @@ namespace BLL
             return Contiene(evento.Nombre, filtro.Nombre)
                 && Contiene(evento.Apellido, filtro.Apellido)
                 && Contiene(evento.Username, filtro.Username)
-                && Contiene(evento.Evento, filtro.Evento)
+                && EventoBitacoraCatalogo_83KI.CoincideConEvento(evento.Evento, filtro.Evento)
                 && (!filtro.Modulo.HasValue || evento.Modulo.Equals(filtro.Modulo.Value))
                 && (!filtro.Criticidad.HasValue || evento.Criticidad.Equals(filtro.Criticidad.Value));
         }

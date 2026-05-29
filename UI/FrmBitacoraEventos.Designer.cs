@@ -27,7 +27,7 @@ namespace UI
             this.txtNombre = new System.Windows.Forms.TextBox();
             this.txtApellido = new System.Windows.Forms.TextBox();
             this.txtLogin = new System.Windows.Forms.TextBox();
-            this.txtEvento = new System.Windows.Forms.TextBox();
+            this.cmbEvento = new System.Windows.Forms.ComboBox();
             this.dtpFechaInicio = new System.Windows.Forms.DateTimePicker();
             this.dtpFechaFin = new System.Windows.Forms.DateTimePicker();
             this.cmbModulo = new System.Windows.Forms.ComboBox();
@@ -157,12 +157,15 @@ namespace UI
             this.txtLogin.Size = new System.Drawing.Size(132, 33);
             this.txtLogin.TabIndex = 11;
             // 
-            // txtEvento
+            // cmbEvento
             // 
-            this.txtEvento.Location = new System.Drawing.Point(756, 471);
-            this.txtEvento.Name = "txtEvento";
-            this.txtEvento.Size = new System.Drawing.Size(220, 33);
-            this.txtEvento.TabIndex = 14;
+            this.cmbEvento.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbEvento.DropDownWidth = 320;
+            this.cmbEvento.FormattingEnabled = true;
+            this.cmbEvento.Location = new System.Drawing.Point(756, 471);
+            this.cmbEvento.Name = "cmbEvento";
+            this.cmbEvento.Size = new System.Drawing.Size(220, 33);
+            this.cmbEvento.TabIndex = 14;
             // 
             // dtpFechaInicio
             // 
@@ -188,6 +191,7 @@ namespace UI
             this.cmbModulo.Name = "cmbModulo";
             this.cmbModulo.Size = new System.Drawing.Size(114, 33);
             this.cmbModulo.TabIndex = 13;
+            this.cmbModulo.SelectedIndexChanged += new System.EventHandler(this.cmbModulo_SelectedIndexChanged);
             // 
             // cmbCriticidad
             // 
@@ -257,7 +261,7 @@ namespace UI
             this.panelBitacora.Controls.Add(this.cmbModulo);
             this.panelBitacora.Controls.Add(this.dtpFechaFin);
             this.panelBitacora.Controls.Add(this.dtpFechaInicio);
-            this.panelBitacora.Controls.Add(this.txtEvento);
+            this.panelBitacora.Controls.Add(this.cmbEvento);
             this.panelBitacora.Controls.Add(this.txtLogin);
             this.panelBitacora.Controls.Add(this.txtApellido);
             this.panelBitacora.Controls.Add(this.txtNombre);
@@ -310,7 +314,7 @@ namespace UI
         private System.Windows.Forms.TextBox txtNombre;
         private System.Windows.Forms.TextBox txtApellido;
         private System.Windows.Forms.TextBox txtLogin;
-        private System.Windows.Forms.TextBox txtEvento;
+        private System.Windows.Forms.ComboBox cmbEvento;
         private System.Windows.Forms.DateTimePicker dtpFechaInicio;
         private System.Windows.Forms.DateTimePicker dtpFechaFin;
         private System.Windows.Forms.ComboBox cmbModulo;

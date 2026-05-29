@@ -11,6 +11,7 @@ namespace UI
 {
     public partial class FrmBitacoraEventos : Form
     {
+        private const string OpcionTodos = "Todos";
         private readonly IConsultaBitacoraEventos_83KI _consultaBitacoraEventos;
         private readonly IBitacoraEventosExporter_83KI _exporter;
         private readonly List<BitacoraEventoVista_83KI> _eventosVisibles = new List<BitacoraEventoVista_83KI>();
@@ -30,20 +31,25 @@ namespace UI
 
         private void FrmBitacoraEventos_Load(object sender, EventArgs e)
         {
+            ConfigurarFechas();
             CargarCombos();
             RestaurarFiltrosIniciales();
             CargarEventos();
         }
 
+        private void ConfigurarFechas()
+        {
+            dtpFechaInicio.MaxDate = DateTime.Today;
+            dtpFechaFin.MaxDate = DateTime.Today;
+        }
+
         private void CargarCombos()
         {
             cmbModulo.Items.Clear();
-            cmbModulo.Items.Add(string.Empty);
-            foreach (Modulo modulo in Enum.GetValues(typeof(Modulo)))
-            {
-                cmbModulo.Items.Add(modulo);
-            }
+            cmbModulo.Items.Add(OpcionTodos);
+            cmbModulo.Items.Add(Modulo.Usuarios);
             cmbModulo.SelectedIndex = 0;
+            CargarEventosPorModulo();
 
             cmbCriticidad.Items.Clear();
             cmbCriticidad.Items.Add(string.Empty);
@@ -59,17 +65,41 @@ namespace UI
             txtNombre.Clear();
             txtApellido.Clear();
             txtLogin.Clear();
-            txtEvento.Clear();
             cmbModulo.SelectedIndex = 0;
+            cmbEvento.SelectedIndex = 0;
             cmbCriticidad.SelectedIndex = 0;
 
             dtpFechaInicio.Value = DateTime.Today.AddDays(-3);
             dtpFechaFin.Value = DateTime.Today;
         }
 
+        private void CargarEventosPorModulo()
+        {
+            cmbEvento.Items.Clear();
+            cmbEvento.Items.Add(OpcionTodos);
+
+            if (cmbModulo.SelectedItem is Modulo)
+            {
+                Modulo modulo = (Modulo)cmbModulo.SelectedItem;
+                foreach (EventoBitacoraOpcion_83KI evento in EventoBitacoraCatalogo_83KI.ObtenerPorModulo(modulo))
+                {
+                    cmbEvento.Items.Add(evento);
+                }
+            }
+
+            cmbEvento.SelectedIndex = 0;
+        }
+
         private void CargarEventos()
         {
             FiltroBitacoraEventos_83KI filtro = ObtenerFiltroDesdeUI();
+            if (filtro.FechaDesde.Date > DateTime.Today || filtro.FechaHasta.Date > DateTime.Today.AddDays(1).AddTicks(-1))
+            {
+                MessageBox.Show("No se pueden seleccionar fechas futuras.");
+                RestaurarFechasValidas();
+                return;
+            }
+
             if (filtro.FechaDesde.Date > filtro.FechaHasta.Date)
             {
                 MessageBox.Show("La fecha de inicio no puede ser mayor que la fecha fin.");
@@ -96,11 +126,35 @@ namespace UI
                 Nombre = txtNombre.Text,
                 Apellido = txtApellido.Text,
                 Username = txtLogin.Text,
-                Evento = txtEvento.Text,
+                Evento = ObtenerTextoCombo(cmbEvento),
                 Modulo = cmbModulo.SelectedItem is Modulo ? (Modulo?)cmbModulo.SelectedItem : null,
                 Criticidad = cmbCriticidad.SelectedItem is Criticidad ? (Criticidad?)cmbCriticidad.SelectedItem : null
             };
         }
+
+        private string ObtenerTextoCombo(ComboBox combo)
+        {
+            if (combo.SelectedItem == null || string.Equals(combo.SelectedItem.ToString(), OpcionTodos, StringComparison.OrdinalIgnoreCase))
+            {
+                return string.Empty;
+            }
+
+            return combo.SelectedItem.ToString();
+        }
+
+        private void RestaurarFechasValidas()
+        {
+            if (dtpFechaInicio.Value.Date > DateTime.Today)
+            {
+                dtpFechaInicio.Value = DateTime.Today;
+            }
+
+            if (dtpFechaFin.Value.Date > DateTime.Today)
+            {
+                dtpFechaFin.Value = DateTime.Today;
+            }
+        }
+
         private void ActualizarDataGridView()
         {
             _actualizandoGrilla = true;
@@ -108,6 +162,7 @@ namespace UI
             dgvEventos.DataSource = _eventosVisibles.ToList();
             ConfigurarGrilla();
             dgvEventos.ClearSelection();
+            dgvEventos.CurrentCell = null;
             _actualizandoGrilla = false;
         }
         #region Configrar grilla
@@ -219,6 +274,11 @@ namespace UI
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void cmbModulo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CargarEventosPorModulo();
         }
     }
 }
