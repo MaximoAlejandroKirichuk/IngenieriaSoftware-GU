@@ -79,6 +79,18 @@
     <Compile Include="FrmGestionUsuarios.Designer.cs">
       <DependentUpon>FrmGestionUsuarios.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmGestionFamilias_83KI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmGestionFamilias_83KI.Designer.cs">
+      <DependentUpon>FrmGestionFamilias_83KI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmGestionRoles_83KI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmGestionRoles_83KI.Designer.cs">
+      <DependentUpon>FrmGestionRoles_83KI.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmModificarUsuario.cs">
       <SubType>Form</SubType>
     </Compile>

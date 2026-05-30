@@ -84,6 +84,18 @@ namespace UI
             gestion.Show();
         }
 
+        private void gestionDeFamiliasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var gestion = new FrmGestionFamilias_83KI(_gestorRol);
+            gestion.Show();
+        }
+
+        private void gestionDeRolesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var gestion = new FrmGestionRoles_83KI(_gestorRol);
+            gestion.Show();
+        }
+
         private void cambiarContraseñaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var cambiarContrasena = new FrmCambiarContrasena(_gestorUsuario);
