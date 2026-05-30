@@ -80,20 +80,26 @@ namespace UI
 
         private void gestionDeUsuariosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var gestion = new FrmGestionUsuarios(_gestorUsuario, _gestorRol);
-            gestion.Show();
+            using (var gestion = new FrmGestionUsuarios(_gestorUsuario, _gestorRol))
+            {
+                gestion.ShowDialog(this);
+            }
         }
 
         private void gestionDeFamiliasToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var gestion = new FrmGestionFamilias_83KI(_gestorRol);
-            gestion.Show();
+            using (var gestion = new FrmGestionFamilias_83KI(_gestorRol))
+            {
+                gestion.ShowDialog(this);
+            }
         }
 
         private void gestionDeRolesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var gestion = new FrmGestionRoles_83KI(_gestorRol);
-            gestion.Show();
+            using (var gestion = new FrmGestionRoles_83KI(_gestorRol))
+            {
+                gestion.ShowDialog(this);
+            }
         }
 
         private void cambiarContraseñaToolStripMenuItem_Click(object sender, EventArgs e)
@@ -134,8 +140,10 @@ namespace UI
 
         private void bitacoraEventosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var bitacoraEventos = new FrmBitacoraEventos(ServiceFactory_83KI.GetConsultaBitacoraEventos());
-            bitacoraEventos.Show();
+            using (var bitacoraEventos = new FrmBitacoraEventos(ServiceFactory_83KI.GetConsultaBitacoraEventos()))
+            {
+                bitacoraEventos.ShowDialog(this);
+            }
         }
     }
 }
