@@ -1,0 +1,24 @@
+{
+  "Id": "en-US",
+  "Nombre": "English",
+  "Traducciones": {
+    "FrmPrincipal.Titulo": "Main",
+    "FrmPrincipal.Usuario": "User",
+    "FrmPrincipal.CerrarSesion": "Log out",
+    "FrmPrincipal.IniciarSesion": "Log in",
+    "FrmPrincipal.CambiarContrasena": "Change password",
+    "FrmPrincipal.Admin": "Admin",
+    "FrmPrincipal.GestionUsuarios": "User management",
+    "FrmPrincipal.GestionFamilias": "Family management",
+    "FrmPrincipal.GestionRoles": "Role management",
+    "FrmPrincipal.BitacoraEventos": "Event log",
+    "FrmPrincipal.Ayuda": "Help",
+    "FrmPrincipal.Idioma": "Language",
+    "FrmPrincipal.Espanol": "Spanish",
+    "FrmPrincipal.Ingles": "English",
+    "FrmPrincipal.ConfirmarCerrarSesionMensaje": "Do you want to close the current session?",
+    "FrmPrincipal.ConfirmarCerrarSesionTitulo": "Log out",
+    "FrmPrincipal.CambioContrasenaMensaje": "Password changed successfully. For security, the session will be closed.",
+    "FrmPrincipal.CambioContrasenaTitulo": "Password Change"
+  }
+}

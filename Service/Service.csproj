@@ -57,6 +57,7 @@
     <Compile Include="Excepciones\CambiarContrasenaUsuario\UsuarioNoAutenticadoException_83KI.cs" />
     <Compile Include="Excepciones\CrearUsuario\DniRegistradoException_83KI.cs" />
     <Compile Include="Excepciones\CrearUsuario\EmailRegistradoException_83KI.cs" />
+    <Compile Include="Excepciones\Idioma\ArchivoIdiomaNoEncontradoException_83KI.cs" />
     <Compile Include="Excepciones\Login\ContrasenaInvalidaException_83KI.cs" />
     <Compile Include="Excepciones\Login\UsuarioActivoActualmenteException_83KI.cs" />
     <Compile Include="Excepciones\Login\UsuarioBloqueadoException_83KI.cs" />

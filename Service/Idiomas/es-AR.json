@@ -1,0 +1,24 @@
+{
+  "Id": "es-AR",
+  "Nombre": "Español",
+  "Traducciones": {
+    "FrmPrincipal.Titulo": "Principal",
+    "FrmPrincipal.Usuario": "Usuario",
+    "FrmPrincipal.CerrarSesion": "Cerrar sesión",
+    "FrmPrincipal.IniciarSesion": "Iniciar sesión",
+    "FrmPrincipal.CambiarContrasena": "Cambiar contraseña",
+    "FrmPrincipal.Admin": "Admin",
+    "FrmPrincipal.GestionUsuarios": "Gestión de usuarios",
+    "FrmPrincipal.GestionFamilias": "Gestión de familias",
+    "FrmPrincipal.GestionRoles": "Gestión de roles",
+    "FrmPrincipal.BitacoraEventos": "Bitácora eventos",
+    "FrmPrincipal.Ayuda": "Ayuda",
+    "FrmPrincipal.Idioma": "Idioma",
+    "FrmPrincipal.Espanol": "Español",
+    "FrmPrincipal.Ingles": "Inglés",
+    "FrmPrincipal.ConfirmarCerrarSesionMensaje": "¿Desea cerrar la sesión actual?",
+    "FrmPrincipal.ConfirmarCerrarSesionTitulo": "Cerrar sesión",
+    "FrmPrincipal.CambioContrasenaMensaje": "Contraseña modificada correctamente. Por seguridad, la sesión se cerrará.",
+    "FrmPrincipal.CambioContrasenaTitulo": "Cambio de Contraseña"
+  }
+}
