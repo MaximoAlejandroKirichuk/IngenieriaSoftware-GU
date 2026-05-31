@@ -115,6 +115,11 @@ namespace Service.Entidades
             Rol = ValidarRol(rol);
         }
 
+        public void AsignarRol(Rol_83KI rol)
+        {
+            Rol = ValidarRol(rol);
+        }
+
         public void ModificarEmail(string email)
         {
             Email = ValidarEmail(email);

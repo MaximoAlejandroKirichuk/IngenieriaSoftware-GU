@@ -24,6 +24,7 @@ namespace Service.Entidades
 
         public override IEnumerable<Patente_83KI> ObtenerPatentes()
         {
+            //Retorna un IEnumerable que contiene un único elemento: la instancia misma de la clase donde está este método.
             yield return this;
         }
     }
