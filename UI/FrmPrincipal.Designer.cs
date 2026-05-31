@@ -35,6 +35,8 @@
             this.cambiarContraseñaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.adminToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gestionDeUsuariosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gestionDeFamiliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gestionDeRolesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bitacoraEventosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
@@ -90,6 +92,8 @@
             // 
             this.adminToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gestionDeUsuariosToolStripMenuItem,
+            this.gestionDeFamiliasToolStripMenuItem,
+            this.gestionDeRolesToolStripMenuItem,
             this.bitacoraEventosToolStripMenuItem});
             this.adminToolStripMenuItem.Name = "adminToolStripMenuItem";
             this.adminToolStripMenuItem.Size = new System.Drawing.Size(114, 41);
@@ -101,6 +105,20 @@
             this.gestionDeUsuariosToolStripMenuItem.Size = new System.Drawing.Size(345, 42);
             this.gestionDeUsuariosToolStripMenuItem.Text = "Gestion de usuarios";
             this.gestionDeUsuariosToolStripMenuItem.Click += new System.EventHandler(this.gestionDeUsuariosToolStripMenuItem_Click);
+            // 
+            // gestionDeFamiliasToolStripMenuItem
+            // 
+            this.gestionDeFamiliasToolStripMenuItem.Name = "gestionDeFamiliasToolStripMenuItem";
+            this.gestionDeFamiliasToolStripMenuItem.Size = new System.Drawing.Size(345, 42);
+            this.gestionDeFamiliasToolStripMenuItem.Text = "Gestion de familias";
+            this.gestionDeFamiliasToolStripMenuItem.Click += new System.EventHandler(this.gestionDeFamiliasToolStripMenuItem_Click);
+            // 
+            // gestionDeRolesToolStripMenuItem
+            // 
+            this.gestionDeRolesToolStripMenuItem.Name = "gestionDeRolesToolStripMenuItem";
+            this.gestionDeRolesToolStripMenuItem.Size = new System.Drawing.Size(345, 42);
+            this.gestionDeRolesToolStripMenuItem.Text = "Gestion de roles";
+            this.gestionDeRolesToolStripMenuItem.Click += new System.EventHandler(this.gestionDeRolesToolStripMenuItem_Click);
             // 
             // bitacoraEventosToolStripMenuItem
             // 
@@ -143,6 +161,8 @@
         private System.Windows.Forms.ToolStripMenuItem iniciarSesionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem adminToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gestionDeUsuariosToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gestionDeFamiliasToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gestionDeRolesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bitacoraEventosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cambiarContraseñaToolStripMenuItem;

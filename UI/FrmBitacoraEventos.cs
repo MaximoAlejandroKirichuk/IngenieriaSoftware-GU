@@ -32,10 +32,42 @@ namespace UI
 
         private void FrmBitacoraEventos_Load(object sender, EventArgs e)
         {
+            AplicarPermisos();
             ConfigurarFechas();
             CargarCombos();
             RestaurarFiltrosIniciales();
-            CargarEventos();
+            if (PermisosUi_83KI.Tiene(PermisoSistema_83KI.ConsultarBitacoraEventos))
+            {
+                CargarEventos();
+            }
+        }
+
+        private void AplicarPermisos()
+        {
+            bool puedeConsultar = PermisosUi_83KI.Tiene(PermisoSistema_83KI.ConsultarBitacoraEventos);
+            bool puedeFiltrar = PermisosUi_83KI.Tiene(PermisoSistema_83KI.FiltrarBitacoraEventos);
+
+            dgvEventos.Visible = puedeConsultar;
+            btnAplicar.Visible = puedeFiltrar;
+            btnLimpiar.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.LimpiarFiltrosBitacora);
+            btnImprimir.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.ExportarBitacoraPdf);
+
+            lblNombre.Visible = puedeFiltrar;
+            txtNombre.Visible = puedeFiltrar;
+            lblApellido.Visible = puedeFiltrar;
+            txtApellido.Visible = puedeFiltrar;
+            lblLogin.Visible = puedeFiltrar;
+            txtLogin.Visible = puedeFiltrar;
+            lblFechaInicio.Visible = puedeFiltrar;
+            dtpFechaInicio.Visible = puedeFiltrar;
+            lblFechaFin.Visible = puedeFiltrar;
+            dtpFechaFin.Visible = puedeFiltrar;
+            lblEvento.Visible = puedeFiltrar;
+            cmbEvento.Visible = puedeFiltrar;
+            lblModulo.Visible = puedeFiltrar;
+            cmbModulo.Visible = puedeFiltrar;
+            lblCriticidad.Visible = puedeFiltrar;
+            cmbCriticidad.Visible = puedeFiltrar;
         }
 
         private void ConfigurarFechas()
@@ -105,9 +137,16 @@ namespace UI
                 return;
             }
 
-            _eventosVisibles.Clear();
-            _eventosVisibles.AddRange(_consultaBitacoraEventos.Consultar(filtro));
-            ActualizarDataGridView();    
+            try
+            {
+                _eventosVisibles.Clear();
+                _eventosVisibles.AddRange(_consultaBitacoraEventos.Consultar(filtro));
+                ActualizarDataGridView();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Bitacora de eventos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private FiltroBitacoraEventos_83KI ObtenerFiltroDesdeUI()

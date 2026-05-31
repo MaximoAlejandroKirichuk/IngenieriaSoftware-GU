@@ -20,8 +20,23 @@ namespace UI
 
         private void FrmGestionUsuarios_Load(object sender, EventArgs e)
         {
-            ActualizarDatos();
+            AplicarPermisos();
+            if (PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerUsuarios))
+            {
+                ActualizarDatos();
+            }
             ActualizarBotonesAccion();
+        }
+
+        private void AplicarPermisos()
+        {
+            PermisosUi_83KI.AplicarVisible(dgvUsuarios, PermisoSistema_83KI.VerUsuarios);
+            PermisosUi_83KI.AplicarVisible(btnCrearUsuario, PermisoSistema_83KI.CrearUsuario);
+            PermisosUi_83KI.AplicarVisible(btnModificarUsuario, PermisoSistema_83KI.ModificarUsuario);
+            PermisosUi_83KI.AplicarVisible(btnDesbloquearUsuario, PermisoSistema_83KI.DesbloquearUsuario);
+            btnCambiarEstadoUsuario.Visible = PermisosUi_83KI.TieneAlguno(
+                PermisoSistema_83KI.HabilitarUsuario,
+                PermisoSistema_83KI.DeshabilitarUsuario);
         }
 
         private void ActualizarDatos()
@@ -34,10 +49,15 @@ namespace UI
         private void ActualizarBotonesAccion()
         {
             Usuario_83KI usuarioSeleccionado = ObtenerUsuarioSeleccionado();
-            bool haySeleccion = usuarioSeleccionado != null;
+            bool haySeleccion = usuarioSeleccionado != null && dgvUsuarios.Visible;
+            bool puedeCambiarEstado = !haySeleccion
+                ? PermisosUi_83KI.TieneAlguno(PermisoSistema_83KI.HabilitarUsuario, PermisoSistema_83KI.DeshabilitarUsuario)
+                : PermisosUi_83KI.Tiene(usuarioSeleccionado.Activo ? PermisoSistema_83KI.DeshabilitarUsuario : PermisoSistema_83KI.HabilitarUsuario);
 
-            btnCambiarEstadoUsuario.Enabled = haySeleccion;
-            btnDesbloquearUsuario.Enabled = haySeleccion && usuarioSeleccionado.Bloqueado;
+            btnModificarUsuario.Enabled = haySeleccion && btnModificarUsuario.Visible;
+            btnCambiarEstadoUsuario.Visible = puedeCambiarEstado;
+            btnCambiarEstadoUsuario.Enabled = haySeleccion && puedeCambiarEstado;
+            btnDesbloquearUsuario.Enabled = haySeleccion && btnDesbloquearUsuario.Visible && usuarioSeleccionado.Bloqueado;
 
             if (!haySeleccion)
             {
