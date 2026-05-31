@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DAL;
 using DAL.interfaces;
+using Service;
 using Service.Entidades;
 using Service.Excepciones;
 using Service.Excepciones.CrearUsuario;
@@ -21,19 +22,21 @@ namespace BLL
         private readonly IEncriptador_83KI _encriptador;
         private readonly ISessionManager_83KI _sessionManager;
         private readonly IBitacoraManager_83KI _bitacora;
+        private readonly IGestorIdioma_83KI _gestorIdioma;
 
         public GestorUsuarioBLL_83KI(IUsuarioDAL_83KI dal, IEncriptador_83KI encriptador, ISessionManager_83KI sessionManager, IBitacoraManager_83KI bitacora)
-            : this(dal, encriptador, sessionManager, bitacora, new RolDAL_83KI())
+            : this(dal, encriptador, sessionManager, bitacora, new RolDAL_83KI(), new GestorIdioma_83KI())
         {
         }
 
-        public GestorUsuarioBLL_83KI(IUsuarioDAL_83KI dal, IEncriptador_83KI encriptador, ISessionManager_83KI sessionManager, IBitacoraManager_83KI bitacora, IRolDAL_83KI rolDal)
+        public GestorUsuarioBLL_83KI(IUsuarioDAL_83KI dal, IEncriptador_83KI encriptador, ISessionManager_83KI sessionManager, IBitacoraManager_83KI bitacora, IRolDAL_83KI rolDal, IGestorIdioma_83KI gestorIdioma)
         {
             _dal = dal;
             _encriptador = encriptador;
             _sessionManager = sessionManager;
             _bitacora = bitacora;
             _rolDal = rolDal;
+            _gestorIdioma = gestorIdioma;
         }
 
         public void Login(string userName, string contrasena)
@@ -75,6 +78,7 @@ namespace BLL
             usuario.AsignarRol(ObtenerRolConPermisos(usuario.Rol));
             _sessionManager.IniciarSesion(usuario);
             ReiniciarIntentosFallidos(usuario);
+            _gestorIdioma.CambiarIdioma(usuario.IdiomaId);
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
                     $"Login exitoso: {usuario.UserName}",
@@ -188,6 +192,16 @@ namespace BLL
         {
             var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
             CambiarContrasena(usuarioActivo.UserName, contrasenaActual, nuevaContrasena);
+        }
+
+        public void CambiarIdiomaUsuarioActual(string idiomaId)
+        {
+            var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
+            _gestorIdioma.CambiarIdioma(idiomaId);
+
+            string idiomaAplicado = _gestorIdioma.IdiomaActual.Id;
+            _dal.ActualizarIdioma(usuarioActivo.DNI, idiomaAplicado);
+            usuarioActivo.CambiarIdioma(idiomaAplicado);
         }
 
         private void CambiarContrasena(string userName, string contrasenaActual, string nuevaContrasena)

@@ -38,6 +38,9 @@
             this.gestionDeFamiliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gestionDeRolesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bitacoraEventosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuIdioma = new System.Windows.Forms.ToolStripMenuItem();
+            this.espanolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inglesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -49,6 +52,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuSesion,
             this.adminToolStripMenuItem,
+            this.menuIdioma,
             this.reToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -127,6 +131,29 @@
             this.bitacoraEventosToolStripMenuItem.Text = "Bitacora eventos";
             this.bitacoraEventosToolStripMenuItem.Click += new System.EventHandler(this.bitacoraEventosToolStripMenuItem_Click);
             // 
+            // menuIdioma
+            // 
+            this.menuIdioma.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.espanolToolStripMenuItem,
+            this.inglesToolStripMenuItem});
+            this.menuIdioma.Name = "menuIdioma";
+            this.menuIdioma.Size = new System.Drawing.Size(118, 41);
+            this.menuIdioma.Text = "Idioma";
+            // 
+            // espanolToolStripMenuItem
+            // 
+            this.espanolToolStripMenuItem.Name = "espanolToolStripMenuItem";
+            this.espanolToolStripMenuItem.Size = new System.Drawing.Size(180, 42);
+            this.espanolToolStripMenuItem.Text = "Español";
+            this.espanolToolStripMenuItem.Click += new System.EventHandler(this.espanolToolStripMenuItem_Click);
+            // 
+            // inglesToolStripMenuItem
+            // 
+            this.inglesToolStripMenuItem.Name = "inglesToolStripMenuItem";
+            this.inglesToolStripMenuItem.Size = new System.Drawing.Size(180, 42);
+            this.inglesToolStripMenuItem.Text = "Inglés";
+            this.inglesToolStripMenuItem.Click += new System.EventHandler(this.inglesToolStripMenuItem_Click);
+            // 
             // reToolStripMenuItem
             // 
             this.reToolStripMenuItem.Name = "reToolStripMenuItem";
@@ -164,6 +191,9 @@
         private System.Windows.Forms.ToolStripMenuItem gestionDeFamiliasToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gestionDeRolesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bitacoraEventosToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuIdioma;
+        private System.Windows.Forms.ToolStripMenuItem espanolToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem inglesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cambiarContraseñaToolStripMenuItem;
     }

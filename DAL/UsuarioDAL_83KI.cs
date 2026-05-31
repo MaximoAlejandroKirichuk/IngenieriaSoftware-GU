@@ -52,8 +52,8 @@ namespace DAL
 
         public void CrearUsuario(Usuario_83KI usuario)
         {
-            string consulta = @"INSERT INTO Usuarios (Username, Nombre, Apellido, DNI, Email, CodigoRol, Contrasena, Activo, Bloqueado, IntentosRealizados, FechaUltimoIntento) 
-                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @codigoRol, @pass, @activo, @bloqueado, @intentosRealizados, @fechaUltimoIntento)";
+            string consulta = @"INSERT INTO Usuarios (Username, Nombre, Apellido, DNI, Email, CodigoRol, Contrasena, Activo, Bloqueado, IntentosRealizados, FechaUltimoIntento, IdiomaId) 
+                        VALUES (@userName ,@nombre, @apellido, @dni, @email, @codigoRol, @pass, @activo, @bloqueado, @intentosRealizados, @fechaUltimoIntento, @idiomaId)";
 
             List<SqlParameter> parametros = new List<SqlParameter>
             {
@@ -67,7 +67,8 @@ namespace DAL
                 new SqlParameter("@activo", usuario.Activo),
                 new SqlParameter("@bloqueado", usuario.Bloqueado),
                 new SqlParameter("@intentosRealizados", usuario.IntentosRealizados),
-                new SqlParameter("@fechaUltimoIntento", (object)usuario.FechaUltimoIntento ?? DBNull.Value)
+                new SqlParameter("@fechaUltimoIntento", (object)usuario.FechaUltimoIntento ?? DBNull.Value),
+                new SqlParameter("@idiomaId", usuario.IdiomaId)
             };
 
             _accesoDAL.Escribir(consulta, parametros);
@@ -95,6 +96,19 @@ namespace DAL
             {
                 new SqlParameter("@dni", usuario.DNI),
                 new SqlParameter("@contrasena", usuario.Contrasena)
+            };
+
+            _accesoDAL.Escribir(consulta, parametros);
+        }
+
+        public void ActualizarIdioma(int dni, string idiomaId)
+        {
+            string consulta = "UPDATE Usuarios SET IdiomaId = @idiomaId WHERE DNI = @dni";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                new SqlParameter("@dni", dni),
+                new SqlParameter("@idiomaId", idiomaId)
             };
 
             _accesoDAL.Escribir(consulta, parametros);
@@ -265,6 +279,7 @@ namespace DAL
                             u.Bloqueado,
                             u.IntentosRealizados,
                             u.FechaUltimoIntento,
+                            u.IdiomaId,
                             u.CodigoRol,
                             r.Nombre AS NombreRol
                      FROM Usuarios u
@@ -292,6 +307,7 @@ namespace DAL
                 MapearRolDesdeUsuario(row),
                 Convert.ToBoolean(row["Activo"]),
                 Convert.ToBoolean(row["Bloqueado"]),
+                ObtenerTexto(row, "IdiomaId"),
                 ObtenerEntero(row, "IntentosRealizados"),
                 ObtenerFechaNullable(row, "FechaUltimoIntento")
             );
