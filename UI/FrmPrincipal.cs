@@ -1,4 +1,5 @@
 ﻿using Service;
+using Service.Entidades;
 using Service.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -21,15 +22,23 @@ namespace UI
         public FrmPrincipal(IGestorUsuario_83KI gestorUsuario, IGestorRol_83KI gestorRol)
         {
             InitializeComponent();
-            AplicarPermisos();
             _gestorUsuario = gestorUsuario;
             _gestorRol = gestorRol;
+            AplicarPermisos();
         }
 
         private void AplicarPermisos()
         {
-            var usuario = SessionManager_83KI.Instancia.UsuarioActivo;
-            adminToolStripMenuItem.Visible = usuario.Rol.PuedeGestionarAdmin;
+            gestionDeUsuariosToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionUsuarios);
+            gestionDeFamiliasToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionFamilias);
+            gestionDeRolesToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionRoles);
+            bitacoraEventosToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.ConsultarBitacoraEventos);
+            adminToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionAdmin); 
+
+            menuCerrarSesion.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.CerrarSesion);
+            iniciarSesionToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.ReLogin);
+            cambiarContraseñaToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.CambiarContrasena);
+            reToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.Ayuda);
         }
         private void menuCerrarSesion_Click(object sender, EventArgs e)
         {
