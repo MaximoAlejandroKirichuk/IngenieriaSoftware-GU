@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using DAL;
 using DAL.interfaces;
 using Service.Entidades;
 using Service.Excepciones;
@@ -15,16 +17,23 @@ namespace BLL
         private const int MinutosParaReiniciarIntentos = 30;
 
         private readonly IUsuarioDAL_83KI _dal;
+        private readonly IRolDAL_83KI _rolDal;
         private readonly IEncriptador_83KI _encriptador;
         private readonly ISessionManager_83KI _sessionManager;
         private readonly IBitacoraManager_83KI _bitacora;
 
         public GestorUsuarioBLL_83KI(IUsuarioDAL_83KI dal, IEncriptador_83KI encriptador, ISessionManager_83KI sessionManager, IBitacoraManager_83KI bitacora)
+            : this(dal, encriptador, sessionManager, bitacora, new RolDAL_83KI())
+        {
+        }
+
+        public GestorUsuarioBLL_83KI(IUsuarioDAL_83KI dal, IEncriptador_83KI encriptador, ISessionManager_83KI sessionManager, IBitacoraManager_83KI bitacora, IRolDAL_83KI rolDal)
         {
             _dal = dal;
             _encriptador = encriptador;
             _sessionManager = sessionManager;
             _bitacora = bitacora;
+            _rolDal = rolDal;
         }
 
         public void Login(string userName, string contrasena)
@@ -63,6 +72,7 @@ namespace BLL
                 throw new ContrasenaInvalidaException_83KI($"Intento {usuario.IntentosRealizados} de {IntentosPermitidos}.");
             }
 
+            usuario.AsignarRol(ObtenerRolConPermisos(usuario.Rol));
             _sessionManager.IniciarSesion(usuario);
             ReiniciarIntentosFallidos(usuario);
             _bitacora.RegistrarEvento(
@@ -73,6 +83,19 @@ namespace BLL
                     userName
                 )
             );
+        }
+
+        private Rol_83KI ObtenerRolConPermisos(Rol_83KI rol)
+        {
+            Rol_83KI rolConPermisos = _rolDal.ObtenerRolesConPermisos()
+                .FirstOrDefault(r => r.CodigoRol == rol.CodigoRol);
+
+            if (rolConPermisos == null)
+            {
+                throw new InvalidOperationException("El rol del usuario no existe o no pudo cargarse con permisos.");
+            }
+
+            return rolConPermisos;
         }
 
         private void ReiniciarIntentosSiCorresponde(Usuario_83KI usuario)
@@ -140,6 +163,8 @@ namespace BLL
 
         public void BloquearUsuarioPorUserName(string userName)
         {
+            ValidarPermiso(PermisoSistema_83KI.BloquearUsuario);
+
             var usuario = _dal.ObtenerPorUserName(userName) ?? throw new UsuarioNoExisteException_83KI();
 
             if (usuario.Bloqueado)
@@ -196,11 +221,7 @@ namespace BLL
         public void ModificarUsuario(int dni, string email, Rol_83KI rol)
         {
             var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
-
-            if (!usuarioActivo.Rol.EsAdministrador)
-            {
-                throw new InvalidOperationException("Solo un administrador puede modificar usuarios.");
-            }
+            ValidarPermiso(PermisoSistema_83KI.ModificarUsuario);
 
             var usuarioModificado = _dal.ObtenerPorDni(dni) ?? throw new UsuarioNoExisteException_83KI();
             usuarioModificado.ModificarEmailYRol(email, rol);
@@ -235,6 +256,8 @@ namespace BLL
 
         public void CrearUsuario(string nombre, string apellido, int dni, string email, Rol_83KI rol)
         {
+            ValidarPermiso(PermisoSistema_83KI.CrearUsuario);
+
             if (_dal.ExisteDni(dni))
             {
                 throw new DniRegistradoException_83KI();
@@ -269,6 +292,8 @@ namespace BLL
 
         public void DesbloquearCuenta(int dni)
         {
+            ValidarPermiso(PermisoSistema_83KI.DesbloquearUsuario);
+
             var usuario = _dal.ObtenerPorDni(dni) ?? throw new UsuarioNoExisteException_83KI();
             string contrasenaPorDefecto = Usuario_83KI.EstablecerContrasenaPorDefecto(usuario.Apellido, usuario.DNI);
             usuario.Desbloquear(_encriptador.HashContrasena(contrasenaPorDefecto));
@@ -297,11 +322,7 @@ namespace BLL
         {
             //ACA VALIDO QUE NO ME PUEDO DESHABILITAR A MI MISMO.
             var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
-
-            if (!usuarioActivo.Rol.EsAdministrador)
-            {
-                throw new InvalidOperationException("Solo un administrador puede gestionar usuarios.");
-            }
+            ValidarPermiso(activo ? PermisoSistema_83KI.HabilitarUsuario : PermisoSistema_83KI.DeshabilitarUsuario);
 
             if (usuarioActivo.DNI == dni && !activo)
             {
@@ -340,6 +361,14 @@ namespace BLL
                     usuarioActivo.UserName
                 )
             );
+        }
+
+        private void ValidarPermiso(PermisoSistema_83KI permiso)
+        {
+            if (!_sessionManager.TienePermiso(permiso))
+            {
+                throw new InvalidOperationException("No tiene permisos para realizar esta accion.");
+            }
         }
 
     }

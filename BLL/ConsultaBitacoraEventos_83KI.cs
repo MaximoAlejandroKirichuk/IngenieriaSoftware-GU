@@ -1,4 +1,5 @@
 using Service.DTOs;
+using Service;
 using Service.Entidades;
 using Service.Interfaces;
 using System;
@@ -11,15 +12,24 @@ namespace BLL
     {
         private readonly IGestorUsuario_83KI _gestorUsuario;
         private readonly IBitacoraManager_83KI _bitacoraManager;
+        private readonly ISessionManager_83KI _sessionManager;
 
         public ConsultaBitacoraEventos_83KI(IGestorUsuario_83KI gestorUsuario, IBitacoraManager_83KI bitacoraManager)
+            : this(gestorUsuario, bitacoraManager, SessionManager_83KI.Instancia)
+        {
+        }
+
+        public ConsultaBitacoraEventos_83KI(IGestorUsuario_83KI gestorUsuario, IBitacoraManager_83KI bitacoraManager, ISessionManager_83KI sessionManager)
         {
             _gestorUsuario = gestorUsuario;
             _bitacoraManager = bitacoraManager;
+            _sessionManager = sessionManager;
         }
 
         public IEnumerable<BitacoraEventoVista_83KI> Consultar(FiltroBitacoraEventos_83KI filtro)
         {
+            ValidarPermiso(PermisoSistema_83KI.ConsultarBitacoraEventos);
+
             if (filtro == null)
             {
                 throw new ArgumentNullException(nameof(filtro));
@@ -69,6 +79,14 @@ namespace BLL
             }
 
             return (valor ?? string.Empty).IndexOf(filtro.Trim(), StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private void ValidarPermiso(PermisoSistema_83KI permiso)
+        {
+            if (!_sessionManager.TienePermiso(permiso))
+            {
+                throw new InvalidOperationException("No tiene permisos para realizar esta accion.");
+            }
         }
     }
 }

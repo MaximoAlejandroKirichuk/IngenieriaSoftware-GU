@@ -33,5 +33,21 @@ namespace Service
         {
             UsuarioActivo = null;
         }
+
+        public IEnumerable<Patente_83KI> ObtenerPermisos()
+        {
+            if (UsuarioActivo == null || UsuarioActivo.Rol == null)
+            {
+                return Enumerable.Empty<Patente_83KI>();
+            }
+
+            return UsuarioActivo.Rol.ObtenerPatentes().ToList();
+        }
+
+        public bool TienePermiso(PermisoSistema_83KI permiso)
+        {
+            int codigoPermiso = (int)permiso;
+            return ObtenerPermisos().Any(p => p.CodigoPatente == codigoPermiso);
+        }
     }
 }

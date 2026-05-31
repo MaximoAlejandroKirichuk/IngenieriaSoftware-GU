@@ -1,4 +1,5 @@
 using DAL.interfaces;
+using Service;
 using Service.Entidades;
 using Service.Interfaces;
 using System;
@@ -10,10 +11,17 @@ namespace BLL
     internal class GestorRolBLL_83KI : IGestorRol_83KI
     {
         private readonly IRolDAL_83KI _rolDal;
+        private readonly ISessionManager_83KI _sessionManager;
 
         public GestorRolBLL_83KI(IRolDAL_83KI rolDal)
+            : this(rolDal, SessionManager_83KI.Instancia)
+        {
+        }
+
+        public GestorRolBLL_83KI(IRolDAL_83KI rolDal, ISessionManager_83KI sessionManager)
         {
             _rolDal = rolDal;
+            _sessionManager = sessionManager;
         }
 
         public IEnumerable<Rol_83KI> ObtenerRoles()
@@ -38,6 +46,8 @@ namespace BLL
 
         public Familia_83KI CrearFamilia(string nombre)
         {
+            ValidarPermiso(PermisoSistema_83KI.CrearFamilia);
+
             string nombreNormalizado = ValidarNombre(nombre);
 
             if (_rolDal.ObtenerFamilias().Any(f => string.Equals(f.Nombre, nombreNormalizado, StringComparison.OrdinalIgnoreCase)))
@@ -50,6 +60,8 @@ namespace BLL
 
         public void EliminarFamilia(int codigoFamilia)
         {
+            ValidarPermiso(PermisoSistema_83KI.EliminarFamilia);
+
             if (_rolDal.FamiliaTieneDependencias(codigoFamilia))
             {
                 throw new InvalidOperationException("No se puede eliminar la familia porque tiene dependencias.");
@@ -60,6 +72,8 @@ namespace BLL
 
         public void AsignarPatenteAFamilia(int codigoFamilia, int codigoPatente)
         {
+            ValidarPermiso(PermisoSistema_83KI.AgregarPatenteFamilia);
+
             Familia_83KI familia = ObtenerFamilia(codigoFamilia);
             Patente_83KI patente = ObtenerPatente(codigoPatente);
             familia.Agregar(patente);
@@ -68,11 +82,14 @@ namespace BLL
 
         public void QuitarPatenteDeFamilia(int codigoFamilia, int codigoPatente)
         {
+            ValidarPermiso(PermisoSistema_83KI.QuitarPatenteFamilia);
             _rolDal.QuitarPatenteDeFamilia(codigoFamilia, codigoPatente);
         }
 
         public void AsignarFamiliaAFamilia(int codigoFamiliaPadre, int codigoFamiliaHija)
         {
+            ValidarPermiso(PermisoSistema_83KI.AgregarSubfamilia);
+
             Familia_83KI familiaPadre = ObtenerFamilia(codigoFamiliaPadre);
             Familia_83KI familiaHija = ObtenerFamilia(codigoFamiliaHija);
             familiaPadre.Agregar(familiaHija);
@@ -81,11 +98,14 @@ namespace BLL
 
         public void QuitarFamiliaDeFamilia(int codigoFamiliaPadre, int codigoFamiliaHija)
         {
+            ValidarPermiso(PermisoSistema_83KI.QuitarSubfamilia);
             _rolDal.QuitarFamiliaDeFamilia(codigoFamiliaPadre, codigoFamiliaHija);
         }
 
         public void AsignarPatenteARol(int codigoRol, int codigoPatente)
         {
+            ValidarPermiso(PermisoSistema_83KI.AsignarPatenteRol);
+
             Rol_83KI rol = ObtenerRol(codigoRol);
             Patente_83KI patente = ObtenerPatente(codigoPatente);
             rol.Agregar(patente);
@@ -94,11 +114,14 @@ namespace BLL
 
         public void QuitarPatenteDeRol(int codigoRol, int codigoPatente)
         {
+            ValidarPermiso(PermisoSistema_83KI.QuitarPatenteRol);
             _rolDal.QuitarPatenteDeRol(codigoRol, codigoPatente);
         }
 
         public void AsignarFamiliaARol(int codigoRol, int codigoFamilia)
         {
+            ValidarPermiso(PermisoSistema_83KI.AgregarFamiliaRol);
+
             Rol_83KI rol = ObtenerRol(codigoRol);
             Familia_83KI familia = ObtenerFamilia(codigoFamilia);
             rol.Agregar(familia);
@@ -107,6 +130,7 @@ namespace BLL
 
         public void QuitarFamiliaDeRol(int codigoRol, int codigoFamilia)
         {
+            ValidarPermiso(PermisoSistema_83KI.QuitarFamiliaRol);
             _rolDal.QuitarFamiliaDeRol(codigoRol, codigoFamilia);
         }
 
@@ -154,6 +178,14 @@ namespace BLL
             }
 
             return patente;
+        }
+
+        private void ValidarPermiso(PermisoSistema_83KI permiso)
+        {
+            if (!_sessionManager.TienePermiso(permiso))
+            {
+                throw new InvalidOperationException("No tiene permisos para realizar esta accion.");
+            }
         }
     }
 }
