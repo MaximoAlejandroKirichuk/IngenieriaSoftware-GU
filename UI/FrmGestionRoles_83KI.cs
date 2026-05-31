@@ -18,11 +18,37 @@ namespace UI
 
         private void FrmGestionRoles_83KI_Load(object sender, EventArgs e)
         {
+            AplicarPermisos();
             CargarDatos();
+        }
+
+        private void AplicarPermisos()
+        {
+            bool puedeVerRoles = PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerRoles);
+            bool puedeVerPermisosEfectivos = PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerPermisosEfectivosRol);
+            bool puedeAgregarFamilia = PermisosUi_83KI.Tiene(PermisoSistema_83KI.AgregarFamiliaRol);
+
+            lblRoles.Visible = puedeVerRoles;
+            lstRoles.Visible = puedeVerRoles;
+            lblFamiliasRol.Visible = puedeVerRoles;
+            lstFamiliasRol.Visible = puedeVerRoles;
+            lblPatentesFamilia.Visible = puedeVerPermisosEfectivos;
+            lstPatentesFamilia.Visible = puedeVerPermisosEfectivos;
+            cmbFamiliasDisponibles.Visible = puedeAgregarFamilia;
+            btnAgregarFamilia.Visible = puedeAgregarFamilia;
+            btnQuitarFamilia.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarFamiliaRol);
         }
 
         private void CargarDatos()
         {
+            if (!PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerRoles))
+            {
+                lstRoles.DataSource = null;
+                lstFamiliasRol.DataSource = null;
+                lstPatentesFamilia.DataSource = null;
+                return;
+            }
+
             lstRoles.DataSource = null;
             lstRoles.DisplayMember = nameof(Rol_83KI.Nombre);
             lstRoles.ValueMember = nameof(Rol_83KI.CodigoRol);
@@ -67,6 +93,12 @@ namespace UI
 
         private void CargarPatentesDeFamilia()
         {
+            if (!PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerPermisosEfectivosRol))
+            {
+                lstPatentesFamilia.DataSource = null;
+                return;
+            }
+
             Familia_83KI familia = ObtenerFamiliaSeleccionada();
             lstPatentesFamilia.DataSource = null;
             lstPatentesFamilia.DisplayMember = nameof(Patente_83KI.Nombre);

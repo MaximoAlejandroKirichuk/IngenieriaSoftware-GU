@@ -19,7 +19,8 @@ namespace UI
 
         private void FrmGestionFamilias_83KI_Load(object sender, EventArgs e)
         {
-            rdbSeleccionarFamilia.Checked = true;
+            rdbSeleccionarFamilia.Checked = PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerFamilias);
+            rdbCrearFamilia.Checked = !rdbSeleccionarFamilia.Checked && PermisosUi_83KI.Tiene(PermisoSistema_83KI.CrearFamilia);
             CargarDatos();
             ActualizarModoFamilia();
             ActualizarBotonQuitar();
@@ -67,6 +68,13 @@ namespace UI
         private void CargarArbolFamilia()
         {
             treeFamilia.Nodes.Clear();
+
+            if (!PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerFamilias))
+            {
+                ActualizarBotonQuitar();
+                return;
+            }
+
             Familia_83KI familia = ObtenerFamiliaSeleccionada();
 
             if (familia == null)
@@ -209,28 +217,41 @@ namespace UI
 
         private void ActualizarModoFamilia()
         {
-            bool seleccionarExistente = rdbSeleccionarFamilia.Checked;
+            bool puedeVerFamilias = PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerFamilias);
+            bool puedeCrearFamilia = PermisosUi_83KI.Tiene(PermisoSistema_83KI.CrearFamilia);
+            bool puedeAgregarPatente = PermisosUi_83KI.Tiene(PermisoSistema_83KI.AgregarPatenteFamilia);
+            bool puedeAgregarSubfamilia = PermisosUi_83KI.Tiene(PermisoSistema_83KI.AgregarSubfamilia);
+            bool seleccionarExistente = rdbSeleccionarFamilia.Checked && puedeVerFamilias;
+            bool crearFamilia = rdbCrearFamilia.Checked && puedeCrearFamilia;
 
+            rdbSeleccionarFamilia.Visible = puedeVerFamilias;
+            rdbCrearFamilia.Visible = puedeCrearFamilia;
+            lblFamilia.Visible = seleccionarExistente || crearFamilia;
             cmbFamilias.Visible = seleccionarExistente;
-            btnEliminarFamilia.Visible = seleccionarExistente;
+            btnEliminarFamilia.Visible = seleccionarExistente && PermisosUi_83KI.Tiene(PermisoSistema_83KI.EliminarFamilia);
             treeFamilia.Visible = seleccionarExistente;
-            btnQuitarSeleccion.Visible = seleccionarExistente;
-            lblPatentes.Visible = seleccionarExistente;
-            lstPatentesDisponibles.Visible = seleccionarExistente;
-            btnAgregarPatente.Visible = seleccionarExistente;
-            lblFamiliasDisponibles.Visible = seleccionarExistente;
-            cmbFamiliasDisponibles.Visible = seleccionarExistente;
-            btnAgregarFamilia.Visible = seleccionarExistente;
-            btnAgregarPatente.Enabled = seleccionarExistente;
+            btnQuitarSeleccion.Visible = seleccionarExistente && PermisosUi_83KI.TieneAlguno(
+                PermisoSistema_83KI.QuitarPatenteFamilia,
+                PermisoSistema_83KI.QuitarSubfamilia);
+            lblPatentes.Visible = seleccionarExistente && puedeAgregarPatente;
+            lstPatentesDisponibles.Visible = seleccionarExistente && puedeAgregarPatente;
+            btnAgregarPatente.Visible = seleccionarExistente && puedeAgregarPatente;
+            lblFamiliasDisponibles.Visible = seleccionarExistente && puedeAgregarSubfamilia;
+            cmbFamiliasDisponibles.Visible = seleccionarExistente && puedeAgregarSubfamilia;
+            btnAgregarFamilia.Visible = seleccionarExistente && puedeAgregarSubfamilia;
+            btnAgregarPatente.Enabled = seleccionarExistente && puedeAgregarPatente;
 
-            txtNombreFamilia.Visible = !seleccionarExistente;
-            btnCrearFamilia.Visible = !seleccionarExistente;
+            txtNombreFamilia.Visible = crearFamilia;
+            btnCrearFamilia.Visible = crearFamilia;
             lblFamilia.Text = seleccionarExistente ? "Familia existente" : "Nombre de la nueva familia";
 
             if (!seleccionarExistente)
             {
                 treeFamilia.Nodes.Clear();
-                txtNombreFamilia.Focus();
+                if (crearFamilia)
+                {
+                    txtNombreFamilia.Focus();
+                }
             }
             else
             {
@@ -240,6 +261,9 @@ namespace UI
 
         private void ActualizarBotonQuitar()
         {
+            btnQuitarSeleccion.Visible = rdbSeleccionarFamilia.Checked && PermisosUi_83KI.TieneAlguno(
+                PermisoSistema_83KI.QuitarPatenteFamilia,
+                PermisoSistema_83KI.QuitarSubfamilia);
             btnQuitarSeleccion.Enabled = false;
             btnQuitarSeleccion.Text = "Seleccionar permiso o subfamilia";
 
@@ -250,13 +274,15 @@ namespace UI
 
             if (treeFamilia.SelectedNode.Tag is Patente_83KI)
             {
+                btnQuitarSeleccion.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarPatenteFamilia);
                 btnQuitarSeleccion.Text = "Quitar patente";
-                btnQuitarSeleccion.Enabled = true;
+                btnQuitarSeleccion.Enabled = btnQuitarSeleccion.Visible;
             }
             else if (treeFamilia.SelectedNode.Tag is Familia_83KI)
             {
+                btnQuitarSeleccion.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarSubfamilia);
                 btnQuitarSeleccion.Text = "Quitar subfamilia";
-                btnQuitarSeleccion.Enabled = true;
+                btnQuitarSeleccion.Enabled = btnQuitarSeleccion.Visible;
             }
         }
 

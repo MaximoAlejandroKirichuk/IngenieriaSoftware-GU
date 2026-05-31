@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Exportacion\BitacoraEventosPdfExporter_83KI.cs" />
     <Compile Include="Exportacion\IBitacoraEventosExporter_83KI.cs" />
+    <Compile Include="PermisosUi_83KI.cs" />
     <Compile Include="FrmConfirmarEstadoUsuario.cs">
       <SubType>Form</SubType>
     </Compile>
