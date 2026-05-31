@@ -27,16 +27,25 @@ namespace UI
             bool puedeVerRoles = PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerRoles);
             bool puedeVerPermisosEfectivos = PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerPermisosEfectivosRol);
             bool puedeAgregarFamilia = PermisosUi_83KI.Tiene(PermisoSistema_83KI.AgregarFamiliaRol);
+            bool puedeAsignarPatente = PermisosUi_83KI.Tiene(PermisoSistema_83KI.AsignarPatenteRol);
+            bool puedeGestionarRoles = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionRoles);
 
             lblRoles.Visible = puedeVerRoles;
             lstRoles.Visible = puedeVerRoles;
+            txtNombreRol.Visible = puedeGestionarRoles;
+            btnCrearRol.Visible = puedeGestionarRoles;
             lblFamiliasRol.Visible = puedeVerRoles;
             lstFamiliasRol.Visible = puedeVerRoles;
             lblPatentesFamilia.Visible = puedeVerPermisosEfectivos;
-            lstPatentesFamilia.Visible = puedeVerPermisosEfectivos;
+            treeContenidoFamilia.Visible = puedeVerPermisosEfectivos;
+            lblPatentesRol.Visible = puedeVerPermisosEfectivos;
+            lstPatentesRol.Visible = puedeVerPermisosEfectivos;
             cmbFamiliasDisponibles.Visible = puedeAgregarFamilia;
             btnAgregarFamilia.Visible = puedeAgregarFamilia;
             btnQuitarFamilia.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarFamiliaRol);
+            cmbPatentesDisponibles.Visible = puedeAsignarPatente;
+            btnAsignarPatente.Visible = puedeAsignarPatente;
+            btnQuitarPatente.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarPatenteRol);
         }
 
         private void CargarDatos()
@@ -45,7 +54,8 @@ namespace UI
             {
                 lstRoles.DataSource = null;
                 lstFamiliasRol.DataSource = null;
-                lstPatentesFamilia.DataSource = null;
+                treeContenidoFamilia.Nodes.Clear();
+                lstPatentesRol.DataSource = null;
                 return;
             }
 
@@ -55,6 +65,7 @@ namespace UI
             lstRoles.DataSource = _gestorRol.ObtenerRolesConPermisos().ToList();
 
             CargarFamiliasDisponibles();
+            CargarPatentesDisponibles();
             CargarFamiliasDelRol();
         }
 
@@ -68,14 +79,20 @@ namespace UI
             return lstFamiliasRol.SelectedItem as Familia_83KI;
         }
 
+        private Patente_83KI ObtenerPatenteSeleccionadaDelRol()
+        {
+            return lstPatentesRol.SelectedItem as Patente_83KI;
+        }
+
         private void lstRoles_SelectedIndexChanged(object sender, EventArgs e)
         {
             CargarFamiliasDelRol();
+            CargarPatentesDelRol();
         }
 
         private void lstFamiliasRol_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CargarPatentesDeFamilia();
+            CargarContenidoFamilia();
         }
 
         private void CargarFamiliasDelRol()
@@ -88,24 +105,58 @@ namespace UI
                 ? null
                 : rol.Hijos.OfType<Familia_83KI>().OrderBy(f => f.Nombre).ToList();
 
-            CargarPatentesDeFamilia();
+            CargarContenidoFamilia();
+            CargarPatentesDelRol();
         }
 
-        private void CargarPatentesDeFamilia()
+        private void CargarPatentesDelRol()
         {
+            lstPatentesRol.DataSource = null;
+
             if (!PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerPermisosEfectivosRol))
             {
-                lstPatentesFamilia.DataSource = null;
+                return;
+            }
+
+            Rol_83KI rol = ObtenerRolSeleccionado();
+            lstPatentesRol.DisplayMember = nameof(Patente_83KI.Nombre);
+            lstPatentesRol.ValueMember = nameof(Patente_83KI.CodigoPatente);
+            lstPatentesRol.DataSource = rol == null
+                ? null
+                : rol.ObtenerPatentes().OrderBy(p => p.Nombre).ToList();
+        }
+
+        private void CargarContenidoFamilia()
+        {
+            treeContenidoFamilia.Nodes.Clear();
+
+            if (!PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerPermisosEfectivosRol))
+            {
                 return;
             }
 
             Familia_83KI familia = ObtenerFamiliaSeleccionada();
-            lstPatentesFamilia.DataSource = null;
-            lstPatentesFamilia.DisplayMember = nameof(Patente_83KI.Nombre);
-            lstPatentesFamilia.ValueMember = nameof(Patente_83KI.CodigoPatente);
-            lstPatentesFamilia.DataSource = familia == null
-                ? null
-                : familia.ObtenerPatentes().OrderBy(p => p.Nombre).ToList();
+
+            if (familia == null)
+            {
+                return;
+            }
+
+            TreeNode raiz = CrearNodo(familia);
+            treeContenidoFamilia.Nodes.Add(raiz);
+            raiz.ExpandAll();
+        }
+
+        private TreeNode CrearNodo(ComponentePermiso_83KI componente)
+        {
+            TreeNode nodo = new TreeNode(componente.Nombre) { Tag = componente };
+
+            foreach (ComponentePermiso_83KI hijo in componente.Hijos.OrderBy(h => h.Nombre))
+            {
+                nodo.Nodes.Add(CrearNodo(hijo));
+            }
+
+            return nodo;
         }
 
         private void CargarFamiliasDisponibles()
@@ -114,6 +165,25 @@ namespace UI
             cmbFamiliasDisponibles.DisplayMember = nameof(Familia_83KI.Nombre);
             cmbFamiliasDisponibles.ValueMember = nameof(Familia_83KI.CodigoFamilia);
             cmbFamiliasDisponibles.DataSource = _gestorRol.ObtenerFamilias().ToList();
+        }
+
+        private void CargarPatentesDisponibles()
+        {
+            cmbPatentesDisponibles.DataSource = null;
+            cmbPatentesDisponibles.DisplayMember = nameof(Patente_83KI.Nombre);
+            cmbPatentesDisponibles.ValueMember = nameof(Patente_83KI.CodigoPatente);
+            cmbPatentesDisponibles.DataSource = _gestorRol.ObtenerPatentes().ToList();
+        }
+
+        private void btnCrearRol_Click(object sender, EventArgs e)
+        {
+            string nombre = txtNombreRol.Text.Trim();
+
+            EjecutarOperacion(() =>
+            {
+                _gestorRol.CrearRol(nombre);
+                txtNombreRol.Clear();
+            });
         }
 
         private void btnAgregarFamilia_Click(object sender, EventArgs e)
@@ -127,6 +197,45 @@ namespace UI
             }
 
             EjecutarOperacion(() => _gestorRol.AsignarFamiliaARol(rol.CodigoRol, familia.CodigoFamilia));
+        }
+
+        private void btnAsignarPatente_Click(object sender, EventArgs e)
+        {
+            Rol_83KI rol = ObtenerRolSeleccionado();
+            Patente_83KI patente = cmbPatentesDisponibles.SelectedItem as Patente_83KI;
+
+            if (rol == null || patente == null)
+            {
+                return;
+            }
+
+            EjecutarOperacion(() => _gestorRol.AsignarPatenteARol(rol.CodigoRol, patente.CodigoPatente));
+        }
+
+        private void btnQuitarPatente_Click(object sender, EventArgs e)
+        {
+            Rol_83KI rol = ObtenerRolSeleccionado();
+            Patente_83KI patente = ObtenerPatenteSeleccionadaDelRol();
+
+            if (rol == null || patente == null)
+            {
+                return;
+            }
+
+            bool patenteDirecta = rol.Hijos.OfType<Patente_83KI>()
+                .Any(p => p.CodigoPatente == patente.CodigoPatente);
+
+            if (!patenteDirecta)
+            {
+                MessageBox.Show(
+                    "La patente seleccionada pertenece a una familia del rol. Para quitarla, quite la familia o modifique su contenido.",
+                    "Gestion de roles",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            EjecutarOperacion(() => _gestorRol.QuitarPatenteDeRol(rol.CodigoRol, patente.CodigoPatente));
         }
 
         private void btnQuitarFamilia_Click(object sender, EventArgs e)

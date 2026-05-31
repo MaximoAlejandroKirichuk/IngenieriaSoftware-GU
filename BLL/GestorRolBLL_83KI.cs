@@ -44,6 +44,20 @@ namespace BLL
             return _rolDal.ObtenerPatentes();
         }
 
+        public Rol_83KI CrearRol(string nombre)
+        {
+            ValidarPermiso(PermisoSistema_83KI.GestionRoles);
+
+            string nombreNormalizado = ValidarNombre(nombre);
+
+            if (_rolDal.ObtenerRoles().Any(r => string.Equals(r.Nombre, nombreNormalizado, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new InvalidOperationException("Ya existe un rol con ese nombre.");
+            }
+
+            return _rolDal.CrearRol(nombreNormalizado);
+        }
+
         public Familia_83KI CrearFamilia(string nombre)
         {
             ValidarPermiso(PermisoSistema_83KI.CrearFamilia);

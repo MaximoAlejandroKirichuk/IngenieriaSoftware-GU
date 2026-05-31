@@ -79,6 +79,26 @@ namespace DAL
             return patentes;
         }
 
+        public Rol_83KI CrearRol(string nombre)
+        {
+            string consulta = @"DECLARE @codigoRol int;
+
+                                IF COLUMNPROPERTY(OBJECT_ID('Roles'), 'CodigoRol', 'IsIdentity') = 1
+                                BEGIN
+                                    INSERT INTO Roles (Nombre) VALUES (@nombre);
+                                    SET @codigoRol = CAST(SCOPE_IDENTITY() AS int);
+                                END
+                                ELSE
+                                BEGIN
+                                    SELECT @codigoRol = ISNULL(MAX(CodigoRol), 0) + 1 FROM Roles;
+                                    INSERT INTO Roles (CodigoRol, Nombre) VALUES (@codigoRol, @nombre);
+                                END
+
+                                SELECT @codigoRol;";
+            object codigo = _accesoDAL.LeerEscalar(consulta, new List<SqlParameter> { new SqlParameter("@nombre", nombre) });
+            return new Rol_83KI(Convert.ToInt32(codigo), nombre);
+        }
+
         public Familia_83KI CrearFamilia(string nombre)
         {
             string consulta = "INSERT INTO Familias (Nombre) VALUES (@nombre); SELECT CAST(SCOPE_IDENTITY() AS int);";

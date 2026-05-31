@@ -20,10 +20,17 @@ namespace UI
             this.lblFamiliasRol = new System.Windows.Forms.Label();
             this.lstFamiliasRol = new System.Windows.Forms.ListBox();
             this.lblPatentesFamilia = new System.Windows.Forms.Label();
-            this.lstPatentesFamilia = new System.Windows.Forms.ListBox();
+            this.treeContenidoFamilia = new System.Windows.Forms.TreeView();
             this.cmbFamiliasDisponibles = new System.Windows.Forms.ComboBox();
             this.btnAgregarFamilia = new System.Windows.Forms.Button();
             this.btnQuitarFamilia = new System.Windows.Forms.Button();
+            this.txtNombreRol = new System.Windows.Forms.TextBox();
+            this.btnCrearRol = new System.Windows.Forms.Button();
+            this.cmbPatentesDisponibles = new System.Windows.Forms.ComboBox();
+            this.btnAsignarPatente = new System.Windows.Forms.Button();
+            this.lblPatentesRol = new System.Windows.Forms.Label();
+            this.lstPatentesRol = new System.Windows.Forms.ListBox();
+            this.btnQuitarPatente = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lblRoles
@@ -41,7 +48,7 @@ namespace UI
             this.lstRoles.ItemHeight = 21;
             this.lstRoles.Location = new System.Drawing.Point(28, 52);
             this.lstRoles.Name = "lstRoles";
-            this.lstRoles.Size = new System.Drawing.Size(220, 382);
+            this.lstRoles.Size = new System.Drawing.Size(220, 298);
             this.lstRoles.TabIndex = 1;
             this.lstRoles.SelectedIndexChanged += new System.EventHandler(this.lstRoles_SelectedIndexChanged);
             // 
@@ -69,18 +76,16 @@ namespace UI
             this.lblPatentesFamilia.AutoSize = true;
             this.lblPatentesFamilia.Location = new System.Drawing.Point(568, 24);
             this.lblPatentesFamilia.Name = "lblPatentesFamilia";
-            this.lblPatentesFamilia.Size = new System.Drawing.Size(148, 21);
+            this.lblPatentesFamilia.Size = new System.Drawing.Size(170, 21);
             this.lblPatentesFamilia.TabIndex = 4;
-            this.lblPatentesFamilia.Text = "Permisos efectivos";
+            this.lblPatentesFamilia.Text = "Contenido de la familia";
             // 
-            // lstPatentesFamilia
+            // treeContenidoFamilia
             // 
-            this.lstPatentesFamilia.FormattingEnabled = true;
-            this.lstPatentesFamilia.ItemHeight = 21;
-            this.lstPatentesFamilia.Location = new System.Drawing.Point(572, 52);
-            this.lstPatentesFamilia.Name = "lstPatentesFamilia";
-            this.lstPatentesFamilia.Size = new System.Drawing.Size(240, 382);
-            this.lstPatentesFamilia.TabIndex = 5;
+            this.treeContenidoFamilia.Location = new System.Drawing.Point(572, 52);
+            this.treeContenidoFamilia.Name = "treeContenidoFamilia";
+            this.treeContenidoFamilia.Size = new System.Drawing.Size(240, 298);
+            this.treeContenidoFamilia.TabIndex = 5;
             // 
             // cmbFamiliasDisponibles
             // 
@@ -111,16 +116,87 @@ namespace UI
             this.btnQuitarFamilia.UseVisualStyleBackColor = true;
             this.btnQuitarFamilia.Click += new System.EventHandler(this.btnQuitarFamilia_Click);
             // 
+            // txtNombreRol
+            // 
+            this.txtNombreRol.Location = new System.Drawing.Point(28, 366);
+            this.txtNombreRol.Name = "txtNombreRol";
+            this.txtNombreRol.Size = new System.Drawing.Size(220, 29);
+            this.txtNombreRol.TabIndex = 9;
+            // 
+            // btnCrearRol
+            // 
+            this.btnCrearRol.Location = new System.Drawing.Point(28, 410);
+            this.btnCrearRol.Name = "btnCrearRol";
+            this.btnCrearRol.Size = new System.Drawing.Size(220, 34);
+            this.btnCrearRol.TabIndex = 10;
+            this.btnCrearRol.Text = "Crear rol";
+            this.btnCrearRol.UseVisualStyleBackColor = true;
+            this.btnCrearRol.Click += new System.EventHandler(this.btnCrearRol_Click);
+            // 
+            // cmbPatentesDisponibles
+            // 
+            this.cmbPatentesDisponibles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPatentesDisponibles.FormattingEnabled = true;
+            this.cmbPatentesDisponibles.Location = new System.Drawing.Point(834, 366);
+            this.cmbPatentesDisponibles.Name = "cmbPatentesDisponibles";
+            this.cmbPatentesDisponibles.Size = new System.Drawing.Size(240, 29);
+            this.cmbPatentesDisponibles.TabIndex = 11;
+            // 
+            // btnAsignarPatente
+            // 
+            this.btnAsignarPatente.Location = new System.Drawing.Point(834, 410);
+            this.btnAsignarPatente.Name = "btnAsignarPatente";
+            this.btnAsignarPatente.Size = new System.Drawing.Size(115, 34);
+            this.btnAsignarPatente.TabIndex = 12;
+            this.btnAsignarPatente.Text = "Asignar";
+            this.btnAsignarPatente.UseVisualStyleBackColor = true;
+            this.btnAsignarPatente.Click += new System.EventHandler(this.btnAsignarPatente_Click);
+            // 
+            // lblPatentesRol
+            // 
+            this.lblPatentesRol.AutoSize = true;
+            this.lblPatentesRol.Location = new System.Drawing.Point(830, 24);
+            this.lblPatentesRol.Name = "lblPatentesRol";
+            this.lblPatentesRol.Size = new System.Drawing.Size(119, 21);
+            this.lblPatentesRol.TabIndex = 13;
+            this.lblPatentesRol.Text = "Patentes del rol";
+            // 
+            // lstPatentesRol
+            // 
+            this.lstPatentesRol.FormattingEnabled = true;
+            this.lstPatentesRol.ItemHeight = 21;
+            this.lstPatentesRol.Location = new System.Drawing.Point(834, 52);
+            this.lstPatentesRol.Name = "lstPatentesRol";
+            this.lstPatentesRol.Size = new System.Drawing.Size(240, 298);
+            this.lstPatentesRol.TabIndex = 14;
+            // 
+            // btnQuitarPatente
+            // 
+            this.btnQuitarPatente.Location = new System.Drawing.Point(959, 410);
+            this.btnQuitarPatente.Name = "btnQuitarPatente";
+            this.btnQuitarPatente.Size = new System.Drawing.Size(115, 34);
+            this.btnQuitarPatente.TabIndex = 15;
+            this.btnQuitarPatente.Text = "Quitar";
+            this.btnQuitarPatente.UseVisualStyleBackColor = true;
+            this.btnQuitarPatente.Click += new System.EventHandler(this.btnQuitarPatente_Click);
+            // 
             // FrmGestionRoles_83KI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.CornflowerBlue;
-            this.ClientSize = new System.Drawing.Size(844, 472);
+            this.ClientSize = new System.Drawing.Size(1106, 472);
+            this.Controls.Add(this.btnQuitarPatente);
+            this.Controls.Add(this.lstPatentesRol);
+            this.Controls.Add(this.lblPatentesRol);
+            this.Controls.Add(this.btnAsignarPatente);
+            this.Controls.Add(this.cmbPatentesDisponibles);
+            this.Controls.Add(this.btnCrearRol);
+            this.Controls.Add(this.txtNombreRol);
             this.Controls.Add(this.btnQuitarFamilia);
             this.Controls.Add(this.btnAgregarFamilia);
             this.Controls.Add(this.cmbFamiliasDisponibles);
-            this.Controls.Add(this.lstPatentesFamilia);
+            this.Controls.Add(this.treeContenidoFamilia);
             this.Controls.Add(this.lblPatentesFamilia);
             this.Controls.Add(this.lstFamiliasRol);
             this.Controls.Add(this.lblFamiliasRol);
@@ -139,9 +215,16 @@ namespace UI
         private System.Windows.Forms.Label lblFamiliasRol;
         private System.Windows.Forms.ListBox lstFamiliasRol;
         private System.Windows.Forms.Label lblPatentesFamilia;
-        private System.Windows.Forms.ListBox lstPatentesFamilia;
+        private System.Windows.Forms.TreeView treeContenidoFamilia;
         private System.Windows.Forms.ComboBox cmbFamiliasDisponibles;
         private System.Windows.Forms.Button btnAgregarFamilia;
         private System.Windows.Forms.Button btnQuitarFamilia;
+        private System.Windows.Forms.TextBox txtNombreRol;
+        private System.Windows.Forms.Button btnCrearRol;
+        private System.Windows.Forms.ComboBox cmbPatentesDisponibles;
+        private System.Windows.Forms.Button btnAsignarPatente;
+        private System.Windows.Forms.Label lblPatentesRol;
+        private System.Windows.Forms.ListBox lstPatentesRol;
+        private System.Windows.Forms.Button btnQuitarPatente;
     }
 }

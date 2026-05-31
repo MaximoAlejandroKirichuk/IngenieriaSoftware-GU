@@ -9,6 +9,7 @@ namespace DAL.interfaces
         IEnumerable<Rol_83KI> ObtenerRolesConPermisos();
         IEnumerable<Familia_83KI> ObtenerFamilias();
         IEnumerable<Patente_83KI> ObtenerPatentes();
+        Rol_83KI CrearRol(string nombre);
         Familia_83KI CrearFamilia(string nombre);
         void EliminarFamilia(int codigoFamilia);
         bool FamiliaTieneDependencias(int codigoFamilia);

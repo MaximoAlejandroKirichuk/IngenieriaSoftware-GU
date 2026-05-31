@@ -145,7 +145,7 @@ namespace UI
             // 
             // txtApellido
             // 
-            this.txtApellido.Location = new System.Drawing.Point(650, 417);
+            this.txtApellido.Location = new System.Drawing.Point(648, 420);
             this.txtApellido.Name = "txtApellido";
             this.txtApellido.Size = new System.Drawing.Size(200, 33);
             this.txtApellido.TabIndex = 10;
