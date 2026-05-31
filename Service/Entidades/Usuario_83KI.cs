@@ -17,6 +17,7 @@ namespace Service.Entidades
         public bool Activo { get; private set; }
         public bool Bloqueado { get; private set; }
         public string Email { get; private set; }
+        public string IdiomaId { get; private set; }
         public int IntentosRealizados { get; private set; }
         public DateTime? FechaUltimoIntento { get; private set; }
 
@@ -38,6 +39,7 @@ namespace Service.Entidades
                 Contrasena = ValidarContrasena(contrasenaHash),
                 Activo = true,
                 Bloqueado = false,
+                IdiomaId = GestorIdioma_83KI.IdiomaPorDefecto,
                 IntentosRealizados = 0,
                 FechaUltimoIntento = null,
             };
@@ -52,6 +54,7 @@ namespace Service.Entidades
             Rol_83KI rol,
             bool activo,
             bool bloqueado,
+            string idiomaId,
             int intentosRealizados,
             DateTime? fechaUltimoIntento
             )
@@ -67,6 +70,7 @@ namespace Service.Entidades
                 Rol = ValidarRol(rol),
                 Activo = activo,
                 Bloqueado = bloqueado,
+                IdiomaId = ValidarIdiomaId(idiomaId),
                 IntentosRealizados = ValidarIntentosRealizados(intentosRealizados),
                 FechaUltimoIntento = fechaUltimoIntento,
             };
@@ -125,6 +129,11 @@ namespace Service.Entidades
             Email = ValidarEmail(email);
         }
 
+        public void CambiarIdioma(string idiomaId)
+        {
+            IdiomaId = ValidarIdiomaId(idiomaId);
+        }
+
         public void Habilitar()
         {
             Activo = true;
@@ -171,6 +180,16 @@ namespace Service.Entidades
         {
             //luki: el name of ayuda a que las excepciones digan que parametro fallo.
             return ValidarTextoObligatorio(contrasenaHash, nameof(contrasenaHash));
+        }
+
+        private static string ValidarIdiomaId(string idiomaId)
+        {
+            if (string.IsNullOrWhiteSpace(idiomaId))
+            {
+                return GestorIdioma_83KI.IdiomaPorDefecto;
+            }
+
+            return idiomaId.Trim();
         }
 
         private static Rol_83KI ValidarRol(Rol_83KI rol)

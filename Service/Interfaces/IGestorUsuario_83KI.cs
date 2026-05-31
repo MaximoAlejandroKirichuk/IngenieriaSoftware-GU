@@ -16,6 +16,7 @@ namespace Service.Interfaces
         void CrearUsuario(string nombre, string apellido, int dni, string email, Rol_83KI rol);
         void ModificarUsuario(int dni, string email, Rol_83KI rol);
         void CambiarContrasenaUsuarioActual(string contrasenaActual, string nuevaContrasena);
+        void CambiarIdiomaUsuarioActual(string idiomaId);
         void DesbloquearCuenta(int dni);
         void HabilitarUsuario(int dni);
         void DeshabilitarUsuario(int dni);

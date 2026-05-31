@@ -18,6 +18,7 @@ namespace Service
         private static IGestorRol_83KI _gestorRol;
         private static IBitacoraManager_83KI _bitacoraManager;
         private static IConsultaBitacoraEventos_83KI _consultaBitacoraEventos;
+        private static IGestorIdioma_83KI _gestorIdioma;
 
         public static IGestorUsuario_83KI GetGestorUsuario()
         {
@@ -29,10 +30,21 @@ namespace Service
                 IEncriptador_83KI encriptador = new Encriptador_83KI();
                 ISessionManager_83KI sessionManager = SessionManager_83KI.Instancia;
                 IBitacoraManager_83KI bitacoraManager = GetBitacoraManager();
+                IGestorIdioma_83KI gestorIdioma = GetGestorIdioma();
 
-                _gestorUsuario = new GestorUsuarioBLL_83KI(datos, encriptador, sessionManager, bitacoraManager);
+                _gestorUsuario = new GestorUsuarioBLL_83KI(datos, encriptador, sessionManager, bitacoraManager, new RolDAL_83KI(), gestorIdioma);
             }
             return _gestorUsuario;
+        }
+
+        public static IGestorIdioma_83KI GetGestorIdioma()
+        {
+            if (_gestorIdioma == null)
+            {
+                _gestorIdioma = new GestorIdioma_83KI();
+            }
+
+            return _gestorIdioma;
         }
 
         public static IGestorRol_83KI GetGestorRol()
