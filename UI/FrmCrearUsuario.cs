@@ -15,17 +15,20 @@ using System.Windows.Forms;
 
 namespace UI
 {
-    public partial class FrmCrearUsuario : Form
+    public partial class FrmCrearUsuario : Form, IObservadorIdioma
     {
         private readonly IGestorUsuario_83KI _usuarioService;
         private readonly IGestorRol_83KI _gestorRol;
+        private readonly IGestorIdioma_83KI _gestorIdioma;
 
         public FrmCrearUsuario(IGestorUsuario_83KI gestorUsuario, IGestorRol_83KI gestorRol)
         {
             InitializeComponent();
             _usuarioService = gestorUsuario;
             _gestorRol = gestorRol;
+            _gestorIdioma = Service.ServiceFactory_83KI.GetGestorIdioma();
             CargarRoles();
+            _gestorIdioma.Suscribir(this);
         }
 
         private void CargarRoles()
@@ -42,21 +45,21 @@ namespace UI
             try
             {
                 CrearUsuarioDesdeFormulario();
-                MessageBox.Show("Usuario registrado con éxito.");
+                IdiomaUiHelper_83KI.MostrarInformacion(this, "FrmCrearUsuario.UsuarioRegistrado", "Comun.Informacion");
                 this.DialogResult = DialogResult.OK;
             }
 
             catch (DniRegistradoException_83KI ex)
             {
-                MessageBox.Show(ex.Message);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Usuarios", MessageBoxIcon.Warning);
             }
             catch (EmailRegistradoException_83KI ex)
             {
-                MessageBox.Show(ex.Message);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Usuarios", MessageBoxIcon.Warning);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Error", MessageBoxIcon.Warning);
             }
         }
         private void CrearUsuarioDesdeFormulario()
@@ -64,7 +67,7 @@ namespace UI
             int.TryParse(txt_Dni.Text, out int dni);
             if (!(comboBox1.SelectedItem is Rol_83KI rol))
             {
-                throw new InvalidOperationException("El rol seleccionado no es valido.");
+                throw new InvalidOperationException("El rol seleccionado no existe.");
             }
             _usuarioService.CrearUsuario(
                 txtNombre.Text,
@@ -82,26 +85,26 @@ namespace UI
                 string.IsNullOrWhiteSpace(txtApellido.Text) ||
                 string.IsNullOrWhiteSpace(txt_Dni.Text))
             {
-                MessageBox.Show("Todos los campos son obligatorios.");
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Validaciones.CamposObligatorios", "Comun.Validacion");
                 return false;
             }
 
             string patronEmail = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
             if (!Regex.IsMatch(txtEmail.Text, patronEmail))
             {
-                MessageBox.Show("El formato del Email no es válido.");
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Validaciones.EmailFormatoInvalido", "Comun.Validacion");
                 return false;
             }
 
             if (!long.TryParse(txt_Dni.Text, out _) || txt_Dni.Text.Length < 7)
             {
-                MessageBox.Show("El DNI debe ser un número válido.");
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Validaciones.DniValido", "Comun.Validacion");
                 return false;
             }
 
             if (comboBox1.SelectedItem == null)
             {
-                MessageBox.Show("Debe seleccionar un rol.");
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Validaciones.SeleccionarRol", "Comun.Validacion");
                 return false;
             }
 
@@ -150,6 +153,23 @@ namespace UI
         private void FrmCrearUsuario_Load(object sender, EventArgs e)
         {
             FormDesign(panelCrearUsu, btnCrearUsuario); 
+        }
+
+        public void ActualizarIdioma(IIdioma idioma)
+        {
+            Text = IdiomaUiHelper_83KI.Texto("FrmCrearUsuario.Titulo");
+            frm_lbl_nombre.Text = IdiomaUiHelper_83KI.Texto("Comun.Nombre");
+            frm_lbl_apellido.Text = IdiomaUiHelper_83KI.Texto("Comun.Apellido");
+            frm_lbl_email.Text = IdiomaUiHelper_83KI.Texto("Comun.Email");
+            frm_lbl_dni.Text = IdiomaUiHelper_83KI.Texto("Comun.Dni");
+            frm_lbl_rol.Text = IdiomaUiHelper_83KI.Texto("Comun.Rol");
+            btnCrearUsuario.Text = IdiomaUiHelper_83KI.Texto("FrmCrearUsuario.CrearUsuario");
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _gestorIdioma.Desuscribir(this);
+            base.OnFormClosed(e);
         }
     }
 }

@@ -14,16 +14,19 @@ using Service.Excepciones;
 
 namespace UI
 {
-    public partial class Login : Form
+    public partial class Login : Form, IObservadorIdioma
     {
         private readonly IGestorUsuario_83KI _gestor;
         private readonly IGestorRol_83KI _gestorRol;
+        private readonly IGestorIdioma_83KI _gestorIdioma;
 
         public Login()
         {
             _gestor = Service.ServiceFactory_83KI.GetGestorUsuario();
             _gestorRol = Service.ServiceFactory_83KI.GetGestorRol();
+            _gestorIdioma = Service.ServiceFactory_83KI.GetGestorIdioma();
             InitializeComponent();
+            _gestorIdioma.Suscribir(this);
         }
 
 
@@ -77,37 +80,36 @@ namespace UI
             catch (UsuarioActivoActualmenteException_83KI ex)
             {
                 Show();
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Error", MessageBoxIcon.Warning);
             }
             catch (UsuarioNoExisteException_83KI ex)
             {
                 Show();
-                MessageBox.Show(ex.Message);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Error", MessageBoxIcon.Warning);
             }
             catch (UsuarioBloqueadoException_83KI ex)
             {
                 Show();
-                MessageBox.Show(ex.Message, "Seguridad", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Seguridad", MessageBoxIcon.Stop);
             }
             catch (UsuarioDeshabilitadoException_83KI ex)
             {
                 Show();
-                MessageBox.Show(ex.Message, "Usuarios", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Usuarios", MessageBoxIcon.Stop);
             }
             catch (ContrasenaInvalidaException_83KI ex)
             {
                 Show();
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Error", MessageBoxIcon.Warning);
             }
         }
 
         private void MostrarAdvertenciaYForzarCambio()
         {
-            MessageBox.Show(
-                "El sistema detectó que está utilizando la contraseña generada por defecto. Por su seguridad, recomendamos cambiarla ahora mismo.",
-                "Advertencia de Seguridad",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning);
+            IdiomaUiHelper_83KI.MostrarAdvertencia(
+                this,
+                "Login.ContrasenaDefaultMensaje",
+                "Login.ContrasenaDefaultTitulo");
 
             using (var frmCambio = new FrmCambiarContrasena(_gestor))
             {
@@ -115,7 +117,7 @@ namespace UI
 
                 if (resultadoCambio == DialogResult.OK)
                 {
-                    MessageBox.Show("Contraseña actualizada con éxito.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    IdiomaUiHelper_83KI.MostrarInformacion(this, "Login.ContrasenaActualizada", "Comun.Informacion");
                 }
             }
         }
@@ -160,6 +162,20 @@ namespace UI
             path.CloseFigure();
 
             btn.Region = new Region(path);
+        }
+
+        public void ActualizarIdioma(IIdioma idioma)
+        {
+            Text = IdiomaUiHelper_83KI.Texto("Login.Titulo");
+            lbl_Email.Text = IdiomaUiHelper_83KI.Texto("Login.Username");
+            lbl_Contrasena.Text = IdiomaUiHelper_83KI.Texto("Login.Contrasena");
+            btnLogin.Text = IdiomaUiHelper_83KI.Texto("Login.Ingresar");
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _gestorIdioma.Desuscribir(this);
+            base.OnFormClosed(e);
         }
     }
 }

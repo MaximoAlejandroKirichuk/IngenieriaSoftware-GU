@@ -9,14 +9,16 @@ using UI.Exportacion;
 
 namespace UI
 {
-    public partial class FrmBitacoraEventos : Form
+    public partial class FrmBitacoraEventos : Form, IObservadorIdioma
     {
         private const string OpcionTodos = "Todos";
         private const string OpcionCualquiera = "Cualquiera";
         private readonly IConsultaBitacoraEventos_83KI _consultaBitacoraEventos;
         private readonly IBitacoraEventosExporter_83KI _exporter;
+        private readonly IGestorIdioma_83KI _gestorIdioma;
         private readonly List<BitacoraEventoVista_83KI> _eventosVisibles = new List<BitacoraEventoVista_83KI>();
         private bool _actualizandoGrilla;
+        private bool _cargandoCombos;
 
         public FrmBitacoraEventos(IConsultaBitacoraEventos_83KI consultaBitacoraEventos)
             : this(consultaBitacoraEventos, new BitacoraEventosPdfExporter_83KI())
@@ -28,6 +30,9 @@ namespace UI
             InitializeComponent();
             _consultaBitacoraEventos = consultaBitacoraEventos;
             _exporter = exporter;
+            _gestorIdioma = Service.ServiceFactory_83KI.GetGestorIdioma();
+            dgvEventos.CellFormatting += dgvEventos_CellFormatting;
+            _gestorIdioma.Suscribir(this);
         }
 
         private void FrmBitacoraEventos_Load(object sender, EventArgs e)
@@ -78,16 +83,18 @@ namespace UI
 
         private void CargarCombos()
         {
+            _cargandoCombos = true;
             cmbModulo.Items.Clear();
-            cmbModulo.Items.Add(OpcionTodos);
-            cmbModulo.Items.Add(Modulo.Usuarios);
+            cmbModulo.Items.Add(new ComboItemIdioma_83KI(OpcionTodos, IdiomaUiHelper_83KI.Texto("Comun.Todos")));
+            cmbModulo.Items.Add(new ComboItemIdioma_83KI(Modulo.Usuarios, IdiomaUiHelper_83KI.TraducirModulo(Modulo.Usuarios)));
             cmbModulo.SelectedIndex = 0;
+            _cargandoCombos = false;
             CargarEventosPorModulo();
             cmbCriticidad.Items.Clear();
-            cmbCriticidad.Items.Add(OpcionCualquiera);
+            cmbCriticidad.Items.Add(new ComboItemIdioma_83KI(OpcionCualquiera, IdiomaUiHelper_83KI.Texto("Comun.Cualquiera")));
             foreach (Criticidad criticidad in Enum.GetValues(typeof(Criticidad)))
             {
-                cmbCriticidad.Items.Add(criticidad);
+                cmbCriticidad.Items.Add(new ComboItemIdioma_83KI(criticidad, IdiomaUiHelper_83KI.TraducirCriticidad(criticidad)));
             }
             cmbCriticidad.SelectedIndex = 0;
         }
@@ -107,14 +114,15 @@ namespace UI
         private void CargarEventosPorModulo()
         {
             cmbEvento.Items.Clear();
-            cmbEvento.Items.Add(OpcionTodos);
+            cmbEvento.Items.Add(new ComboItemIdioma_83KI(OpcionTodos, IdiomaUiHelper_83KI.Texto("Comun.Todos")));
 
-            if (cmbModulo.SelectedItem is Modulo)
+            object moduloSeleccionado = ObtenerValorCombo(cmbModulo);
+            if (moduloSeleccionado is Modulo)
             {
-                Modulo modulo = (Modulo)cmbModulo.SelectedItem;
+                Modulo modulo = (Modulo)moduloSeleccionado;
                 foreach (EventoBitacoraOpcion_83KI evento in EventoBitacoraCatalogo_83KI.ObtenerPorModulo(modulo))
                 {
-                    cmbEvento.Items.Add(evento);
+                    cmbEvento.Items.Add(new ComboItemIdioma_83KI(evento.Nombre, IdiomaUiHelper_83KI.TraducirEventoBitacora(evento.Nombre)));
                 }
             }
 
@@ -126,14 +134,14 @@ namespace UI
             FiltroBitacoraEventos_83KI filtro = ObtenerFiltroDesdeUI();
             if (filtro.FechaDesde.Date > DateTime.Today || filtro.FechaHasta.Date > DateTime.Today.AddDays(1).AddTicks(-1))
             {
-                MessageBox.Show("No se pueden seleccionar fechas futuras.");
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "FrmBitacoraEventos.FechasFuturas", "Comun.Validacion");
                 RestaurarFechasValidas();
                 return;
             }
 
             if (filtro.FechaDesde.Date > filtro.FechaHasta.Date)
             {
-                MessageBox.Show("La fecha de inicio no puede ser mayor que la fecha fin.");
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "FrmBitacoraEventos.FechaInicioMayor", "Comun.Validacion");
                 return;
             }
 
@@ -145,7 +153,7 @@ namespace UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Bitacora de eventos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "FrmBitacoraEventos.Titulo", MessageBoxIcon.Warning);
             }
         }
 
@@ -162,18 +170,27 @@ namespace UI
                 Apellido = txtApellido.Text,
                 Username = txtLogin.Text,
                 Evento = ObtenerTextoCombo(cmbEvento),
-                Modulo = cmbModulo.SelectedItem is Modulo ? (Modulo?)cmbModulo.SelectedItem : null,
-                Criticidad = cmbCriticidad.SelectedItem is Criticidad ? (Criticidad?)cmbCriticidad.SelectedItem : null
+                Modulo = ObtenerValorCombo(cmbModulo) is Modulo ? (Modulo?)ObtenerValorCombo(cmbModulo) : null,
+                Criticidad = ObtenerValorCombo(cmbCriticidad) is Criticidad ? (Criticidad?)ObtenerValorCombo(cmbCriticidad) : null
             };
         }
 
         private string ObtenerTextoCombo(ComboBox combo)
         {
-            if (combo.SelectedItem == null || string.Equals(combo.SelectedItem.ToString(), OpcionTodos, StringComparison.OrdinalIgnoreCase))
+            object valor = ObtenerValorCombo(combo);
+            if (valor == null ||
+                string.Equals(valor.ToString(), OpcionTodos, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(valor.ToString(), OpcionCualquiera, StringComparison.OrdinalIgnoreCase))
             {
                 return string.Empty;
             }
-            return combo.SelectedItem.ToString();
+            return valor.ToString();
+        }
+
+        private object ObtenerValorCombo(ComboBox combo)
+        {
+            ComboItemIdioma_83KI item = combo.SelectedItem as ComboItemIdioma_83KI;
+            return item == null ? combo.SelectedItem : item.Valor;
         }
 
         private void RestaurarFechasValidas()
@@ -208,13 +225,13 @@ namespace UI
                 dgvEventos.Columns["Id"].Width = 55;
             }
 
-            ConfigurarColumna("Fecha", "Fecha", 125);
-            ConfigurarColumna("Username", "Username", 110);
-            ConfigurarColumna("Nombre", "Nombre", 110);
-            ConfigurarColumna("Apellido", "Apellido", 110);
-            ConfigurarColumna("Modulo", "Modulo", 95);
-            ConfigurarColumna("Criticidad", "Criticidad", 95);
-            ConfigurarColumna("Evento", "Evento", 290);
+            ConfigurarColumna("Fecha", IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.ColumnaFecha"), 125);
+            ConfigurarColumna("Username", IdiomaUiHelper_83KI.Texto("Comun.Username"), 110);
+            ConfigurarColumna("Nombre", IdiomaUiHelper_83KI.Texto("Comun.Nombre"), 110);
+            ConfigurarColumna("Apellido", IdiomaUiHelper_83KI.Texto("Comun.Apellido"), 110);
+            ConfigurarColumna("Modulo", IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.Modulo"), 95);
+            ConfigurarColumna("Criticidad", IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.Criticidad"), 95);
+            ConfigurarColumna("Evento", IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.Evento"), 290);
         }
 
         private void ConfigurarColumna(string nombre, string titulo, int ancho)
@@ -268,14 +285,14 @@ namespace UI
         {
             if (_eventosVisibles.Count == 0)
             {
-                MessageBox.Show("No hay eventos para exportar.");
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "FrmBitacoraEventos.SinEventosExportar", "Comun.Validacion");
                 return;
             }
 
             string mensaje;
             if (!_exporter.PuedeExportar(out mensaje))
             {
-                MessageBox.Show(mensaje);
+                MessageBox.Show(this, mensaje, IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.Titulo"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -296,11 +313,11 @@ namespace UI
                 try
                 {
                     _exporter.Exportar(_eventosVisibles, dialogo.FileName);
-                    MessageBox.Show("PDF exportado correctamente.");
+                    IdiomaUiHelper_83KI.MostrarInformacion(this, "FrmBitacoraEventos.PdfExportado", "Comun.Informacion");
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("No se pudo exportar el PDF. " + ex.Message);
+                    MessageBox.Show(this, IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.ErrorExportarPdf", IdiomaUiHelper_83KI.TraducirExcepcion(ex)), IdiomaUiHelper_83KI.Texto("Comun.Error"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
@@ -312,7 +329,98 @@ namespace UI
 
         private void cmbModulo_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (_cargandoCombos)
+            {
+                return;
+            }
+
             CargarEventosPorModulo();
+        }
+
+        private void dgvEventos_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.Value == null || e.ColumnIndex < 0)
+            {
+                return;
+            }
+
+            string nombreColumna = dgvEventos.Columns[e.ColumnIndex].Name;
+            if (nombreColumna == "Modulo" && e.Value is Modulo)
+            {
+                e.Value = IdiomaUiHelper_83KI.TraducirModulo((Modulo)e.Value);
+                e.FormattingApplied = true;
+            }
+            else if (nombreColumna == "Criticidad" && e.Value is Criticidad)
+            {
+                e.Value = IdiomaUiHelper_83KI.TraducirCriticidad((Criticidad)e.Value);
+                e.FormattingApplied = true;
+            }
+            else if (nombreColumna == "Evento")
+            {
+                e.Value = IdiomaUiHelper_83KI.TraducirEventoBitacora(e.Value.ToString());
+                e.FormattingApplied = true;
+            }
+        }
+
+        public void ActualizarIdioma(IIdioma idioma)
+        {
+            Text = IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.Titulo");
+            lblNombre.Text = IdiomaUiHelper_83KI.Texto("Comun.Nombre");
+            lblApellido.Text = IdiomaUiHelper_83KI.Texto("Comun.Apellido");
+            lblLogin.Text = IdiomaUiHelper_83KI.Texto("Comun.Username");
+            lblFechaInicio.Text = IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.FechaInicio");
+            lblFechaFin.Text = IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.FechaFin");
+            lblEvento.Text = IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.Evento");
+            lblModulo.Text = IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.Modulo");
+            lblCriticidad.Text = IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.Criticidad");
+            btnLimpiar.Text = IdiomaUiHelper_83KI.Texto("Comun.Limpiar");
+            btnAplicar.Text = IdiomaUiHelper_83KI.Texto("Comun.Aplicar");
+            btnImprimir.Text = IdiomaUiHelper_83KI.Texto("FrmBitacoraEventos.ExportarPdf");
+            btnCancelar.Text = IdiomaUiHelper_83KI.Texto("Comun.Cancelar");
+            RefrescarCombosTraducidos();
+            ConfigurarGrilla();
+            dgvEventos.Refresh();
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _gestorIdioma.Desuscribir(this);
+            base.OnFormClosed(e);
+        }
+
+        private void RefrescarCombosTraducidos()
+        {
+            if (cmbModulo.Items.Count == 0)
+            {
+                return;
+            }
+
+            object modulo = ObtenerValorCombo(cmbModulo);
+            object evento = ObtenerValorCombo(cmbEvento);
+            object criticidad = ObtenerValorCombo(cmbCriticidad);
+
+            CargarCombos();
+
+            SeleccionarValor(cmbModulo, modulo);
+            CargarEventosPorModulo();
+            SeleccionarValor(cmbEvento, evento);
+            SeleccionarValor(cmbCriticidad, criticidad);
+        }
+
+        private void SeleccionarValor(ComboBox combo, object valor)
+        {
+            for (int i = 0; i < combo.Items.Count; i++)
+            {
+                object valorItem = combo.Items[i] is ComboItemIdioma_83KI
+                    ? ((ComboItemIdioma_83KI)combo.Items[i]).Valor
+                    : combo.Items[i];
+
+                if (object.Equals(valorItem, valor))
+                {
+                    combo.SelectedIndex = i;
+                    return;
+                }
+            }
         }
     }
 }

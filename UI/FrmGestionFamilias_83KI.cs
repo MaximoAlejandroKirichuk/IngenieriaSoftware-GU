@@ -6,15 +6,18 @@ using System.Windows.Forms;
 
 namespace UI
 {
-    public partial class FrmGestionFamilias_83KI : Form
+    public partial class FrmGestionFamilias_83KI : Form, IObservadorIdioma
     {
         private readonly IGestorRol_83KI _gestorRol;
+        private readonly IGestorIdioma_83KI _gestorIdioma;
         private bool _cargandoDatos;
 
         public FrmGestionFamilias_83KI(IGestorRol_83KI gestorRol)
         {
             InitializeComponent();
             _gestorRol = gestorRol;
+            _gestorIdioma = Service.ServiceFactory_83KI.GetGestorIdioma();
+            _gestorIdioma.Suscribir(this);
         }
 
         private void FrmGestionFamilias_83KI_Load(object sender, EventArgs e)
@@ -154,7 +157,7 @@ namespace UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Gestion de familias", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "FrmGestionFamilias.Titulo", MessageBoxIcon.Warning);
             }
         }
 
@@ -243,7 +246,9 @@ namespace UI
 
             txtNombreFamilia.Visible = crearFamilia;
             btnCrearFamilia.Visible = crearFamilia;
-            lblFamilia.Text = seleccionarExistente ? "Familia existente" : "Nombre de la nueva familia";
+            lblFamilia.Text = seleccionarExistente
+                ? IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.FamiliaExistente")
+                : IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.NombreNuevaFamilia");
 
             if (!seleccionarExistente)
             {
@@ -265,7 +270,7 @@ namespace UI
                 PermisoSistema_83KI.QuitarPatenteFamilia,
                 PermisoSistema_83KI.QuitarSubfamilia);
             btnQuitarSeleccion.Enabled = false;
-            btnQuitarSeleccion.Text = "Seleccionar permiso o subfamilia";
+            btnQuitarSeleccion.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.SeleccionarPermisoOSubfamilia");
 
             if (treeFamilia.SelectedNode == null || treeFamilia.SelectedNode.Parent == null)
             {
@@ -275,13 +280,13 @@ namespace UI
             if (treeFamilia.SelectedNode.Tag is Patente_83KI)
             {
                 btnQuitarSeleccion.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarPatenteFamilia);
-                btnQuitarSeleccion.Text = "Quitar patente";
+                btnQuitarSeleccion.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.QuitarPatente");
                 btnQuitarSeleccion.Enabled = btnQuitarSeleccion.Visible;
             }
             else if (treeFamilia.SelectedNode.Tag is Familia_83KI)
             {
                 btnQuitarSeleccion.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarSubfamilia);
-                btnQuitarSeleccion.Text = "Quitar subfamilia";
+                btnQuitarSeleccion.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.QuitarSubfamilia");
                 btnQuitarSeleccion.Enabled = btnQuitarSeleccion.Visible;
             }
         }
@@ -297,8 +302,29 @@ namespace UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Gestion de familias", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "FrmGestionFamilias.Titulo", MessageBoxIcon.Warning);
             }
+        }
+
+        public void ActualizarIdioma(IIdioma idioma)
+        {
+            Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.Titulo");
+            rdbSeleccionarFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.SeleccionarFamiliaExistente");
+            rdbCrearFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.CrearFamiliaModo");
+            btnCrearFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.CrearFamilia");
+            btnEliminarFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.EliminarFamilia");
+            lblPatentes.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.PatentesDisponibles");
+            btnAgregarPatente.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.AgregarPatente");
+            lblFamiliasDisponibles.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.FamiliasDisponibles");
+            btnAgregarFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.AgregarSubfamilia");
+            ActualizarModoFamilia();
+            ActualizarBotonQuitar();
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _gestorIdioma.Desuscribir(this);
+            base.OnFormClosed(e);
         }
     }
 }
