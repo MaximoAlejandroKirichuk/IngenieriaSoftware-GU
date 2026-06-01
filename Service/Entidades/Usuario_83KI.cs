@@ -70,7 +70,7 @@ namespace Service.Entidades
                 Rol = ValidarRol(rol),
                 Activo = activo,
                 Bloqueado = bloqueado,
-                IdiomaId = ValidarIdiomaId(idiomaId),
+                IdiomaId = idiomaId,
                 IntentosRealizados = ValidarIntentosRealizados(intentosRealizados),
                 FechaUltimoIntento = fechaUltimoIntento,
             };
@@ -131,7 +131,7 @@ namespace Service.Entidades
 
         public void CambiarIdioma(string idiomaId)
         {
-            IdiomaId = ValidarIdiomaId(idiomaId);
+            IdiomaId = (idiomaId);
         }
 
         public void Habilitar()
@@ -180,16 +180,6 @@ namespace Service.Entidades
         {
             //luki: el name of ayuda a que las excepciones digan que parametro fallo.
             return ValidarTextoObligatorio(contrasenaHash, nameof(contrasenaHash));
-        }
-
-        private static string ValidarIdiomaId(string idiomaId)
-        {
-            if (string.IsNullOrWhiteSpace(idiomaId))
-            {
-                return GestorIdioma_83KI.IdiomaPorDefecto;
-            }
-
-            return idiomaId.Trim();
         }
 
         private static Rol_83KI ValidarRol(Rol_83KI rol)

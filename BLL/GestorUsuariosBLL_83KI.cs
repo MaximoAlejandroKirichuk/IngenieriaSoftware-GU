@@ -78,6 +78,8 @@ namespace BLL
             usuario.AsignarRol(ObtenerRolConPermisos(usuario.Rol));
             _sessionManager.IniciarSesion(usuario);
             ReiniciarIntentosFallidos(usuario);
+
+            //aca asigno el idioma para el sistema segun la tabla usuario
             _gestorIdioma.CambiarIdioma(usuario.IdiomaId);
             _bitacora.RegistrarEvento(
                 BitacoraEvento_83KI.CrearNuevo(
