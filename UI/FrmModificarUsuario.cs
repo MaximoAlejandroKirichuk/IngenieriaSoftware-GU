@@ -7,10 +7,11 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace UI
 {
-    public partial class FrmModificarUsuario : Form
+    public partial class FrmModificarUsuario : Form, IObservadorIdioma
     {
         private readonly IGestorUsuario_83KI _gestorUsuario;
         private readonly IGestorRol_83KI _gestorRol;
+        private readonly IGestorIdioma_83KI _gestorIdioma;
         private readonly Usuario_83KI _usuarioOriginal;
 
         public FrmModificarUsuario(IGestorUsuario_83KI gestorUsuario, IGestorRol_83KI gestorRol, Usuario_83KI usuario)
@@ -20,8 +21,10 @@ namespace UI
             _usuarioOriginal = usuario ?? throw new ArgumentNullException(nameof(usuario));
 
             InitializeComponent();
+            _gestorIdioma = Service.ServiceFactory_83KI.GetGestorIdioma();
             CargarRoles();
             CargarDatos();
+            _gestorIdioma.Suscribir(this);
         }
 
         private void CargarRoles()
@@ -53,7 +56,7 @@ namespace UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Modificar usuario", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "FrmModificarUsuario.Titulo", MessageBoxIcon.Warning);
             }
         }
 
@@ -82,6 +85,24 @@ namespace UI
             {
                 throw new InvalidOperationException("El formato del email no es valido.");
             }
+        }
+
+        public void ActualizarIdioma(IIdioma idioma)
+        {
+            Text = IdiomaUiHelper_83KI.Texto("FrmModificarUsuario.Titulo");
+            lblNombre.Text = IdiomaUiHelper_83KI.Texto("Comun.Nombre");
+            lblApellido.Text = IdiomaUiHelper_83KI.Texto("Comun.Apellido");
+            lblDni.Text = IdiomaUiHelper_83KI.Texto("Comun.Dni");
+            lblEmail.Text = IdiomaUiHelper_83KI.Texto("Comun.Email");
+            lblRol.Text = IdiomaUiHelper_83KI.Texto("Comun.Rol");
+            btnGuardar.Text = IdiomaUiHelper_83KI.Texto("FrmModificarUsuario.Guardar");
+            btnCancelar.Text = IdiomaUiHelper_83KI.Texto("Comun.Cancelar");
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _gestorIdioma.Desuscribir(this);
+            base.OnFormClosed(e);
         }
     }
 }

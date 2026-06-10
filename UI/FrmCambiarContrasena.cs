@@ -5,14 +5,17 @@ using System.Windows.Forms;
 
 namespace UI
 {
-    public partial class FrmCambiarContrasena : Form
+    public partial class FrmCambiarContrasena : Form, IObservadorIdioma
     {
         private readonly IGestorUsuario_83KI _gestorUsuario;
+        private readonly IGestorIdioma_83KI _gestorIdioma;
 
         public FrmCambiarContrasena(IGestorUsuario_83KI gestorUsuario)
         {
             InitializeComponent();
             _gestorUsuario = gestorUsuario;
+            _gestorIdioma = Service.ServiceFactory_83KI.GetGestorIdioma();
+            _gestorIdioma.Suscribir(this);
         }
 
         private void btnCambiarContrasena_Click(object sender, EventArgs e)
@@ -31,16 +34,16 @@ namespace UI
             }
             catch (ContrasenaInvalidaException_83KI ex)
             {
-                MessageBox.Show(ex.Message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Validacion", MessageBoxIcon.Warning);
             }
             catch (UsuarioNoAutenticadoException_83KI ex)
             {
-                MessageBox.Show(ex.Message, "Sesión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Sesion", MessageBoxIcon.Warning);
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Error", MessageBoxIcon.Error);
             }
         }
 
@@ -56,22 +59,38 @@ namespace UI
                 string.IsNullOrWhiteSpace(txtNuevaContrasena.Text) ||
                 string.IsNullOrWhiteSpace(txtConfirmarContrasena.Text))
             {
-                MessageBox.Show("Todos los campos son obligatorios.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Validaciones.CamposObligatorios", "Comun.Validacion");
                 return false;
             }
 
             if (txtNuevaContrasena.Text != txtConfirmarContrasena.Text)
             {
-                MessageBox.Show("La nueva contraseña y su confirmación deben coincidir.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Validaciones.ContrasenasNoCoinciden", "Comun.Validacion");
                 return false;
             }
             if (txtNuevaContrasena.Text == txtContrasenaActual.Text)
             {
-                MessageBox.Show("La nueva contraseña y la anterior no deben coincidir.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Validaciones.ContrasenaNuevaDiferente", "Comun.Validacion");
                 return false;
             }
 
             return true;
+        }
+
+        public void ActualizarIdioma(IIdioma idioma)
+        {
+            Text = IdiomaUiHelper_83KI.Texto("FrmCambiarContrasena.Titulo");
+            lblContrasenaActual.Text = IdiomaUiHelper_83KI.Texto("FrmCambiarContrasena.ContrasenaActual");
+            lblNuevaContrasena.Text = IdiomaUiHelper_83KI.Texto("FrmCambiarContrasena.NuevaContrasena");
+            lblConfirmarContrasena.Text = IdiomaUiHelper_83KI.Texto("FrmCambiarContrasena.ConfirmarContrasena");
+            btnCambiarContrasena.Text = IdiomaUiHelper_83KI.Texto("FrmCambiarContrasena.CambiarContrasena");
+            btnCancelar.Text = IdiomaUiHelper_83KI.Texto("Comun.Cancelar");
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _gestorIdioma.Desuscribir(this);
+            base.OnFormClosed(e);
         }
     }
 }

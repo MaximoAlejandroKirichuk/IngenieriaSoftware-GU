@@ -6,14 +6,17 @@ using System.Windows.Forms;
 
 namespace UI
 {
-    public partial class FrmGestionRoles_83KI : Form
+    public partial class FrmGestionRoles_83KI : Form, IObservadorIdioma
     {
         private readonly IGestorRol_83KI _gestorRol;
+        private readonly IGestorIdioma_83KI _gestorIdioma;
 
         public FrmGestionRoles_83KI(IGestorRol_83KI gestorRol)
         {
             InitializeComponent();
             _gestorRol = gestorRol;
+            _gestorIdioma = Service.ServiceFactory_83KI.GetGestorIdioma();
+            _gestorIdioma.Suscribir(this);
         }
 
         private void FrmGestionRoles_83KI_Load(object sender, EventArgs e)
@@ -227,11 +230,7 @@ namespace UI
 
             if (!patenteDirecta)
             {
-                MessageBox.Show(
-                    "La patente seleccionada pertenece a una familia del rol. Para quitarla, quite la familia o modifique su contenido.",
-                    "Gestion de roles",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                IdiomaUiHelper_83KI.MostrarInformacion(this, "FrmGestionRoles.PatenteIndirecta", "FrmGestionRoles.Titulo");
                 return;
             }
 
@@ -260,8 +259,28 @@ namespace UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Gestion de roles", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "FrmGestionRoles.Titulo", MessageBoxIcon.Warning);
             }
+        }
+
+        public void ActualizarIdioma(IIdioma idioma)
+        {
+            Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.Titulo");
+            lblRoles.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.Roles");
+            lblFamiliasRol.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.FamiliasRol");
+            lblPatentesFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.ContenidoFamilia");
+            lblPatentesRol.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.PatentesRol");
+            btnAgregarFamilia.Text = IdiomaUiHelper_83KI.Texto("Comun.Agregar");
+            btnQuitarFamilia.Text = IdiomaUiHelper_83KI.Texto("Comun.Quitar");
+            btnCrearRol.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.CrearRol");
+            btnAsignarPatente.Text = IdiomaUiHelper_83KI.Texto("Comun.Asignar");
+            btnQuitarPatente.Text = IdiomaUiHelper_83KI.Texto("Comun.Quitar");
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _gestorIdioma.Desuscribir(this);
+            base.OnFormClosed(e);
         }
     }
 }
