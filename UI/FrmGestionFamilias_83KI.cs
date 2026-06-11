@@ -97,7 +97,14 @@ namespace UI
         {
             TreeNode nodo = new TreeNode(componente.Nombre) { Tag = componente };
 
-            foreach (ComponentePermiso_83KI hijo in componente.Hijos)
+            Familia_83KI familia = componente as Familia_83KI;
+
+            if (familia == null)
+            {
+                return nodo;
+            }
+
+            foreach (ComponentePermiso_83KI hijo in familia.Hijos.OrderBy(h => h.Nombre))
             {
                 nodo.Nodes.Add(CrearNodo(hijo));
             }
@@ -146,9 +153,17 @@ namespace UI
 
         private void btnCrearFamilia_Click(object sender, EventArgs e)
         {
+            string nombre = txtNombreFamilia.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(nombre))
+            {
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Errores.NombreObligatorio", "FrmGestionFamilias.Titulo");
+                return;
+            }
+
             try
             {
-                Familia_83KI familiaCreada = _gestorRol.CrearFamilia(txtNombreFamilia.Text);
+                Familia_83KI familiaCreada = _gestorRol.CrearFamilia(nombre);
                 rdbSeleccionarFamilia.Checked = true;
                 CargarDatos();
                 cmbFamilias.SelectedValue = familiaCreada.CodigoFamilia;

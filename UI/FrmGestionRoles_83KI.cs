@@ -106,7 +106,7 @@ namespace UI
             lstFamiliasRol.ValueMember = nameof(Familia_83KI.CodigoFamilia);
             lstFamiliasRol.DataSource = rol == null
                 ? null
-                : rol.Hijos.OfType<Familia_83KI>().OrderBy(f => f.Nombre).ToList();
+                : rol.Familias.OrderBy(f => f.Nombre).ToList();
 
             CargarContenidoFamilia();
             CargarPatentesDelRol();
@@ -154,7 +154,14 @@ namespace UI
         {
             TreeNode nodo = new TreeNode(componente.Nombre) { Tag = componente };
 
-            foreach (ComponentePermiso_83KI hijo in componente.Hijos.OrderBy(h => h.Nombre))
+            Familia_83KI familia = componente as Familia_83KI;
+
+            if (familia == null)
+            {
+                return nodo;
+            }
+
+            foreach (ComponentePermiso_83KI hijo in familia.Hijos.OrderBy(h => h.Nombre))
             {
                 nodo.Nodes.Add(CrearNodo(hijo));
             }
@@ -181,6 +188,12 @@ namespace UI
         private void btnCrearRol_Click(object sender, EventArgs e)
         {
             string nombre = txtNombreRol.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(nombre))
+            {
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Errores.NombreObligatorio", "FrmGestionRoles.Titulo");
+                return;
+            }
 
             EjecutarOperacion(() =>
             {
@@ -225,7 +238,7 @@ namespace UI
                 return;
             }
 
-            bool patenteDirecta = rol.Hijos.OfType<Patente_83KI>()
+            bool patenteDirecta = rol.PatentesDirectas
                 .Any(p => p.CodigoPatente == patente.CodigoPatente);
 
             if (!patenteDirecta)
