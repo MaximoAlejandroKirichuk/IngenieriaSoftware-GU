@@ -122,7 +122,7 @@ namespace BLL
 
             Rol_83KI rol = ObtenerRol(codigoRol);
             Patente_83KI patente = ObtenerPatente(codigoPatente);
-            rol.Agregar(patente);
+            rol.AgregarPatente(patente);
             _rolDal.AsignarPatenteARol(codigoRol, codigoPatente);
         }
 
@@ -138,7 +138,7 @@ namespace BLL
 
             Rol_83KI rol = ObtenerRol(codigoRol);
             Familia_83KI familia = ObtenerFamilia(codigoFamilia);
-            rol.Agregar(familia);
+            rol.AgregarFamilia(familia);
             _rolDal.AsignarFamiliaARol(codigoRol, codigoFamilia);
         }
 
