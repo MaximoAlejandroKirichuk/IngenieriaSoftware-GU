@@ -31,6 +31,10 @@ namespace UI
             this.lblPatentesRol = new System.Windows.Forms.Label();
             this.lstPatentesRol = new System.Windows.Forms.ListBox();
             this.btnQuitarPatente = new System.Windows.Forms.Button();
+            this.btnEliminarRol = new System.Windows.Forms.Button();
+            this.lblTipoComponente = new System.Windows.Forms.Label();
+            this.rbtnTipoFamilia = new System.Windows.Forms.RadioButton();
+            this.rbtnTipoPatente = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // lblRoles
@@ -95,10 +99,11 @@ namespace UI
             this.cmbFamiliasDisponibles.Name = "cmbFamiliasDisponibles";
             this.cmbFamiliasDisponibles.Size = new System.Drawing.Size(240, 29);
             this.cmbFamiliasDisponibles.TabIndex = 6;
+            this.cmbFamiliasDisponibles.SelectedIndexChanged += new System.EventHandler(this.cmbFamiliasDisponibles_SelectedIndexChanged);
             // 
             // btnAgregarFamilia
             // 
-            this.btnAgregarFamilia.Location = new System.Drawing.Point(290, 410);
+            this.btnAgregarFamilia.Location = new System.Drawing.Point(290, 460);
             this.btnAgregarFamilia.Name = "btnAgregarFamilia";
             this.btnAgregarFamilia.Size = new System.Drawing.Size(115, 34);
             this.btnAgregarFamilia.TabIndex = 7;
@@ -108,7 +113,7 @@ namespace UI
             // 
             // btnQuitarFamilia
             // 
-            this.btnQuitarFamilia.Location = new System.Drawing.Point(415, 410);
+            this.btnQuitarFamilia.Location = new System.Drawing.Point(415, 460);
             this.btnQuitarFamilia.Name = "btnQuitarFamilia";
             this.btnQuitarFamilia.Size = new System.Drawing.Size(115, 34);
             this.btnQuitarFamilia.TabIndex = 8;
@@ -123,11 +128,44 @@ namespace UI
             this.txtNombreRol.Size = new System.Drawing.Size(220, 29);
             this.txtNombreRol.TabIndex = 9;
             // 
+            // lblTipoComponente
+            // 
+            this.lblTipoComponente.AutoSize = true;
+            this.lblTipoComponente.Location = new System.Drawing.Point(28, 404);
+            this.lblTipoComponente.Name = "lblTipoComponente";
+            this.lblTipoComponente.Size = new System.Drawing.Size(170, 21);
+            this.lblTipoComponente.TabIndex = 17;
+            this.lblTipoComponente.Text = "Tipo de componente";
+            // 
+            // rbtnTipoFamilia
+            // 
+            this.rbtnTipoFamilia.AutoSize = true;
+            this.rbtnTipoFamilia.Checked = true;
+            this.rbtnTipoFamilia.Location = new System.Drawing.Point(28, 428);
+            this.rbtnTipoFamilia.Name = "rbtnTipoFamilia";
+            this.rbtnTipoFamilia.Size = new System.Drawing.Size(80, 25);
+            this.rbtnTipoFamilia.TabIndex = 18;
+            this.rbtnTipoFamilia.TabStop = true;
+            this.rbtnTipoFamilia.Text = "Familia";
+            this.rbtnTipoFamilia.UseVisualStyleBackColor = true;
+            this.rbtnTipoFamilia.CheckedChanged += new System.EventHandler(this.rbtnTipoFamilia_CheckedChanged);
+            // 
+            // rbtnTipoPatente
+            // 
+            this.rbtnTipoPatente.AutoSize = true;
+            this.rbtnTipoPatente.Location = new System.Drawing.Point(130, 428);
+            this.rbtnTipoPatente.Name = "rbtnTipoPatente";
+            this.rbtnTipoPatente.Size = new System.Drawing.Size(75, 25);
+            this.rbtnTipoPatente.TabIndex = 19;
+            this.rbtnTipoPatente.Text = "Patente";
+            this.rbtnTipoPatente.UseVisualStyleBackColor = true;
+            this.rbtnTipoPatente.CheckedChanged += new System.EventHandler(this.rbtnTipoPatente_CheckedChanged);
+            // 
             // btnCrearRol
             // 
-            this.btnCrearRol.Location = new System.Drawing.Point(28, 410);
+            this.btnCrearRol.Location = new System.Drawing.Point(28, 460);
             this.btnCrearRol.Name = "btnCrearRol";
-            this.btnCrearRol.Size = new System.Drawing.Size(220, 34);
+            this.btnCrearRol.Size = new System.Drawing.Size(115, 34);
             this.btnCrearRol.TabIndex = 10;
             this.btnCrearRol.Text = "Crear rol";
             this.btnCrearRol.UseVisualStyleBackColor = true;
@@ -141,10 +179,11 @@ namespace UI
             this.cmbPatentesDisponibles.Name = "cmbPatentesDisponibles";
             this.cmbPatentesDisponibles.Size = new System.Drawing.Size(240, 29);
             this.cmbPatentesDisponibles.TabIndex = 11;
+            this.cmbPatentesDisponibles.SelectedIndexChanged += new System.EventHandler(this.cmbPatentesDisponibles_SelectedIndexChanged);
             // 
             // btnAsignarPatente
             // 
-            this.btnAsignarPatente.Location = new System.Drawing.Point(834, 410);
+            this.btnAsignarPatente.Location = new System.Drawing.Point(834, 460);
             this.btnAsignarPatente.Name = "btnAsignarPatente";
             this.btnAsignarPatente.Size = new System.Drawing.Size(115, 34);
             this.btnAsignarPatente.TabIndex = 12;
@@ -172,7 +211,7 @@ namespace UI
             // 
             // btnQuitarPatente
             // 
-            this.btnQuitarPatente.Location = new System.Drawing.Point(959, 410);
+            this.btnQuitarPatente.Location = new System.Drawing.Point(959, 460);
             this.btnQuitarPatente.Name = "btnQuitarPatente";
             this.btnQuitarPatente.Size = new System.Drawing.Size(115, 34);
             this.btnQuitarPatente.TabIndex = 15;
@@ -180,13 +219,24 @@ namespace UI
             this.btnQuitarPatente.UseVisualStyleBackColor = true;
             this.btnQuitarPatente.Click += new System.EventHandler(this.btnQuitarPatente_Click);
             // 
+            // btnEliminarRol
+            // 
+            this.btnEliminarRol.Location = new System.Drawing.Point(155, 460);
+            this.btnEliminarRol.Name = "btnEliminarRol";
+            this.btnEliminarRol.Size = new System.Drawing.Size(115, 34);
+            this.btnEliminarRol.TabIndex = 16;
+            this.btnEliminarRol.Text = "Eliminar rol";
+            this.btnEliminarRol.UseVisualStyleBackColor = true;
+            this.btnEliminarRol.Click += new System.EventHandler(this.btnEliminarRol_Click);
+            // 
             // FrmGestionRoles_83KI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.CornflowerBlue;
-            this.ClientSize = new System.Drawing.Size(1106, 472);
+            this.ClientSize = new System.Drawing.Size(1106, 520);
             this.Controls.Add(this.btnQuitarPatente);
+            this.Controls.Add(this.btnEliminarRol);
             this.Controls.Add(this.lstPatentesRol);
             this.Controls.Add(this.lblPatentesRol);
             this.Controls.Add(this.btnAsignarPatente);
@@ -202,6 +252,9 @@ namespace UI
             this.Controls.Add(this.lblFamiliasRol);
             this.Controls.Add(this.lstRoles);
             this.Controls.Add(this.lblRoles);
+            this.Controls.Add(this.rbtnTipoPatente);
+            this.Controls.Add(this.rbtnTipoFamilia);
+            this.Controls.Add(this.lblTipoComponente);
             this.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.Name = "FrmGestionRoles_83KI";
             this.Text = "Gestion de roles";
@@ -226,5 +279,9 @@ namespace UI
         private System.Windows.Forms.Label lblPatentesRol;
         private System.Windows.Forms.ListBox lstPatentesRol;
         private System.Windows.Forms.Button btnQuitarPatente;
+        private System.Windows.Forms.Button btnEliminarRol;
+        private System.Windows.Forms.Label lblTipoComponente;
+        private System.Windows.Forms.RadioButton rbtnTipoFamilia;
+        private System.Windows.Forms.RadioButton rbtnTipoPatente;
     }
 }

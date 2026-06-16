@@ -99,25 +99,50 @@ namespace DAL
 
         public void EliminarFamilia(int codigoFamilia)
         {
+            // Limpiar relaciones de FamiliaPatente y FamiliaFamilia antes de eliminar la familia
+            _accesoDAL.Escribir(
+                "DELETE FROM FamiliaPatente WHERE CodigoFamilia = @codigoFamilia",
+                new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
+            _accesoDAL.Escribir(
+                "DELETE FROM FamiliaFamilia WHERE CodigoFamiliaPadre = @codigoFamilia OR CodigoFamiliaHija = @codigoFamilia",
+                new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
             _accesoDAL.Escribir(
                 "DELETE FROM Familias WHERE CodigoFamilia = @codigoFamilia",
                 new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
         }
 
-        public bool FamiliaTieneDependencias(int codigoFamilia)
+        public bool FamiliaAsignadaARol(int codigoFamilia)
         {
-            // Suma todas las relaciones que impedirian eliminar la familia.
-            string consulta = @"SELECT
-                                    (SELECT COUNT(1) FROM RolFamilia WHERE CodigoFamilia = @codigoFamilia) +
-                                    (SELECT COUNT(1) FROM FamiliaFamilia WHERE CodigoFamiliaHija = @codigoFamilia) +
-                                    (SELECT COUNT(1) FROM FamiliaFamilia WHERE CodigoFamiliaPadre = @codigoFamilia) +
-                                    (SELECT COUNT(1) FROM FamiliaPatente WHERE CodigoFamilia = @codigoFamilia)";
+            // Solo bloquea el borrado si la familia está referenciada desde RolFamilia
+            string consulta = "SELECT COUNT(1) FROM RolFamilia WHERE CodigoFamilia = @codigoFamilia";
 
             object total = _accesoDAL.LeerEscalar(
                 consulta,
                 new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
 
             return Convert.ToInt32(total) > 0;
+        }
+
+        public bool RolTieneUsuarios(int codigoRol)
+        {
+            string consulta = "SELECT COUNT(1) FROM Usuarios WHERE CodigoRol = @codigoRol";
+            object total = _accesoDAL.LeerEscalar(
+                consulta,
+                new List<SqlParameter> { new SqlParameter("@codigoRol", codigoRol) });
+            return Convert.ToInt32(total) > 0;
+        }
+
+        public void EliminarRol(int codigoRol)
+        {
+            _accesoDAL.Escribir(
+                "DELETE FROM RolPatente WHERE CodigoRol = @codigoRol",
+                new List<SqlParameter> { new SqlParameter("@codigoRol", codigoRol) });
+            _accesoDAL.Escribir(
+                "DELETE FROM RolFamilia WHERE CodigoRol = @codigoRol",
+                new List<SqlParameter> { new SqlParameter("@codigoRol", codigoRol) });
+            _accesoDAL.Escribir(
+                "DELETE FROM Roles WHERE CodigoRol = @codigoRol",
+                new List<SqlParameter> { new SqlParameter("@codigoRol", codigoRol) });
         }
 
         public void AsignarPatenteAFamilia(int codigoFamilia, int codigoPatente)

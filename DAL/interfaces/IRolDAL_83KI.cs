@@ -12,7 +12,7 @@ namespace DAL.interfaces
         Rol_83KI CrearRol(string nombre);
         Familia_83KI CrearFamilia(string nombre);
         void EliminarFamilia(int codigoFamilia);
-        bool FamiliaTieneDependencias(int codigoFamilia);
+        bool FamiliaAsignadaARol(int codigoFamilia);
         void AsignarPatenteAFamilia(int codigoFamilia, int codigoPatente);
         void QuitarPatenteDeFamilia(int codigoFamilia, int codigoPatente);
         void AsignarFamiliaAFamilia(int codigoFamiliaPadre, int codigoFamiliaHija);
@@ -21,5 +21,7 @@ namespace DAL.interfaces
         void QuitarPatenteDeRol(int codigoRol, int codigoPatente);
         void AsignarFamiliaARol(int codigoRol, int codigoFamilia);
         void QuitarFamiliaDeRol(int codigoRol, int codigoFamilia);
+        bool RolTieneUsuarios(int codigoRol);
+        void EliminarRol(int codigoRol);
     }
 }

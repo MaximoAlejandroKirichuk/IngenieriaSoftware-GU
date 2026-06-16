@@ -38,7 +38,7 @@ namespace UI
             { "La patente seleccionada no existe.", "Errores.PatenteNoExiste" },
             { "Ya existe un rol con ese nombre.", "Errores.RolDuplicado" },
             { "Ya existe una familia con ese nombre.", "Errores.FamiliaDuplicada" },
-            { "No se puede eliminar la familia porque tiene dependencias.", "Errores.FamiliaConDependencias" },
+            { "No se puede eliminar la familia porque está asignada a uno o más roles.", "Errores.FamiliaAsignadaARol" },
             { "El nombre es obligatorio.", "Errores.NombreObligatorio" },
             { "El email es obligatorio.", "Errores.EmailObligatorio" },
             { "El formato del email no es valido.", "Errores.EmailFormatoInvalido" },
@@ -47,7 +47,10 @@ namespace UI
             { "La patente ya se encuentra asignada.", "Errores.PatenteAsignada" },
             { "La asignacion duplicaria permisos indirectos.", "Errores.PermisosIndirectosDuplicados" },
             { "No se puede asignar una familia a si misma ni generar ciclos.", "Errores.CicloFamilia" },
-            { "Una patente no puede contener otros permisos.", "Errores.PatenteNoContienePermisos" }
+            { "Una patente no puede contener otros permisos.", "Errores.PatenteNoContienePermisos" },
+            { "La familia debe contener al menos una patente.", "Errores.FamiliaSinPatente" },
+            { "El rol debe contener al menos una patente o familia.", "Errores.RolSinComponente" },
+            { "El rol tiene usuarios asignados.", "Errores.RolConUsuarios" }
         };
 
         public static IGestorIdioma_83KI GestorIdioma

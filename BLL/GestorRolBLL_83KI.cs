@@ -44,7 +44,7 @@ namespace BLL
             return _rolDal.ObtenerPatentes();
         }
 
-        public Rol_83KI CrearRol(string nombre)
+        public Rol_83KI CrearRol(string nombre, int codigoComponenteInicial, bool esFamilia)
         {
             ValidarPermiso(PermisoSistema_83KI.GestionRoles);
 
@@ -55,10 +55,23 @@ namespace BLL
                 throw new InvalidOperationException("Ya existe un rol con ese nombre.");
             }
 
-            return _rolDal.CrearRol(nombreNormalizado);
+            
+            if (esFamilia)
+                ObtenerFamilia(codigoComponenteInicial);
+            else
+                ObtenerPatente(codigoComponenteInicial);
+
+            Rol_83KI rol = _rolDal.CrearRol(nombreNormalizado);
+
+            if (esFamilia)
+                _rolDal.AsignarFamiliaARol(rol.CodigoRol, codigoComponenteInicial);
+            else
+                _rolDal.AsignarPatenteARol(rol.CodigoRol, codigoComponenteInicial);
+
+            return rol;
         }
 
-        public Familia_83KI CrearFamilia(string nombre)
+        public Familia_83KI CrearFamilia(string nombre, int codigoPatenteInicial)
         {
             ValidarPermiso(PermisoSistema_83KI.CrearFamilia);
 
@@ -69,19 +82,36 @@ namespace BLL
                 throw new InvalidOperationException("Ya existe una familia con ese nombre.");
             }
 
-            return _rolDal.CrearFamilia(nombreNormalizado);
+            ObtenerPatente(codigoPatenteInicial);
+
+            Familia_83KI familia = _rolDal.CrearFamilia(nombreNormalizado);
+            _rolDal.AsignarPatenteAFamilia(familia.CodigoFamilia, codigoPatenteInicial);
+
+            return familia;
         }
 
         public void EliminarFamilia(int codigoFamilia)
         {
             ValidarPermiso(PermisoSistema_83KI.EliminarFamilia);
 
-            if (_rolDal.FamiliaTieneDependencias(codigoFamilia))
+            if (_rolDal.FamiliaAsignadaARol(codigoFamilia))
             {
-                throw new InvalidOperationException("No se puede eliminar la familia porque tiene dependencias.");
+                throw new InvalidOperationException("No se puede eliminar la familia porque está asignada a uno o más roles.");
             }
 
             _rolDal.EliminarFamilia(codigoFamilia);
+        }
+
+        public void EliminarRol(int codigoRol)
+        {
+            ValidarPermiso(PermisoSistema_83KI.EliminarRol);
+
+            if (_rolDal.RolTieneUsuarios(codigoRol))
+            {
+                throw new InvalidOperationException("El rol tiene usuarios asignados.");
+            }
+
+            _rolDal.EliminarRol(codigoRol);
         }
 
         public void AsignarPatenteAFamilia(int codigoFamilia, int codigoPatente)
@@ -97,6 +127,19 @@ namespace BLL
         public void QuitarPatenteDeFamilia(int codigoFamilia, int codigoPatente)
         {
             ValidarPermiso(PermisoSistema_83KI.QuitarPatenteFamilia);
+
+            Familia_83KI familia = ObtenerFamilia(codigoFamilia);
+
+            bool hayOtrasPatentesDirectas = familia.Hijos.OfType<Patente_83KI>()
+                .Any(p => p.CodigoPatente != codigoPatente);
+            bool haySubfamiliasConPatentes = familia.Hijos.OfType<Familia_83KI>()
+                .Any(f => f.ObtenerPatentes().Any());
+
+            if (!hayOtrasPatentesDirectas && !haySubfamiliasConPatentes)
+            {
+                throw new InvalidOperationException("La familia debe contener al menos una patente.");
+            }
+
             _rolDal.QuitarPatenteDeFamilia(codigoFamilia, codigoPatente);
         }
 
@@ -113,6 +156,18 @@ namespace BLL
         public void QuitarFamiliaDeFamilia(int codigoFamiliaPadre, int codigoFamiliaHija)
         {
             ValidarPermiso(PermisoSistema_83KI.QuitarSubfamilia);
+
+            Familia_83KI familiaPadre = ObtenerFamilia(codigoFamiliaPadre);
+
+            bool hayPatentesDirectas = familiaPadre.Hijos.OfType<Patente_83KI>().Any();
+            bool hayOtrasSubfamiliasConPatentes = familiaPadre.Hijos.OfType<Familia_83KI>()
+                .Any(f => f.CodigoFamilia != codigoFamiliaHija && f.ObtenerPatentes().Any());
+
+            if (!hayPatentesDirectas && !hayOtrasSubfamiliasConPatentes)
+            {
+                throw new InvalidOperationException("La familia debe contener al menos una patente.");
+            }
+
             _rolDal.QuitarFamiliaDeFamilia(codigoFamiliaPadre, codigoFamiliaHija);
         }
 
@@ -129,6 +184,18 @@ namespace BLL
         public void QuitarPatenteDeRol(int codigoRol, int codigoPatente)
         {
             ValidarPermiso(PermisoSistema_83KI.QuitarPatenteRol);
+
+            Rol_83KI rol = ObtenerRol(codigoRol);
+
+            bool hayOtrasPatentesDirectas = rol.PatentesDirectas
+                .Any(p => p.CodigoPatente != codigoPatente);
+            bool hayFamilias = rol.Familias.Any();
+
+            if (!hayOtrasPatentesDirectas && !hayFamilias)
+            {
+                throw new InvalidOperationException("El rol debe contener al menos una patente o familia.");
+            }
+
             _rolDal.QuitarPatenteDeRol(codigoRol, codigoPatente);
         }
 
@@ -145,6 +212,18 @@ namespace BLL
         public void QuitarFamiliaDeRol(int codigoRol, int codigoFamilia)
         {
             ValidarPermiso(PermisoSistema_83KI.QuitarFamiliaRol);
+
+            Rol_83KI rol = ObtenerRol(codigoRol);
+
+            bool hayOtrasFamilias = rol.Familias
+                .Any(f => f.CodigoFamilia != codigoFamilia);
+            bool hayPatentesDirectas = rol.PatentesDirectas.Any();
+
+            if (!hayOtrasFamilias && !hayPatentesDirectas)
+            {
+                throw new InvalidOperationException("El rol debe contener al menos una patente o familia.");
+            }
+
             _rolDal.QuitarFamiliaDeRol(codigoRol, codigoFamilia);
         }
 
