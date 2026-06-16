@@ -66,7 +66,6 @@ namespace UI
                 return;
             }
 
-            // Reiniciar selección de tipo de componente al cargar
             rbtnTipoFamilia.Checked = true;
 
             lstRoles.DataSource = null;

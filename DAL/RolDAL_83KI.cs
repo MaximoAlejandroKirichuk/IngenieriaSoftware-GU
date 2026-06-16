@@ -99,7 +99,6 @@ namespace DAL
 
         public void EliminarFamilia(int codigoFamilia)
         {
-            // Limpiar relaciones de FamiliaPatente y FamiliaFamilia antes de eliminar la familia
             _accesoDAL.Escribir(
                 "DELETE FROM FamiliaPatente WHERE CodigoFamilia = @codigoFamilia",
                 new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
@@ -113,7 +112,6 @@ namespace DAL
 
         public bool FamiliaAsignadaARol(int codigoFamilia)
         {
-            // Solo bloquea el borrado si la familia está referenciada desde RolFamilia
             string consulta = "SELECT COUNT(1) FROM RolFamilia WHERE CodigoFamilia = @codigoFamilia";
 
             object total = _accesoDAL.LeerEscalar(
