@@ -256,7 +256,7 @@ namespace DAL
 
                     if (roles.ContainsKey(codigoRol) && patentes.ContainsKey(codigoPatente))
                     {
-                        roles[codigoRol].CargarHijoDesdePersistencia(patentes[codigoPatente]);
+                        roles[codigoRol].CargarPatenteDesdePersistencia(patentes[codigoPatente]);
                     }
                 }
             }
@@ -272,7 +272,7 @@ namespace DAL
 
                     if (roles.ContainsKey(codigoRol) && familias.ContainsKey(codigoFamilia))
                     {
-                        roles[codigoRol].CargarHijoDesdePersistencia(familias[codigoFamilia]);
+                        roles[codigoRol].CargarFamiliaDesdePersistencia(familias[codigoFamilia]);
                     }
                 }
             }
