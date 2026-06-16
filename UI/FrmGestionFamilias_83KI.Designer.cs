@@ -137,6 +137,7 @@ namespace UI
             this.lstPatentesDisponibles.Name = "lstPatentesDisponibles";
             this.lstPatentesDisponibles.Size = new System.Drawing.Size(318, 214);
             this.lstPatentesDisponibles.TabIndex = 8;
+            this.lstPatentesDisponibles.SelectedIndexChanged += new System.EventHandler(this.lstPatentesDisponibles_SelectedIndexChanged);
             // 
             // btnAgregarPatente
             // 

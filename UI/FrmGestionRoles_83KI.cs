@@ -43,12 +43,16 @@ namespace UI
             treeContenidoFamilia.Visible = puedeVerPermisosEfectivos;
             lblPatentesRol.Visible = puedeVerPermisosEfectivos;
             lstPatentesRol.Visible = puedeVerPermisosEfectivos;
-            cmbFamiliasDisponibles.Visible = puedeAgregarFamilia;
+            cmbFamiliasDisponibles.Visible = puedeAgregarFamilia || puedeGestionarRoles;
             btnAgregarFamilia.Visible = puedeAgregarFamilia;
             btnQuitarFamilia.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarFamiliaRol);
-            cmbPatentesDisponibles.Visible = puedeAsignarPatente;
+            cmbPatentesDisponibles.Visible = puedeAsignarPatente || puedeGestionarRoles;
             btnAsignarPatente.Visible = puedeAsignarPatente;
             btnQuitarPatente.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarPatenteRol);
+            btnEliminarRol.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.EliminarRol);
+            rbtnTipoFamilia.Visible = puedeGestionarRoles;
+            rbtnTipoPatente.Visible = puedeGestionarRoles;
+            lblTipoComponente.Visible = puedeGestionarRoles;
         }
 
         private void CargarDatos()
@@ -61,6 +65,8 @@ namespace UI
                 lstPatentesRol.DataSource = null;
                 return;
             }
+
+            rbtnTipoFamilia.Checked = true;
 
             lstRoles.DataSource = null;
             lstRoles.DisplayMember = nameof(Rol_83KI.Nombre);
@@ -195,9 +201,33 @@ namespace UI
                 return;
             }
 
+            bool esFamilia = rbtnTipoFamilia.Checked;
+            int codigoComponente;
+
+            if (esFamilia)
+            {
+                Familia_83KI familiaSeleccionada = cmbFamiliasDisponibles.SelectedItem as Familia_83KI;
+                if (familiaSeleccionada == null)
+                {
+                    IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Errores.RolSinComponente", "FrmGestionRoles.Titulo");
+                    return;
+                }
+                codigoComponente = familiaSeleccionada.CodigoFamilia;
+            }
+            else
+            {
+                Patente_83KI patenteSeleccionada = cmbPatentesDisponibles.SelectedItem as Patente_83KI;
+                if (patenteSeleccionada == null)
+                {
+                    IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Errores.RolSinComponente", "FrmGestionRoles.Titulo");
+                    return;
+                }
+                codigoComponente = patenteSeleccionada.CodigoPatente;
+            }
+
             EjecutarOperacion(() =>
             {
-                _gestorRol.CrearRol(nombre);
+                _gestorRol.CrearRol(nombre, codigoComponente, esFamilia);
                 txtNombreRol.Clear();
             });
         }
@@ -263,6 +293,60 @@ namespace UI
             EjecutarOperacion(() => _gestorRol.QuitarFamiliaDeRol(rol.CodigoRol, familia.CodigoFamilia));
         }
 
+        private void btnEliminarRol_Click(object sender, EventArgs e)
+        {
+            Rol_83KI rol = ObtenerRolSeleccionado();
+
+            if (rol == null)
+            {
+                return;
+            }
+
+            EjecutarOperacion(() => _gestorRol.EliminarRol(rol.CodigoRol));
+        }
+
+        private void rbtnTipoFamilia_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbtnTipoFamilia.Checked)
+                SincronizarControlesTipoComponente();
+        }
+
+        private void rbtnTipoPatente_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbtnTipoPatente.Checked)
+                SincronizarControlesTipoComponente();
+        }
+
+        private void SincronizarControlesTipoComponente()
+        {
+            bool esFamilia = rbtnTipoFamilia.Checked;
+            cmbFamiliasDisponibles.Enabled = esFamilia;
+            cmbPatentesDisponibles.Enabled = !esFamilia;
+            ActualizarBotonCrearRol();
+        }
+
+        private void cmbFamiliasDisponibles_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ActualizarBotonCrearRol();
+        }
+
+        private void cmbPatentesDisponibles_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ActualizarBotonCrearRol();
+        }
+
+        private void ActualizarBotonCrearRol()
+        {
+            bool puedeCrear = false;
+
+            if (rbtnTipoFamilia.Checked)
+                puedeCrear = cmbFamiliasDisponibles.SelectedItem is Familia_83KI;
+            else
+                puedeCrear = cmbPatentesDisponibles.SelectedItem is Patente_83KI;
+
+            btnCrearRol.Enabled = puedeCrear;
+        }
+
         private void EjecutarOperacion(Action operacion)
         {
             try
@@ -283,9 +367,13 @@ namespace UI
             lblFamiliasRol.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.FamiliasRol");
             lblPatentesFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.ContenidoFamilia");
             lblPatentesRol.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.PatentesRol");
+            lblTipoComponente.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.TipoComponente");
+            rbtnTipoFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.TipoFamilia");
+            rbtnTipoPatente.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.TipoPatente");
             btnAgregarFamilia.Text = IdiomaUiHelper_83KI.Texto("Comun.Agregar");
             btnQuitarFamilia.Text = IdiomaUiHelper_83KI.Texto("Comun.Quitar");
             btnCrearRol.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.CrearRol");
+            btnEliminarRol.Text = IdiomaUiHelper_83KI.Texto("FrmGestionRoles.EliminarRol");
             btnAsignarPatente.Text = IdiomaUiHelper_83KI.Texto("Comun.Asignar");
             btnQuitarPatente.Text = IdiomaUiHelper_83KI.Texto("Comun.Quitar");
         }

@@ -51,7 +51,7 @@
     "Errores.PatenteNoExiste": "La patente seleccionada no existe.",
     "Errores.RolDuplicado": "Ya existe un rol con ese nombre.",
     "Errores.FamiliaDuplicada": "Ya existe una familia con ese nombre.",
-    "Errores.FamiliaConDependencias": "No se puede eliminar la familia porque tiene dependencias.",
+    "Errores.FamiliaAsignadaARol": "No se puede eliminar la familia porque está asignada a uno o más roles.",
     "Errores.NombreObligatorio": "El nombre es obligatorio.",
     "Errores.EmailObligatorio": "El email es obligatorio.",
     "Errores.EmailFormatoInvalido": "El formato del email no es válido.",
@@ -60,6 +60,9 @@
     "Errores.PermisosIndirectosDuplicados": "La asignación duplicaría permisos indirectos.",
     "Errores.CicloFamilia": "No se puede asignar una familia a sí misma ni generar ciclos.",
     "Errores.PatenteNoContienePermisos": "Una patente no puede contener otros permisos.",
+    "Errores.FamiliaSinPatente": "La familia debe contener al menos una patente.",
+    "Errores.RolSinComponente": "El rol debe contener al menos una patente o familia.",
+    "Errores.RolConUsuarios": "No se puede eliminar el rol porque tiene usuarios asignados.",
     "Errores.UsuarioSeleccionadoHabilitado": "El usuario seleccionado ya se encuentra habilitado.",
     "Errores.UsuarioSeleccionadoDeshabilitado": "El usuario seleccionado ya se encuentra deshabilitado.",
 
@@ -163,6 +166,10 @@
     "FrmGestionRoles.ContenidoFamilia": "Contenido de la familia",
     "FrmGestionRoles.PatentesRol": "Patentes del rol",
     "FrmGestionRoles.CrearRol": "Crear rol",
+    "FrmGestionRoles.EliminarRol": "Eliminar rol",
+    "FrmGestionRoles.TipoComponente": "Tipo de componente inicial",
+    "FrmGestionRoles.TipoFamilia": "Familia",
+    "FrmGestionRoles.TipoPatente": "Patente",
     "FrmGestionRoles.PatenteIndirecta": "La patente seleccionada pertenece a una familia del rol. Para quitarla, quite la familia o modifique su contenido.",
 
     "FrmGestionFamilias.Titulo": "Gestión de familias",
@@ -178,6 +185,7 @@
     "FrmGestionFamilias.FamiliasDisponibles": "Familias disponibles",
     "FrmGestionFamilias.AgregarSubfamilia": "Agregar subfamilia",
     "FrmGestionFamilias.QuitarPatente": "Quitar patente",
-    "FrmGestionFamilias.QuitarSubfamilia": "Quitar subfamilia"
+    "FrmGestionFamilias.QuitarSubfamilia": "Quitar subfamilia",
+    "FrmGestionFamilias.PatenteParaNuevaFamilia": "Seleccione una patente para la nueva familia"
   }
 }

@@ -51,7 +51,7 @@
     "Errores.PatenteNoExiste": "The selected patent does not exist.",
     "Errores.RolDuplicado": "A role with that name already exists.",
     "Errores.FamiliaDuplicada": "A family with that name already exists.",
-    "Errores.FamiliaConDependencias": "The family cannot be deleted because it has dependencies.",
+    "Errores.FamiliaAsignadaARol": "The family cannot be deleted because it is assigned to one or more roles.",
     "Errores.NombreObligatorio": "Name is required.",
     "Errores.EmailObligatorio": "Email is required.",
     "Errores.EmailFormatoInvalido": "The email format is invalid.",
@@ -60,6 +60,9 @@
     "Errores.PermisosIndirectosDuplicados": "The assignment would duplicate indirect permissions.",
     "Errores.CicloFamilia": "A family cannot be assigned to itself or generate cycles.",
     "Errores.PatenteNoContienePermisos": "A patent cannot contain other permissions.",
+    "Errores.FamiliaSinPatente": "The family must contain at least one patent.",
+    "Errores.RolSinComponente": "The role must contain at least one patent or family.",
+    "Errores.RolConUsuarios": "The role cannot be deleted because it has users assigned.",
     "Errores.UsuarioSeleccionadoHabilitado": "The selected user is already enabled.",
     "Errores.UsuarioSeleccionadoDeshabilitado": "The selected user is already disabled.",
 
@@ -163,6 +166,10 @@
     "FrmGestionRoles.ContenidoFamilia": "Family content",
     "FrmGestionRoles.PatentesRol": "Role patents",
     "FrmGestionRoles.CrearRol": "Create role",
+    "FrmGestionRoles.EliminarRol": "Delete role",
+    "FrmGestionRoles.TipoComponente": "Initial component type",
+    "FrmGestionRoles.TipoFamilia": "Family",
+    "FrmGestionRoles.TipoPatente": "Patent",
     "FrmGestionRoles.PatenteIndirecta": "The selected patent belongs to a role family. To remove it, remove the family or modify its content.",
 
     "FrmGestionFamilias.Titulo": "Family management",
@@ -178,6 +185,7 @@
     "FrmGestionFamilias.FamiliasDisponibles": "Available families",
     "FrmGestionFamilias.AgregarSubfamilia": "Add subfamily",
     "FrmGestionFamilias.QuitarPatente": "Remove patent",
-    "FrmGestionFamilias.QuitarSubfamilia": "Remove subfamily"
+    "FrmGestionFamilias.QuitarSubfamilia": "Remove subfamily",
+    "FrmGestionFamilias.PatenteParaNuevaFamilia": "Select a patent for the new family"
   }
 }

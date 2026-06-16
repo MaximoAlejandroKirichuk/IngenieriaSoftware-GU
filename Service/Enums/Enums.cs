@@ -55,6 +55,7 @@ namespace Service.Entidades
         FiltrarBitacoraEventos = 32,
         LimpiarFiltrosBitacora = 33,
         ExportarBitacoraPdf = 34,
-        GestionAdmin = 35
+        GestionAdmin = 35,
+        EliminarRol = 36
     }
 }
