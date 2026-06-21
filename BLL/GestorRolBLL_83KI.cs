@@ -12,16 +12,23 @@ namespace BLL
     {
         private readonly IRolDAL_83KI _rolDal;
         private readonly ISessionManager_83KI _sessionManager;
+        private readonly IBitacoraManager_83KI _bitacoraManager;
 
         public GestorRolBLL_83KI(IRolDAL_83KI rolDal)
-            : this(rolDal, SessionManager_83KI.Instancia)
+            : this(rolDal, SessionManager_83KI.Instancia, null)
         {
         }
 
         public GestorRolBLL_83KI(IRolDAL_83KI rolDal, ISessionManager_83KI sessionManager)
+            : this(rolDal, sessionManager, null)
+        {
+        }
+
+        public GestorRolBLL_83KI(IRolDAL_83KI rolDal, ISessionManager_83KI sessionManager, IBitacoraManager_83KI bitacoraManager)
         {
             _rolDal = rolDal;
             _sessionManager = sessionManager;
+            _bitacoraManager = bitacoraManager;
         }
 
         public IEnumerable<Rol_83KI> ObtenerRoles()
@@ -44,7 +51,7 @@ namespace BLL
             return _rolDal.ObtenerPatentes();
         }
 
-        public Rol_83KI CrearRol(string nombre, int codigoComponenteInicial, bool esFamilia)
+        public Rol_83KI CrearRol(string nombre, List<int> codigosPatentes, List<int> codigosFamilias)
         {
             ValidarPermiso(PermisoSistema_83KI.GestionRoles);
 
@@ -55,23 +62,83 @@ namespace BLL
                 throw new InvalidOperationException("Ya existe un rol con ese nombre.");
             }
 
-            
-            if (esFamilia)
-                ObtenerFamilia(codigoComponenteInicial);
-            else
-                ObtenerPatente(codigoComponenteInicial);
+            List<int> patentes = codigosPatentes ?? new List<int>();
+            List<int> familias = codigosFamilias ?? new List<int>();
 
-            Rol_83KI rol = _rolDal.CrearRol(nombreNormalizado);
+            if (patentes.Count == 0 && familias.Count == 0)
+            {
+                throw new InvalidOperationException("El rol debe contener al menos una patente o familia.");
+            }
 
-            if (esFamilia)
-                _rolDal.AsignarFamiliaARol(rol.CodigoRol, codigoComponenteInicial);
-            else
-                _rolDal.AsignarPatenteARol(rol.CodigoRol, codigoComponenteInicial);
+            // Validar que todas las entidades referenciadas existan
+            foreach (int codigoPatente in patentes)
+            {
+                ObtenerPatente(codigoPatente);
+            }
+
+            List<Familia_83KI> familiasCargadas = new List<Familia_83KI>();
+            foreach (int codigoFamilia in familias)
+            {
+                familiasCargadas.Add(ObtenerFamilia(codigoFamilia));
+            }
+
+            // Evitar asignaciones lógicas duplicadas: asegurar que las patentes directas no
+            // estén ya cubiertas por la jerarquía de patentes de alguna familia seleccionada
+            HashSet<int> patentesDesdeFamilias = new HashSet<int>();
+            foreach (Familia_83KI familia in familiasCargadas)
+            {
+                foreach (Patente_83KI p in familia.ObtenerPatentes())
+                {
+                    patentesDesdeFamilias.Add(p.CodigoPatente);
+                }
+            }
+
+            foreach (int codigoPatente in patentes)
+            {
+                if (patentesDesdeFamilias.Contains(codigoPatente))
+                {
+                    throw new InvalidOperationException("La asignacion duplicaria permisos indirectos.");
+                }
+            }
+
+            // Evitar superposición entre familias seleccionadas: si dos familias comparten patentes,
+            // la asignación genera permisos duplicados
+            for (int i = 0; i < familiasCargadas.Count; i++)
+            {
+                HashSet<int> patentesI = new HashSet<int>(
+                    familiasCargadas[i].ObtenerPatentes().Select(p => p.CodigoPatente));
+                for (int j = i + 1; j < familiasCargadas.Count; j++)
+                {
+                    foreach (Patente_83KI p in familiasCargadas[j].ObtenerPatentes())
+                    {
+                        if (patentesI.Contains(p.CodigoPatente))
+                        {
+                            throw new InvalidOperationException("La asignacion duplicaria permisos indirectos.");
+                        }
+                    }
+                }
+            }
+
+            // Evitar familias duplicadas
+            if (familias.Distinct().Count() != familias.Count)
+            {
+                throw new InvalidOperationException("Hay familias duplicadas en la seleccion.");
+            }
+
+            // Evitar patentes duplicadas
+            if (patentes.Distinct().Count() != patentes.Count)
+            {
+                throw new InvalidOperationException("Hay patentes duplicadas en la seleccion.");
+            }
+
+            Rol_83KI rol = _rolDal.CrearRolConComponentes(nombreNormalizado, patentes, familias);
+
+            RegistrarAuditoria(string.Format("Nuevo rol creado: {0}", nombreNormalizado));
 
             return rol;
         }
 
-        public Familia_83KI CrearFamilia(string nombre, int codigoPatenteInicial)
+        public Familia_83KI CrearFamilia(string nombre, List<int> codigosPatentes, List<int> codigosFamilias)
         {
             ValidarPermiso(PermisoSistema_83KI.CrearFamilia);
 
@@ -82,10 +149,101 @@ namespace BLL
                 throw new InvalidOperationException("Ya existe una familia con ese nombre.");
             }
 
-            ObtenerPatente(codigoPatenteInicial);
+            List<int> patentes = codigosPatentes ?? new List<int>();
+            List<int> familias = codigosFamilias ?? new List<int>();
 
-            Familia_83KI familia = _rolDal.CrearFamilia(nombreNormalizado);
-            _rolDal.AsignarPatenteAFamilia(familia.CodigoFamilia, codigoPatenteInicial);
+            // Regla de negocio: la familia debe tener al menos una patente en su jerarquía (directa o indirecta)
+            bool tienePatenteDirecta = patentes.Count > 0;
+
+            bool tienePatenteIndirecta = false;
+            List<Familia_83KI> familiasCargadas = new List<Familia_83KI>();
+            foreach (int codigoFamilia in familias)
+            {
+                Familia_83KI familiaCargada = ObtenerFamilia(codigoFamilia);
+                familiasCargadas.Add(familiaCargada);
+                if (familiaCargada.ObtenerPatentes().Any())
+                {
+                    tienePatenteIndirecta = true;
+                }
+            }
+
+            if (!tienePatenteDirecta && !tienePatenteIndirecta)
+            {
+                throw new InvalidOperationException("La familia debe contener al menos una patente.");
+            }
+
+            // Validar que todas las entidades referenciadas existan
+            foreach (int codigoPatente in patentes)
+            {
+                ObtenerPatente(codigoPatente);
+            }
+
+            // Evitar referencias circulares: asegurar que ninguna familia seleccionada contenga
+            // (transitivamente) a otra familia seleccionada, y que ninguna familia seleccionada
+            // contenga una patente ya seleccionada
+            HashSet<int> familiasSeleccionadas = new HashSet<int>(familias);
+            HashSet<int> patentesSeleccionadas = new HashSet<int>(patentes);
+
+            foreach (Familia_83KI famCargada in familiasCargadas)
+            {
+                // Una familia no puede contenerse a sí misma
+                if (familiasSeleccionadas.Contains(famCargada.CodigoFamilia))
+                {
+                    // Verificar contención transitiva: si alguna otra familia seleccionada
+                    // está dentro de la jerarquía de esta familia, hay riesgo de ciclo
+                    foreach (Familia_83KI otra in familiasCargadas)
+                    {
+                        if (otra.CodigoFamilia != famCargada.CodigoFamilia &&
+                            famCargada.Contiene(otra))
+                        {
+                            throw new InvalidOperationException("No se puede asignar una familia a si misma ni generar ciclos.");
+                        }
+                    }
+                }
+
+                // Verificar asignaciones de patentes duplicadas entre la patente seleccionada y las patentes de la familia
+                foreach (Patente_83KI p in famCargada.ObtenerPatentes())
+                {
+                    if (patentesSeleccionadas.Contains(p.CodigoPatente))
+                    {
+                        throw new InvalidOperationException("La asignacion duplicaria permisos indirectos.");
+                    }
+                }
+            }
+
+            // Evitar superposición entre subfamilias seleccionadas: si dos familias comparten patentes,
+            // la asignación genera permisos duplicados
+            for (int i = 0; i < familiasCargadas.Count; i++)
+            {
+                HashSet<int> patentesI = new HashSet<int>(
+                    familiasCargadas[i].ObtenerPatentes().Select(p => p.CodigoPatente));
+                for (int j = i + 1; j < familiasCargadas.Count; j++)
+                {
+                    foreach (Patente_83KI p in familiasCargadas[j].ObtenerPatentes())
+                    {
+                        if (patentesI.Contains(p.CodigoPatente))
+                        {
+                            throw new InvalidOperationException("La asignacion duplicaria permisos indirectos.");
+                        }
+                    }
+                }
+            }
+
+            // Evitar familias duplicadas
+            if (familias.Distinct().Count() != familias.Count)
+            {
+                throw new InvalidOperationException("Hay familias duplicadas en la seleccion.");
+            }
+
+            // Evitar patentes duplicadas
+            if (patentes.Distinct().Count() != patentes.Count)
+            {
+                throw new InvalidOperationException("Hay patentes duplicadas en la seleccion.");
+            }
+
+            Familia_83KI familia = _rolDal.CrearFamiliaConComponentes(nombreNormalizado, patentes, familias);
+
+            RegistrarAuditoria(string.Format("Nueva familia creada: {0}", nombreNormalizado));
 
             return familia;
         }
@@ -97,6 +255,11 @@ namespace BLL
             if (_rolDal.FamiliaAsignadaARol(codigoFamilia))
             {
                 throw new InvalidOperationException("No se puede eliminar la familia porque está asignada a uno o más roles.");
+            }
+
+            if (_rolDal.FamiliaEsSubfamiliaDeOtra(codigoFamilia))
+            {
+                throw new InvalidOperationException("No se puede eliminar la familia porque es subfamilia de otra familia.");
             }
 
             _rolDal.EliminarFamilia(codigoFamilia);
@@ -120,6 +283,10 @@ namespace BLL
 
             Familia_83KI familia = ObtenerFamilia(codigoFamilia);
             Patente_83KI patente = ObtenerPatente(codigoPatente);
+
+            ValidarPatenteEnCadenaAncestral(familia, codigoPatente);
+            ValidarPatenteEnRolesQueContienenFamilia(familia, patente);
+
             familia.Agregar(patente);
             _rolDal.AsignarPatenteAFamilia(codigoFamilia, codigoPatente);
         }
@@ -149,6 +316,9 @@ namespace BLL
 
             Familia_83KI familiaPadre = ObtenerFamilia(codigoFamiliaPadre);
             Familia_83KI familiaHija = ObtenerFamilia(codigoFamiliaHija);
+
+            ValidarFamiliaEnCadenaAncestral(familiaPadre, familiaHija);
+
             familiaPadre.Agregar(familiaHija);
             _rolDal.AsignarFamiliaAFamilia(codigoFamiliaPadre, codigoFamiliaHija);
         }
@@ -278,6 +448,114 @@ namespace BLL
             if (!_sessionManager.TienePermiso(permiso))
             {
                 throw new InvalidOperationException("No tiene permisos para realizar esta accion.");
+            }
+        }
+
+        private void ValidarPatenteEnCadenaAncestral(Familia_83KI familiaDestino, int codigoPatente)
+        {
+            foreach (Familia_83KI familia in _rolDal.ObtenerFamilias())
+            {
+                if (familia.CodigoFamilia == familiaDestino.CodigoFamilia)
+                    continue;
+
+                if (familia.Contiene(familiaDestino))
+                {
+                    if (familia.ObtenerPatentes().Any(p => p.CodigoPatente == codigoPatente))
+                    {
+                        throw new InvalidOperationException("La asignacion duplicaria permisos indirectos.");
+                    }
+                }
+            }
+        }
+
+        private void ValidarPatenteEnRolesQueContienenFamilia(Familia_83KI familiaDestino, Patente_83KI patente)
+        {
+            foreach (Rol_83KI rol in _rolDal.ObtenerRolesConPermisos())
+            {
+                if (!RolContieneFamilia(rol, familiaDestino))
+                {
+                    continue;
+                }
+
+                if (rol.PatentesDirectas.Any(p => p.CodigoPatente == patente.CodigoPatente))
+                {
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "Errores.PatenteDuplicadaEnRolDirecto|{0}|{1}|{2}",
+                            patente.Nombre,
+                            familiaDestino.Nombre,
+                            rol.Nombre));
+                }
+
+                Familia_83KI familiaDuplicada = rol.Familias.FirstOrDefault(f =>
+                    !PerteneceARamaDeFamiliaDestino(f, familiaDestino)
+                    && f.ObtenerPatentes().Any(p => p.CodigoPatente == patente.CodigoPatente));
+
+                if (familiaDuplicada != null)
+                {
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "Errores.PatenteDuplicadaEnRolPorFamilia|{0}|{1}|{2}|{3}",
+                            patente.Nombre,
+                            familiaDestino.Nombre,
+                            rol.Nombre,
+                            familiaDuplicada.Nombre));
+                }
+            }
+        }
+
+        private bool RolContieneFamilia(Rol_83KI rol, Familia_83KI familiaDestino)
+        {
+            return rol.Familias.Any(f => PerteneceARamaDeFamiliaDestino(f, familiaDestino));
+        }
+
+        private bool PerteneceARamaDeFamiliaDestino(Familia_83KI familia, Familia_83KI familiaDestino)
+        {
+            return familia.CodigoFamilia == familiaDestino.CodigoFamilia || familia.Contiene(familiaDestino);
+        }
+
+        private void ValidarFamiliaEnCadenaAncestral(Familia_83KI familiaPadre, Familia_83KI familiaHija)
+        {
+            HashSet<int> patentesHija = new HashSet<int>(
+                familiaHija.ObtenerPatentes().Select(p => p.CodigoPatente));
+
+            if (patentesHija.Count == 0)
+                return;
+
+            foreach (Familia_83KI familia in _rolDal.ObtenerFamilias())
+            {
+                if (familia.CodigoFamilia == familiaPadre.CodigoFamilia)
+                    continue;
+
+                if (familia.Contiene(familiaPadre))
+                {
+                    if (familia.ObtenerPatentes().Any(p => patentesHija.Contains(p.CodigoPatente)))
+                    {
+                        throw new InvalidOperationException("La asignacion duplicaria permisos indirectos.");
+                    }
+                }
+            }
+        }
+
+        private void RegistrarAuditoria(string descripcion)
+        {
+            if (_bitacoraManager == null || _sessionManager.UsuarioActivo == null)
+            {
+                return;
+            }
+
+            try
+            {
+                BitacoraEvento_83KI evento = BitacoraEvento_83KI.CrearNuevo(
+                    descripcion,
+                    Criticidad.Bajo,
+                    Modulo.Seguridad,
+                    _sessionManager.UsuarioActivo.UserName);
+                _bitacoraManager.RegistrarEvento(evento);
+            }
+            catch
+            {
+                // Un error de auditoría no debe interrumpir el flujo de creación
             }
         }
     }

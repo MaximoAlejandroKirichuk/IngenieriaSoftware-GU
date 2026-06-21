@@ -15,211 +15,364 @@ namespace UI
 
         private void InitializeComponent()
         {
-            this.rdbSeleccionarFamilia = new System.Windows.Forms.RadioButton();
-            this.rdbCrearFamilia = new System.Windows.Forms.RadioButton();
-            this.lblFamilia = new System.Windows.Forms.Label();
-            this.cmbFamilias = new System.Windows.Forms.ComboBox();
-            this.txtNombreFamilia = new System.Windows.Forms.TextBox();
+            this.tabPrincipal = new System.Windows.Forms.TabControl();
+            this.tabCrear = new System.Windows.Forms.TabPage();
+            this.btnLimpiarCreacion = new System.Windows.Forms.Button();
             this.btnCrearFamilia = new System.Windows.Forms.Button();
+            this.clbFamiliasCreacion = new System.Windows.Forms.CheckedListBox();
+            this.lblSubfamilias = new System.Windows.Forms.Label();
+            this.lstPatentesDisponibles = new System.Windows.Forms.CheckedListBox();
+            this.lblPatentes = new System.Windows.Forms.Label();
+            this.txtNombreFamilia = new System.Windows.Forms.TextBox();
+            this.lblNombre = new System.Windows.Forms.Label();
+            this.tabGestionar = new System.Windows.Forms.TabPage();
+            this.pnlAcciones = new System.Windows.Forms.Panel();
+            this.lblPatentesGestion = new System.Windows.Forms.Label();
+            this.cmbPatenteAgregar = new System.Windows.Forms.ComboBox();
+            this.btnAgregarPatente = new System.Windows.Forms.Button();
+            this.btnQuitarPatente = new System.Windows.Forms.Button();
+            this.lblSubfamiliasGestion = new System.Windows.Forms.Label();
+            this.cmbSubfamiliaAgregar = new System.Windows.Forms.ComboBox();
+            this.btnAgregarSubfamilia = new System.Windows.Forms.Button();
+            this.btnQuitarSubfamilia = new System.Windows.Forms.Button();
             this.btnEliminarFamilia = new System.Windows.Forms.Button();
             this.treeFamilia = new System.Windows.Forms.TreeView();
-            this.btnQuitarSeleccion = new System.Windows.Forms.Button();
-            this.lblPatentes = new System.Windows.Forms.Label();
-            this.lstPatentesDisponibles = new System.Windows.Forms.ListBox();
-            this.btnAgregarPatente = new System.Windows.Forms.Button();
-            this.lblFamiliasDisponibles = new System.Windows.Forms.Label();
-            this.cmbFamiliasDisponibles = new System.Windows.Forms.ComboBox();
-            this.btnAgregarFamilia = new System.Windows.Forms.Button();
+            this.lblDetalleFamilia = new System.Windows.Forms.Label();
+            this.cmbFamiliaExistente = new System.Windows.Forms.ComboBox();
+            this.lblFamiliasExistentes = new System.Windows.Forms.Label();
+            this.tabPrincipal.SuspendLayout();
+            this.tabCrear.SuspendLayout();
+            this.tabGestionar.SuspendLayout();
+            this.pnlAcciones.SuspendLayout();
             this.SuspendLayout();
             // 
-            // rdbSeleccionarFamilia
+            // tabPrincipal
             // 
-            this.rdbSeleccionarFamilia.AutoSize = true;
-            this.rdbSeleccionarFamilia.Location = new System.Drawing.Point(28, 24);
-            this.rdbSeleccionarFamilia.Name = "rdbSeleccionarFamilia";
-            this.rdbSeleccionarFamilia.Size = new System.Drawing.Size(215, 25);
-            this.rdbSeleccionarFamilia.TabIndex = 0;
-            this.rdbSeleccionarFamilia.TabStop = true;
-            this.rdbSeleccionarFamilia.Text = "Seleccionar familia existente";
-            this.rdbSeleccionarFamilia.UseVisualStyleBackColor = true;
-            this.rdbSeleccionarFamilia.CheckedChanged += new System.EventHandler(this.rdbSeleccionarFamilia_CheckedChanged);
+            this.tabPrincipal.Controls.Add(this.tabCrear);
+            this.tabPrincipal.Controls.Add(this.tabGestionar);
+            this.tabPrincipal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabPrincipal.Location = new System.Drawing.Point(12, 12);
+            this.tabPrincipal.Name = "tabPrincipal";
+            this.tabPrincipal.SelectedIndex = 0;
+            this.tabPrincipal.Size = new System.Drawing.Size(790, 777);
+            this.tabPrincipal.TabIndex = 0;
             // 
-            // rdbCrearFamilia
+            // tabCrear
             // 
-            this.rdbCrearFamilia.AutoSize = true;
-            this.rdbCrearFamilia.Location = new System.Drawing.Point(28, 54);
-            this.rdbCrearFamilia.Name = "rdbCrearFamilia";
-            this.rdbCrearFamilia.Size = new System.Drawing.Size(118, 25);
-            this.rdbCrearFamilia.TabIndex = 1;
-            this.rdbCrearFamilia.TabStop = true;
-            this.rdbCrearFamilia.Text = "Crear familia";
-            this.rdbCrearFamilia.UseVisualStyleBackColor = true;
-            this.rdbCrearFamilia.CheckedChanged += new System.EventHandler(this.rdbSeleccionarFamilia_CheckedChanged);
+            this.tabCrear.Controls.Add(this.btnLimpiarCreacion);
+            this.tabCrear.Controls.Add(this.btnCrearFamilia);
+            this.tabCrear.Controls.Add(this.clbFamiliasCreacion);
+            this.tabCrear.Controls.Add(this.lblSubfamilias);
+            this.tabCrear.Controls.Add(this.lstPatentesDisponibles);
+            this.tabCrear.Controls.Add(this.lblPatentes);
+            this.tabCrear.Controls.Add(this.txtNombreFamilia);
+            this.tabCrear.Controls.Add(this.lblNombre);
+            this.tabCrear.Location = new System.Drawing.Point(4, 30);
+            this.tabCrear.Name = "tabCrear";
+            this.tabCrear.Padding = new System.Windows.Forms.Padding(12);
+            this.tabCrear.Size = new System.Drawing.Size(768, 622);
+            this.tabCrear.TabIndex = 0;
+            this.tabCrear.Text = "Crear familia";
+            this.tabCrear.UseVisualStyleBackColor = true;
             // 
-            // lblFamilia
+            // btnLimpiarCreacion
             // 
-            this.lblFamilia.AutoSize = true;
-            this.lblFamilia.Location = new System.Drawing.Point(24, 92);
-            this.lblFamilia.Name = "lblFamilia";
-            this.lblFamilia.Size = new System.Drawing.Size(62, 21);
-            this.lblFamilia.TabIndex = 2;
-            this.lblFamilia.Text = "Familia";
-            // 
-            // cmbFamilias
-            // 
-            this.cmbFamilias.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbFamilias.FormattingEnabled = true;
-            this.cmbFamilias.Location = new System.Drawing.Point(28, 118);
-            this.cmbFamilias.Name = "cmbFamilias";
-            this.cmbFamilias.Size = new System.Drawing.Size(318, 29);
-            this.cmbFamilias.TabIndex = 3;
-            this.cmbFamilias.SelectedIndexChanged += new System.EventHandler(this.cmbFamilias_SelectedIndexChanged);
-            // 
-            // txtNombreFamilia
-            // 
-            this.txtNombreFamilia.Location = new System.Drawing.Point(28, 118);
-            this.txtNombreFamilia.Name = "txtNombreFamilia";
-            this.txtNombreFamilia.Size = new System.Drawing.Size(318, 29);
-            this.txtNombreFamilia.TabIndex = 4;
+            this.btnLimpiarCreacion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLimpiarCreacion.Location = new System.Drawing.Point(622, 440);
+            this.btnLimpiarCreacion.Name = "btnLimpiarCreacion";
+            this.btnLimpiarCreacion.Size = new System.Drawing.Size(130, 34);
+            this.btnLimpiarCreacion.TabIndex = 7;
+            this.btnLimpiarCreacion.Text = "Limpiar";
+            this.btnLimpiarCreacion.UseVisualStyleBackColor = true;
+            this.btnLimpiarCreacion.Click += new System.EventHandler(this.btnLimpiarCreacion_Click);
             // 
             // btnCrearFamilia
             // 
-            this.btnCrearFamilia.Location = new System.Drawing.Point(28, 160);
+            this.btnCrearFamilia.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCrearFamilia.Location = new System.Drawing.Point(482, 440);
             this.btnCrearFamilia.Name = "btnCrearFamilia";
-            this.btnCrearFamilia.Size = new System.Drawing.Size(318, 34);
-            this.btnCrearFamilia.TabIndex = 5;
-            this.btnCrearFamilia.Text = "Crear familia";
+            this.btnCrearFamilia.Size = new System.Drawing.Size(130, 34);
+            this.btnCrearFamilia.TabIndex = 6;
+            this.btnCrearFamilia.Text = "Guardar";
             this.btnCrearFamilia.UseVisualStyleBackColor = true;
             this.btnCrearFamilia.Click += new System.EventHandler(this.btnCrearFamilia_Click);
             // 
+            // clbFamiliasCreacion
+            // 
+            this.clbFamiliasCreacion.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.clbFamiliasCreacion.CheckOnClick = true;
+            this.clbFamiliasCreacion.FormattingEnabled = true;
+            this.clbFamiliasCreacion.Location = new System.Drawing.Point(16, 278);
+            this.clbFamiliasCreacion.Name = "clbFamiliasCreacion";
+            this.clbFamiliasCreacion.Size = new System.Drawing.Size(736, 148);
+            this.clbFamiliasCreacion.TabIndex = 5;
+            // 
+            // lblSubfamilias
+            // 
+            this.lblSubfamilias.AutoSize = true;
+            this.lblSubfamilias.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblSubfamilias.Location = new System.Drawing.Point(16, 250);
+            this.lblSubfamilias.Name = "lblSubfamilias";
+            this.lblSubfamilias.Size = new System.Drawing.Size(100, 21);
+            this.lblSubfamilias.TabIndex = 4;
+            this.lblSubfamilias.Text = "Subfamilias";
+            // 
+            // lstPatentesDisponibles
+            // 
+            this.lstPatentesDisponibles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstPatentesDisponibles.CheckOnClick = true;
+            this.lstPatentesDisponibles.FormattingEnabled = true;
+            this.lstPatentesDisponibles.Location = new System.Drawing.Point(16, 88);
+            this.lstPatentesDisponibles.Name = "lstPatentesDisponibles";
+            this.lstPatentesDisponibles.Size = new System.Drawing.Size(736, 148);
+            this.lstPatentesDisponibles.TabIndex = 3;
+            // 
+            // lblPatentes
+            // 
+            this.lblPatentes.AutoSize = true;
+            this.lblPatentes.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblPatentes.Location = new System.Drawing.Point(16, 60);
+            this.lblPatentes.Name = "lblPatentes";
+            this.lblPatentes.Size = new System.Drawing.Size(76, 21);
+            this.lblPatentes.TabIndex = 2;
+            this.lblPatentes.Text = "Patentes";
+            // 
+            // txtNombreFamilia
+            // 
+            this.txtNombreFamilia.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNombreFamilia.Location = new System.Drawing.Point(90, 16);
+            this.txtNombreFamilia.Name = "txtNombreFamilia";
+            this.txtNombreFamilia.Size = new System.Drawing.Size(662, 29);
+            this.txtNombreFamilia.TabIndex = 1;
+            // 
+            // lblNombre
+            // 
+            this.lblNombre.AutoSize = true;
+            this.lblNombre.Location = new System.Drawing.Point(16, 20);
+            this.lblNombre.Name = "lblNombre";
+            this.lblNombre.Size = new System.Drawing.Size(68, 21);
+            this.lblNombre.TabIndex = 0;
+            this.lblNombre.Text = "Nombre";
+            // 
+            // tabGestionar
+            // 
+            this.tabGestionar.Controls.Add(this.pnlAcciones);
+            this.tabGestionar.Controls.Add(this.treeFamilia);
+            this.tabGestionar.Controls.Add(this.lblDetalleFamilia);
+            this.tabGestionar.Controls.Add(this.cmbFamiliaExistente);
+            this.tabGestionar.Controls.Add(this.lblFamiliasExistentes);
+            this.tabGestionar.Location = new System.Drawing.Point(4, 30);
+            this.tabGestionar.Name = "tabGestionar";
+            this.tabGestionar.Padding = new System.Windows.Forms.Padding(12);
+            this.tabGestionar.Size = new System.Drawing.Size(782, 743);
+            this.tabGestionar.TabIndex = 1;
+            this.tabGestionar.Text = "Gestionar familias";
+            this.tabGestionar.UseVisualStyleBackColor = true;
+            // 
+            // pnlAcciones
+            // 
+            this.pnlAcciones.Controls.Add(this.lblPatentesGestion);
+            this.pnlAcciones.Controls.Add(this.cmbPatenteAgregar);
+            this.pnlAcciones.Controls.Add(this.btnAgregarPatente);
+            this.pnlAcciones.Controls.Add(this.btnQuitarPatente);
+            this.pnlAcciones.Controls.Add(this.lblSubfamiliasGestion);
+            this.pnlAcciones.Controls.Add(this.cmbSubfamiliaAgregar);
+            this.pnlAcciones.Controls.Add(this.btnAgregarSubfamilia);
+            this.pnlAcciones.Controls.Add(this.btnQuitarSubfamilia);
+            this.pnlAcciones.Controls.Add(this.btnEliminarFamilia);
+            this.pnlAcciones.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlAcciones.Location = new System.Drawing.Point(12, 581);
+            this.pnlAcciones.Name = "pnlAcciones";
+            this.pnlAcciones.Size = new System.Drawing.Size(758, 150);
+            this.pnlAcciones.TabIndex = 4;
+            // 
+            // lblPatentesGestion
+            // 
+            this.lblPatentesGestion.AutoEllipsis = true;
+            this.lblPatentesGestion.Location = new System.Drawing.Point(4, 0);
+            this.lblPatentesGestion.Name = "lblPatentesGestion";
+            this.lblPatentesGestion.Size = new System.Drawing.Size(220, 21);
+            this.lblPatentesGestion.TabIndex = 0;
+            this.lblPatentesGestion.Text = "Patentes";
+            // 
+            // cmbPatenteAgregar
+            // 
+            this.cmbPatenteAgregar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbPatenteAgregar.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPatenteAgregar.FormattingEnabled = true;
+            this.cmbPatenteAgregar.Location = new System.Drawing.Point(8, 24);
+            this.cmbPatenteAgregar.Name = "cmbPatenteAgregar";
+            this.cmbPatenteAgregar.Size = new System.Drawing.Size(422, 29);
+            this.cmbPatenteAgregar.TabIndex = 1;
+            // 
+            // btnAgregarPatente
+            // 
+            this.btnAgregarPatente.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAgregarPatente.Location = new System.Drawing.Point(436, 20);
+            this.btnAgregarPatente.Name = "btnAgregarPatente";
+            this.btnAgregarPatente.Size = new System.Drawing.Size(150, 34);
+            this.btnAgregarPatente.TabIndex = 2;
+            this.btnAgregarPatente.Text = "Agregar patente";
+            this.btnAgregarPatente.UseVisualStyleBackColor = true;
+            this.btnAgregarPatente.Click += new System.EventHandler(this.btnAgregarPatente_Click);
+            // 
+            // btnQuitarPatente
+            // 
+            this.btnQuitarPatente.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnQuitarPatente.Location = new System.Drawing.Point(594, 20);
+            this.btnQuitarPatente.Name = "btnQuitarPatente";
+            this.btnQuitarPatente.Size = new System.Drawing.Size(150, 34);
+            this.btnQuitarPatente.TabIndex = 3;
+            this.btnQuitarPatente.Text = "Quitar patente";
+            this.btnQuitarPatente.UseVisualStyleBackColor = true;
+            this.btnQuitarPatente.Click += new System.EventHandler(this.btnQuitarPatente_Click);
+            // 
+            // lblSubfamiliasGestion
+            // 
+            this.lblSubfamiliasGestion.AutoEllipsis = true;
+            this.lblSubfamiliasGestion.Location = new System.Drawing.Point(4, 52);
+            this.lblSubfamiliasGestion.Name = "lblSubfamiliasGestion";
+            this.lblSubfamiliasGestion.Size = new System.Drawing.Size(220, 21);
+            this.lblSubfamiliasGestion.TabIndex = 4;
+            this.lblSubfamiliasGestion.Text = "Subfamilias";
+            // 
+            // cmbSubfamiliaAgregar
+            // 
+            this.cmbSubfamiliaAgregar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbSubfamiliaAgregar.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSubfamiliaAgregar.FormattingEnabled = true;
+            this.cmbSubfamiliaAgregar.Location = new System.Drawing.Point(8, 76);
+            this.cmbSubfamiliaAgregar.Name = "cmbSubfamiliaAgregar";
+            this.cmbSubfamiliaAgregar.Size = new System.Drawing.Size(422, 29);
+            this.cmbSubfamiliaAgregar.TabIndex = 5;
+            // 
+            // btnAgregarSubfamilia
+            // 
+            this.btnAgregarSubfamilia.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAgregarSubfamilia.Location = new System.Drawing.Point(438, 72);
+            this.btnAgregarSubfamilia.Name = "btnAgregarSubfamilia";
+            this.btnAgregarSubfamilia.Size = new System.Drawing.Size(150, 34);
+            this.btnAgregarSubfamilia.TabIndex = 6;
+            this.btnAgregarSubfamilia.Text = "Agregar subfamilia";
+            this.btnAgregarSubfamilia.UseVisualStyleBackColor = true;
+            this.btnAgregarSubfamilia.Click += new System.EventHandler(this.btnAgregarSubfamilia_Click);
+            // 
+            // btnQuitarSubfamilia
+            // 
+            this.btnQuitarSubfamilia.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnQuitarSubfamilia.Location = new System.Drawing.Point(594, 72);
+            this.btnQuitarSubfamilia.Name = "btnQuitarSubfamilia";
+            this.btnQuitarSubfamilia.Size = new System.Drawing.Size(150, 34);
+            this.btnQuitarSubfamilia.TabIndex = 7;
+            this.btnQuitarSubfamilia.Text = "Quitar subfamilia";
+            this.btnQuitarSubfamilia.UseVisualStyleBackColor = true;
+            this.btnQuitarSubfamilia.Click += new System.EventHandler(this.btnQuitarSubfamilia_Click);
+            // 
             // btnEliminarFamilia
             // 
-            this.btnEliminarFamilia.Location = new System.Drawing.Point(28, 160);
+            this.btnEliminarFamilia.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnEliminarFamilia.Location = new System.Drawing.Point(594, 112);
             this.btnEliminarFamilia.Name = "btnEliminarFamilia";
-            this.btnEliminarFamilia.Size = new System.Drawing.Size(318, 34);
-            this.btnEliminarFamilia.TabIndex = 6;
+            this.btnEliminarFamilia.Size = new System.Drawing.Size(150, 34);
+            this.btnEliminarFamilia.TabIndex = 8;
             this.btnEliminarFamilia.Text = "Eliminar familia";
             this.btnEliminarFamilia.UseVisualStyleBackColor = true;
             this.btnEliminarFamilia.Click += new System.EventHandler(this.btnEliminarFamilia_Click);
             // 
             // treeFamilia
             // 
-            this.treeFamilia.Location = new System.Drawing.Point(28, 214);
+            this.treeFamilia.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeFamilia.Location = new System.Drawing.Point(12, 104);
             this.treeFamilia.Name = "treeFamilia";
-            this.treeFamilia.Size = new System.Drawing.Size(318, 250);
-            this.treeFamilia.TabIndex = 7;
+            this.treeFamilia.Size = new System.Drawing.Size(758, 485);
+            this.treeFamilia.TabIndex = 3;
             this.treeFamilia.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeFamilia_AfterSelect);
             // 
-            // btnQuitarSeleccion
+            // lblDetalleFamilia
             // 
-            this.btnQuitarSeleccion.Location = new System.Drawing.Point(28, 478);
-            this.btnQuitarSeleccion.Name = "btnQuitarSeleccion";
-            this.btnQuitarSeleccion.Size = new System.Drawing.Size(318, 34);
-            this.btnQuitarSeleccion.TabIndex = 8;
-            this.btnQuitarSeleccion.Text = "Seleccionar permiso o subfamilia";
-            this.btnQuitarSeleccion.UseVisualStyleBackColor = true;
-            this.btnQuitarSeleccion.Click += new System.EventHandler(this.btnQuitarSeleccion_Click);
+            this.lblDetalleFamilia.AutoSize = true;
+            this.lblDetalleFamilia.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblDetalleFamilia.Location = new System.Drawing.Point(16, 80);
+            this.lblDetalleFamilia.Name = "lblDetalleFamilia";
+            this.lblDetalleFamilia.Size = new System.Drawing.Size(164, 21);
+            this.lblDetalleFamilia.TabIndex = 2;
+            this.lblDetalleFamilia.Text = "Detalle de la familia";
             // 
-            // lblPatentes
+            // cmbFamiliaExistente
             // 
-            this.lblPatentes.AutoSize = true;
-            this.lblPatentes.Location = new System.Drawing.Point(404, 24);
-            this.lblPatentes.Name = "lblPatentes";
-            this.lblPatentes.Size = new System.Drawing.Size(150, 21);
-            this.lblPatentes.TabIndex = 7;
-            this.lblPatentes.Text = "Patentes disponibles";
+            this.cmbFamiliaExistente.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbFamiliaExistente.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFamiliaExistente.FormattingEnabled = true;
+            this.cmbFamiliaExistente.Location = new System.Drawing.Point(16, 48);
+            this.cmbFamiliaExistente.Name = "cmbFamiliaExistente";
+            this.cmbFamiliaExistente.Size = new System.Drawing.Size(750, 29);
+            this.cmbFamiliaExistente.TabIndex = 1;
+            this.cmbFamiliaExistente.SelectedIndexChanged += new System.EventHandler(this.cmbFamiliaExistente_SelectedIndexChanged);
             // 
-            // lstPatentesDisponibles
+            // lblFamiliasExistentes
             // 
-            this.lstPatentesDisponibles.FormattingEnabled = true;
-            this.lstPatentesDisponibles.ItemHeight = 21;
-            this.lstPatentesDisponibles.Location = new System.Drawing.Point(408, 50);
-            this.lstPatentesDisponibles.Name = "lstPatentesDisponibles";
-            this.lstPatentesDisponibles.Size = new System.Drawing.Size(318, 214);
-            this.lstPatentesDisponibles.TabIndex = 8;
-            this.lstPatentesDisponibles.SelectedIndexChanged += new System.EventHandler(this.lstPatentesDisponibles_SelectedIndexChanged);
-            // 
-            // btnAgregarPatente
-            // 
-            this.btnAgregarPatente.Location = new System.Drawing.Point(408, 278);
-            this.btnAgregarPatente.Name = "btnAgregarPatente";
-            this.btnAgregarPatente.Size = new System.Drawing.Size(318, 34);
-            this.btnAgregarPatente.TabIndex = 9;
-            this.btnAgregarPatente.Text = "Agregar patente a familia";
-            this.btnAgregarPatente.UseVisualStyleBackColor = true;
-            this.btnAgregarPatente.Click += new System.EventHandler(this.btnAgregarPatente_Click);
-            // 
-            // lblFamiliasDisponibles
-            // 
-            this.lblFamiliasDisponibles.AutoSize = true;
-            this.lblFamiliasDisponibles.Location = new System.Drawing.Point(404, 350);
-            this.lblFamiliasDisponibles.Name = "lblFamiliasDisponibles";
-            this.lblFamiliasDisponibles.Size = new System.Drawing.Size(151, 21);
-            this.lblFamiliasDisponibles.TabIndex = 12;
-            this.lblFamiliasDisponibles.Text = "Familias disponibles";
-            // 
-            // cmbFamiliasDisponibles
-            // 
-            this.cmbFamiliasDisponibles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbFamiliasDisponibles.FormattingEnabled = true;
-            this.cmbFamiliasDisponibles.Location = new System.Drawing.Point(408, 376);
-            this.cmbFamiliasDisponibles.Name = "cmbFamiliasDisponibles";
-            this.cmbFamiliasDisponibles.Size = new System.Drawing.Size(318, 29);
-            this.cmbFamiliasDisponibles.TabIndex = 13;
-            // 
-            // btnAgregarFamilia
-            // 
-            this.btnAgregarFamilia.Location = new System.Drawing.Point(408, 418);
-            this.btnAgregarFamilia.Name = "btnAgregarFamilia";
-            this.btnAgregarFamilia.Size = new System.Drawing.Size(318, 34);
-            this.btnAgregarFamilia.TabIndex = 14;
-            this.btnAgregarFamilia.Text = "Agregar subfamilia";
-            this.btnAgregarFamilia.UseVisualStyleBackColor = true;
-            this.btnAgregarFamilia.Click += new System.EventHandler(this.btnAgregarFamilia_Click);
+            this.lblFamiliasExistentes.AutoSize = true;
+            this.lblFamiliasExistentes.Location = new System.Drawing.Point(16, 20);
+            this.lblFamiliasExistentes.Name = "lblFamiliasExistentes";
+            this.lblFamiliasExistentes.Size = new System.Drawing.Size(205, 21);
+            this.lblFamiliasExistentes.TabIndex = 0;
+            this.lblFamiliasExistentes.Text = "Seleccionar familia existente";
             // 
             // FrmGestionFamilias_83KI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.CornflowerBlue;
-            this.ClientSize = new System.Drawing.Size(764, 552);
-            this.Controls.Add(this.btnAgregarFamilia);
-            this.Controls.Add(this.cmbFamiliasDisponibles);
-            this.Controls.Add(this.lblFamiliasDisponibles);
-            this.Controls.Add(this.btnAgregarPatente);
-            this.Controls.Add(this.lstPatentesDisponibles);
-            this.Controls.Add(this.lblPatentes);
-            this.Controls.Add(this.btnQuitarSeleccion);
-            this.Controls.Add(this.treeFamilia);
-            this.Controls.Add(this.btnEliminarFamilia);
-            this.Controls.Add(this.btnCrearFamilia);
-            this.Controls.Add(this.txtNombreFamilia);
-            this.Controls.Add(this.cmbFamilias);
-            this.Controls.Add(this.lblFamilia);
-            this.Controls.Add(this.rdbCrearFamilia);
-            this.Controls.Add(this.rdbSeleccionarFamilia);
+            this.ClientSize = new System.Drawing.Size(814, 801);
+            this.Controls.Add(this.tabPrincipal);
             this.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.MinimumSize = new System.Drawing.Size(680, 520);
             this.Name = "FrmGestionFamilias_83KI";
+            this.Padding = new System.Windows.Forms.Padding(12);
             this.Text = "Gestion de familias";
             this.Load += new System.EventHandler(this.FrmGestionFamilias_83KI_Load);
+            this.tabPrincipal.ResumeLayout(false);
+            this.tabCrear.ResumeLayout(false);
+            this.tabCrear.PerformLayout();
+            this.tabGestionar.ResumeLayout(false);
+            this.tabGestionar.PerformLayout();
+            this.pnlAcciones.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
+
         }
 
-        private System.Windows.Forms.RadioButton rdbSeleccionarFamilia;
-        private System.Windows.Forms.RadioButton rdbCrearFamilia;
-        private System.Windows.Forms.Label lblFamilia;
-        private System.Windows.Forms.ComboBox cmbFamilias;
+        private System.Windows.Forms.TabControl tabPrincipal;
+        private System.Windows.Forms.TabPage tabCrear;
+        private System.Windows.Forms.TabPage tabGestionar;
+        private System.Windows.Forms.Label lblNombre;
         private System.Windows.Forms.TextBox txtNombreFamilia;
-        private System.Windows.Forms.Button btnCrearFamilia;
-        private System.Windows.Forms.Button btnEliminarFamilia;
-        private System.Windows.Forms.TreeView treeFamilia;
-        private System.Windows.Forms.Button btnQuitarSeleccion;
         private System.Windows.Forms.Label lblPatentes;
-        private System.Windows.Forms.ListBox lstPatentesDisponibles;
+        private System.Windows.Forms.CheckedListBox lstPatentesDisponibles;
+        private System.Windows.Forms.Label lblSubfamilias;
+        private System.Windows.Forms.CheckedListBox clbFamiliasCreacion;
+        private System.Windows.Forms.Button btnCrearFamilia;
+        private System.Windows.Forms.Button btnLimpiarCreacion;
+        private System.Windows.Forms.Label lblFamiliasExistentes;
+        private System.Windows.Forms.ComboBox cmbFamiliaExistente;
+        private System.Windows.Forms.Label lblDetalleFamilia;
+        private System.Windows.Forms.TreeView treeFamilia;
+        private System.Windows.Forms.Panel pnlAcciones;
+        private System.Windows.Forms.Label lblPatentesGestion;
+        private System.Windows.Forms.ComboBox cmbPatenteAgregar;
         private System.Windows.Forms.Button btnAgregarPatente;
-        private System.Windows.Forms.Label lblFamiliasDisponibles;
-        private System.Windows.Forms.ComboBox cmbFamiliasDisponibles;
-        private System.Windows.Forms.Button btnAgregarFamilia;
+        private System.Windows.Forms.Button btnQuitarPatente;
+        private System.Windows.Forms.Label lblSubfamiliasGestion;
+        private System.Windows.Forms.ComboBox cmbSubfamiliaAgregar;
+        private System.Windows.Forms.Button btnAgregarSubfamilia;
+        private System.Windows.Forms.Button btnQuitarSubfamilia;
+        private System.Windows.Forms.Button btnEliminarFamilia;
     }
 }

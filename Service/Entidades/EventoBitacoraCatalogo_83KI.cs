@@ -50,7 +50,9 @@ namespace Service.Entidades
             new EventoBitacoraOpcion_83KI(Modulo.Usuarios, "Nuevo usuario creado", "Nuevo usuario creado:"),
             new EventoBitacoraOpcion_83KI(Modulo.Usuarios, "Usuario desbloqueado", "Usuario desbloqueado:"),
             new EventoBitacoraOpcion_83KI(Modulo.Usuarios, "Usuario habilitado", "Usuario habilitado:"),
-            new EventoBitacoraOpcion_83KI(Modulo.Usuarios, "Usuario deshabilitado", "Usuario deshabilitado:")
+            new EventoBitacoraOpcion_83KI(Modulo.Usuarios, "Usuario deshabilitado", "Usuario deshabilitado:"),
+            new EventoBitacoraOpcion_83KI(Modulo.Seguridad, "Nuevo rol creado", "Nuevo rol creado:"),
+            new EventoBitacoraOpcion_83KI(Modulo.Seguridad, "Nueva familia creada", "Nueva familia creada:")
         };
 
         public static IEnumerable<EventoBitacoraOpcion_83KI> ObtenerPorModulo(Modulo modulo)

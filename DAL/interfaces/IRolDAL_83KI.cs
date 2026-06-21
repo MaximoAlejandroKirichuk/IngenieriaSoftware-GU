@@ -11,8 +11,11 @@ namespace DAL.interfaces
         IEnumerable<Patente_83KI> ObtenerPatentes();
         Rol_83KI CrearRol(string nombre);
         Familia_83KI CrearFamilia(string nombre);
+        Rol_83KI CrearRolConComponentes(string nombre, List<int> codigosPatentes, List<int> codigosFamilias);
+        Familia_83KI CrearFamiliaConComponentes(string nombre, List<int> codigosPatentes, List<int> codigosFamilias);
         void EliminarFamilia(int codigoFamilia);
         bool FamiliaAsignadaARol(int codigoFamilia);
+        bool FamiliaEsSubfamiliaDeOtra(int codigoFamilia);
         void AsignarPatenteAFamilia(int codigoFamilia, int codigoPatente);
         void QuitarPatenteDeFamilia(int codigoFamilia, int codigoPatente);
         void AsignarFamiliaAFamilia(int codigoFamiliaPadre, int codigoFamiliaHija);
