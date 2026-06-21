@@ -39,7 +39,7 @@ namespace UI
             ActualizarBotonesRemover();
         }
 
-        // ── Tab: Crear familia ──────────────────────────────────────────
+        // ── Pestaña: Crear familia ──────────────────────────────────────
 
         private void CargarPatentesCreacion()
         {
@@ -118,7 +118,7 @@ namespace UI
             }
         }
 
-        // ── Tab: Gestionar familias ─────────────────────────────────────
+        // ── Pestaña: Gestionar familias ─────────────────────────────────
 
         private void CargarFamiliasGestion()
         {

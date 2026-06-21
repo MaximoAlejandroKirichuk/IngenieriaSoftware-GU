@@ -70,7 +70,7 @@ namespace BLL
                 throw new InvalidOperationException("El rol debe contener al menos una patente o familia.");
             }
 
-            // Validate all referenced entities exist
+            // Validar que todas las entidades referenciadas existan
             foreach (int codigoPatente in patentes)
             {
                 ObtenerPatente(codigoPatente);
@@ -82,8 +82,8 @@ namespace BLL
                 familiasCargadas.Add(ObtenerFamilia(codigoFamilia));
             }
 
-            // Prevent duplicate logical assignments: ensure direct patents are not
-            // already covered by any selected family's patent hierarchy
+            // Evitar asignaciones lógicas duplicadas: asegurar que las patentes directas no
+            // estén ya cubiertas por la jerarquía de patentes de alguna familia seleccionada
             HashSet<int> patentesDesdeFamilias = new HashSet<int>();
             foreach (Familia_83KI familia in familiasCargadas)
             {
@@ -101,8 +101,8 @@ namespace BLL
                 }
             }
 
-            // Prevent overlap between selected families: if two families share patents,
-            // the assignment duplicates permissions
+            // Evitar superposición entre familias seleccionadas: si dos familias comparten patentes,
+            // la asignación genera permisos duplicados
             for (int i = 0; i < familiasCargadas.Count; i++)
             {
                 HashSet<int> patentesI = new HashSet<int>(
@@ -119,13 +119,13 @@ namespace BLL
                 }
             }
 
-            // Prevent duplicate families
+            // Evitar familias duplicadas
             if (familias.Distinct().Count() != familias.Count)
             {
                 throw new InvalidOperationException("Hay familias duplicadas en la seleccion.");
             }
 
-            // Prevent duplicate patents
+            // Evitar patentes duplicadas
             if (patentes.Distinct().Count() != patentes.Count)
             {
                 throw new InvalidOperationException("Hay patentes duplicadas en la seleccion.");
@@ -152,7 +152,7 @@ namespace BLL
             List<int> patentes = codigosPatentes ?? new List<int>();
             List<int> familias = codigosFamilias ?? new List<int>();
 
-            // Business rule: family must have at least one patent in hierarchy (direct or indirect)
+            // Regla de negocio: la familia debe tener al menos una patente en su jerarquía (directa o indirecta)
             bool tienePatenteDirecta = patentes.Count > 0;
 
             bool tienePatenteIndirecta = false;
@@ -172,25 +172,25 @@ namespace BLL
                 throw new InvalidOperationException("La familia debe contener al menos una patente.");
             }
 
-            // Validate all referenced entities exist
+            // Validar que todas las entidades referenciadas existan
             foreach (int codigoPatente in patentes)
             {
                 ObtenerPatente(codigoPatente);
             }
 
-            // Prevent circular references: ensure no selected family contains
-            // (transitively) any other selected family, and no selected family
-            // contains any selected patent already
+            // Evitar referencias circulares: asegurar que ninguna familia seleccionada contenga
+            // (transitivamente) a otra familia seleccionada, y que ninguna familia seleccionada
+            // contenga una patente ya seleccionada
             HashSet<int> familiasSeleccionadas = new HashSet<int>(familias);
             HashSet<int> patentesSeleccionadas = new HashSet<int>(patentes);
 
             foreach (Familia_83KI famCargada in familiasCargadas)
             {
-                // A family cannot contain itself
+                // Una familia no puede contenerse a sí misma
                 if (familiasSeleccionadas.Contains(famCargada.CodigoFamilia))
                 {
-                    // Check transitive containment: if any other selected family
-                    // is inside this family's hierarchy, that's a cycle risk
+                    // Verificar contención transitiva: si alguna otra familia seleccionada
+                    // está dentro de la jerarquía de esta familia, hay riesgo de ciclo
                     foreach (Familia_83KI otra in familiasCargadas)
                     {
                         if (otra.CodigoFamilia != famCargada.CodigoFamilia &&
@@ -201,7 +201,7 @@ namespace BLL
                     }
                 }
 
-                // Check for duplicate patent assignments between selected patent and family patents
+                // Verificar asignaciones de patentes duplicadas entre la patente seleccionada y las patentes de la familia
                 foreach (Patente_83KI p in famCargada.ObtenerPatentes())
                 {
                     if (patentesSeleccionadas.Contains(p.CodigoPatente))
@@ -211,8 +211,8 @@ namespace BLL
                 }
             }
 
-            // Prevent overlap between selected subfamilies: if two families share patents,
-            // the assignment duplicates permissions
+            // Evitar superposición entre subfamilias seleccionadas: si dos familias comparten patentes,
+            // la asignación genera permisos duplicados
             for (int i = 0; i < familiasCargadas.Count; i++)
             {
                 HashSet<int> patentesI = new HashSet<int>(
@@ -229,13 +229,13 @@ namespace BLL
                 }
             }
 
-            // Prevent duplicate families
+            // Evitar familias duplicadas
             if (familias.Distinct().Count() != familias.Count)
             {
                 throw new InvalidOperationException("Hay familias duplicadas en la seleccion.");
             }
 
-            // Prevent duplicate patents
+            // Evitar patentes duplicadas
             if (patentes.Distinct().Count() != patentes.Count)
             {
                 throw new InvalidOperationException("Hay patentes duplicadas en la seleccion.");
@@ -555,7 +555,7 @@ namespace BLL
             }
             catch
             {
-                // Audit failure must not break the creation flow
+                // Un error de auditoría no debe interrumpir el flujo de creación
             }
         }
     }

@@ -103,7 +103,7 @@ namespace DAL
 
             _accesoDAL.EjecutarTransaccion((conn, tran) =>
             {
-                // Create the role
+                // Crear el rol
                 string consultaRol = @"INSERT INTO Roles (Nombre)
                                        OUTPUT INSERTED.CodigoRol
                                        VALUES (@nombre)";
@@ -112,7 +112,7 @@ namespace DAL
                 int codigoRol = Convert.ToInt32(codigo);
                 rol = new Rol_83KI(codigoRol, nombre);
 
-                // Assign patents
+                // Asignar patentes
                 if (codigosPatentes != null)
                 {
                     foreach (int codigoPatente in codigosPatentes)
@@ -127,7 +127,7 @@ namespace DAL
                     }
                 }
 
-                // Assign families
+                // Asignar familias
                 if (codigosFamilias != null)
                 {
                     foreach (int codigoFamilia in codigosFamilias)
@@ -152,7 +152,7 @@ namespace DAL
 
             _accesoDAL.EjecutarTransaccion((conn, tran) =>
             {
-                // Create the family
+                // Crear la familia
                 string consultaFamilia = @"INSERT INTO Familias (Nombre)
                                            OUTPUT INSERTED.CodigoFamilia
                                            VALUES (@nombre)";
@@ -161,7 +161,7 @@ namespace DAL
                 int codigoFamilia = Convert.ToInt32(codigo);
                 familia = new Familia_83KI(codigoFamilia, nombre);
 
-                // Assign patents
+                // Asignar patentes
                 if (codigosPatentes != null)
                 {
                     foreach (int codigoPatente in codigosPatentes)
@@ -176,7 +176,7 @@ namespace DAL
                     }
                 }
 
-                // Assign subfamilies
+                // Asignar subfamilias
                 if (codigosFamilias != null)
                 {
                     foreach (int codigoFamiliaHija in codigosFamilias)
