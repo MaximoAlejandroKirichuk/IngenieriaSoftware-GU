@@ -97,6 +97,104 @@ namespace DAL
             return new Familia_83KI(Convert.ToInt32(codigo), nombre);
         }
 
+        public Rol_83KI CrearRolConComponentes(string nombre, List<int> codigosPatentes, List<int> codigosFamilias)
+        {
+            Rol_83KI rol = null;
+
+            _accesoDAL.EjecutarTransaccion((conn, tran) =>
+            {
+                // Create the role
+                string consultaRol = @"INSERT INTO Roles (Nombre)
+                                       OUTPUT INSERTED.CodigoRol
+                                       VALUES (@nombre)";
+                object codigo = AccesoDAL_83KI.LeerEscalarTransaccional(conn, tran, consultaRol,
+                    new List<SqlParameter> { new SqlParameter("@nombre", nombre) });
+                int codigoRol = Convert.ToInt32(codigo);
+                rol = new Rol_83KI(codigoRol, nombre);
+
+                // Assign patents
+                if (codigosPatentes != null)
+                {
+                    foreach (int codigoPatente in codigosPatentes)
+                    {
+                        AccesoDAL_83KI.EscribirTransaccional(conn, tran,
+                            "INSERT INTO RolPatente (CodigoRol, CodigoPatente) VALUES (@codigoRol, @codigoPatente)",
+                            new List<SqlParameter>
+                            {
+                                new SqlParameter("@codigoRol", codigoRol),
+                                new SqlParameter("@codigoPatente", codigoPatente)
+                            });
+                    }
+                }
+
+                // Assign families
+                if (codigosFamilias != null)
+                {
+                    foreach (int codigoFamilia in codigosFamilias)
+                    {
+                        AccesoDAL_83KI.EscribirTransaccional(conn, tran,
+                            "INSERT INTO RolFamilia (CodigoRol, CodigoFamilia) VALUES (@codigoRol, @codigoFamilia)",
+                            new List<SqlParameter>
+                            {
+                                new SqlParameter("@codigoRol", codigoRol),
+                                new SqlParameter("@codigoFamilia", codigoFamilia)
+                            });
+                    }
+                }
+            });
+
+            return rol;
+        }
+
+        public Familia_83KI CrearFamiliaConComponentes(string nombre, List<int> codigosPatentes, List<int> codigosFamilias)
+        {
+            Familia_83KI familia = null;
+
+            _accesoDAL.EjecutarTransaccion((conn, tran) =>
+            {
+                // Create the family
+                string consultaFamilia = @"INSERT INTO Familias (Nombre)
+                                           OUTPUT INSERTED.CodigoFamilia
+                                           VALUES (@nombre)";
+                object codigo = AccesoDAL_83KI.LeerEscalarTransaccional(conn, tran, consultaFamilia,
+                    new List<SqlParameter> { new SqlParameter("@nombre", nombre) });
+                int codigoFamilia = Convert.ToInt32(codigo);
+                familia = new Familia_83KI(codigoFamilia, nombre);
+
+                // Assign patents
+                if (codigosPatentes != null)
+                {
+                    foreach (int codigoPatente in codigosPatentes)
+                    {
+                        AccesoDAL_83KI.EscribirTransaccional(conn, tran,
+                            "INSERT INTO FamiliaPatente (CodigoFamilia, CodigoPatente) VALUES (@codigoFamilia, @codigoPatente)",
+                            new List<SqlParameter>
+                            {
+                                new SqlParameter("@codigoFamilia", codigoFamilia),
+                                new SqlParameter("@codigoPatente", codigoPatente)
+                            });
+                    }
+                }
+
+                // Assign subfamilies
+                if (codigosFamilias != null)
+                {
+                    foreach (int codigoFamiliaHija in codigosFamilias)
+                    {
+                        AccesoDAL_83KI.EscribirTransaccional(conn, tran,
+                            "INSERT INTO FamiliaFamilia (CodigoFamiliaPadre, CodigoFamiliaHija) VALUES (@codigoFamiliaPadre, @codigoFamiliaHija)",
+                            new List<SqlParameter>
+                            {
+                                new SqlParameter("@codigoFamiliaPadre", codigoFamilia),
+                                new SqlParameter("@codigoFamiliaHija", codigoFamiliaHija)
+                            });
+                    }
+                }
+            });
+
+            return familia;
+        }
+
         public void EliminarFamilia(int codigoFamilia)
         {
             _accesoDAL.Escribir(
@@ -113,6 +211,17 @@ namespace DAL
         public bool FamiliaAsignadaARol(int codigoFamilia)
         {
             string consulta = "SELECT COUNT(1) FROM RolFamilia WHERE CodigoFamilia = @codigoFamilia";
+
+            object total = _accesoDAL.LeerEscalar(
+                consulta,
+                new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
+
+            return Convert.ToInt32(total) > 0;
+        }
+
+        public bool FamiliaEsSubfamiliaDeOtra(int codigoFamilia)
+        {
+            string consulta = "SELECT COUNT(1) FROM FamiliaFamilia WHERE CodigoFamiliaHija = @codigoFamilia";
 
             object total = _accesoDAL.LeerEscalar(
                 consulta,

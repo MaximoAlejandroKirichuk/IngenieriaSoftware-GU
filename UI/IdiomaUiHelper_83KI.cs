@@ -39,6 +39,7 @@ namespace UI
             { "Ya existe un rol con ese nombre.", "Errores.RolDuplicado" },
             { "Ya existe una familia con ese nombre.", "Errores.FamiliaDuplicada" },
             { "No se puede eliminar la familia porque está asignada a uno o más roles.", "Errores.FamiliaAsignadaARol" },
+            { "No se puede eliminar la familia porque es subfamilia de otra familia.", "Errores.FamiliaEsSubfamilia" },
             { "El nombre es obligatorio.", "Errores.NombreObligatorio" },
             { "El email es obligatorio.", "Errores.EmailObligatorio" },
             { "El formato del email no es valido.", "Errores.EmailFormatoInvalido" },

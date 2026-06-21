@@ -9,8 +9,8 @@ namespace Service.Interfaces
         IEnumerable<Rol_83KI> ObtenerRolesConPermisos();
         IEnumerable<Familia_83KI> ObtenerFamilias();
         IEnumerable<Patente_83KI> ObtenerPatentes();
-        Rol_83KI CrearRol(string nombre, int codigoComponenteInicial, bool esFamilia);
-        Familia_83KI CrearFamilia(string nombre, int codigoPatenteInicial);
+        Rol_83KI CrearRol(string nombre, List<int> codigosPatentes, List<int> codigosFamilias);
+        Familia_83KI CrearFamilia(string nombre, List<int> codigosPatentes, List<int> codigosFamilias);
         void EliminarFamilia(int codigoFamilia);
         void AsignarPatenteAFamilia(int codigoFamilia, int codigoPatente);
         void QuitarPatenteDeFamilia(int codigoFamilia, int codigoPatente);

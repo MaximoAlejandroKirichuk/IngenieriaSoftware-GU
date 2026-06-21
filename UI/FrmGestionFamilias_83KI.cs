@@ -1,6 +1,7 @@
 using Service.Entidades;
 using Service.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -22,32 +23,25 @@ namespace UI
 
         private void FrmGestionFamilias_83KI_Load(object sender, EventArgs e)
         {
-            rdbSeleccionarFamilia.Checked = PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerFamilias);
-            rdbCrearFamilia.Checked = !rdbSeleccionarFamilia.Checked && PermisosUi_83KI.Tiene(PermisoSistema_83KI.CrearFamilia);
             CargarDatos();
-            ActualizarModoFamilia();
-            ActualizarBotonQuitar();
+            ActualizarVisibilidad();
         }
 
         private void CargarDatos()
         {
             _cargandoDatos = true;
-            CargarFamilias();
-            CargarPatentes();
-            CargarFamiliasDisponibles();
+            CargarFamiliasGestion();
+            CargarPatentesCreacion();
+            CargarFamiliasCreacion();
             _cargandoDatos = false;
-            CargarArbolFamilia();
+            CargarDetalleFamilia();
+            CargarCombosGestion();
+            ActualizarBotonesRemover();
         }
 
-        private void CargarFamilias()
-        {
-            cmbFamilias.DataSource = null;
-            cmbFamilias.DisplayMember = nameof(Familia_83KI.Nombre);
-            cmbFamilias.ValueMember = nameof(Familia_83KI.CodigoFamilia);
-            cmbFamilias.DataSource = _gestorRol.ObtenerFamilias().ToList();
-        }
+        // ── Tab: Crear familia ──────────────────────────────────────────
 
-        private void CargarPatentes()
+        private void CargarPatentesCreacion()
         {
             lstPatentesDisponibles.DataSource = null;
             lstPatentesDisponibles.DisplayMember = nameof(Patente_83KI.Nombre);
@@ -55,42 +49,124 @@ namespace UI
             lstPatentesDisponibles.DataSource = _gestorRol.ObtenerPatentes().ToList();
         }
 
-        private void CargarFamiliasDisponibles()
+        private void CargarFamiliasCreacion()
         {
-            Familia_83KI seleccionada = ObtenerFamiliaSeleccionada();
-            var familias = _gestorRol.ObtenerFamilias()
-                .Where(f => seleccionada == null || f.CodigoFamilia != seleccionada.CodigoFamilia)
-                .ToList();
-
-            cmbFamiliasDisponibles.DataSource = null;
-            cmbFamiliasDisponibles.DisplayMember = nameof(Familia_83KI.Nombre);
-            cmbFamiliasDisponibles.ValueMember = nameof(Familia_83KI.CodigoFamilia);
-            cmbFamiliasDisponibles.DataSource = familias;
+            var familias = _gestorRol.ObtenerFamilias().ToList();
+            clbFamiliasCreacion.DataSource = null;
+            clbFamiliasCreacion.DisplayMember = nameof(Familia_83KI.Nombre);
+            clbFamiliasCreacion.ValueMember = nameof(Familia_83KI.CodigoFamilia);
+            clbFamiliasCreacion.DataSource = familias;
         }
 
-        private void CargarArbolFamilia()
+        private void btnCrearFamilia_Click(object sender, EventArgs e)
+        {
+            string nombre = txtNombreFamilia.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(nombre))
+            {
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Errores.NombreObligatorio", "FrmGestionFamilias.Titulo");
+                return;
+            }
+
+            List<int> codigosPatentes = lstPatentesDisponibles.CheckedItems
+                .OfType<Patente_83KI>()
+                .Select(p => p.CodigoPatente)
+                .ToList();
+
+            List<int> codigosFamilias = clbFamiliasCreacion.CheckedItems
+                .OfType<Familia_83KI>()
+                .Select(f => f.CodigoFamilia)
+                .ToList();
+
+            if (codigosPatentes.Count == 0 && codigosFamilias.Count == 0)
+            {
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Errores.FamiliaSinPatente", "FrmGestionFamilias.Titulo");
+                return;
+            }
+
+            try
+            {
+                Familia_83KI familiaCreada = _gestorRol.CrearFamilia(nombre, codigosPatentes, codigosFamilias);
+                LimpiarCreacion();
+                CargarDatos();
+                cmbFamiliaExistente.SelectedValue = familiaCreada.CodigoFamilia;
+                tabPrincipal.SelectedTab = tabGestionar;
+            }
+            catch (Exception ex)
+            {
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "FrmGestionFamilias.Titulo", MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnLimpiarCreacion_Click(object sender, EventArgs e)
+        {
+            LimpiarCreacion();
+        }
+
+        private void LimpiarCreacion()
+        {
+            txtNombreFamilia.Clear();
+
+            for (int i = 0; i < lstPatentesDisponibles.Items.Count; i++)
+            {
+                lstPatentesDisponibles.SetItemChecked(i, false);
+            }
+
+            for (int i = 0; i < clbFamiliasCreacion.Items.Count; i++)
+            {
+                clbFamiliasCreacion.SetItemChecked(i, false);
+            }
+        }
+
+        // ── Tab: Gestionar familias ─────────────────────────────────────
+
+        private void CargarFamiliasGestion()
+        {
+            Familia_83KI seleccionada = cmbFamiliaExistente.SelectedItem as Familia_83KI;
+            int? codigoAnterior = seleccionada?.CodigoFamilia;
+
+            cmbFamiliaExistente.DataSource = null;
+            cmbFamiliaExistente.DisplayMember = nameof(Familia_83KI.Nombre);
+            cmbFamiliaExistente.ValueMember = nameof(Familia_83KI.CodigoFamilia);
+            cmbFamiliaExistente.DataSource = _gestorRol.ObtenerFamilias().ToList();
+
+            if (codigoAnterior.HasValue)
+            {
+                cmbFamiliaExistente.SelectedValue = codigoAnterior.Value;
+            }
+        }
+
+        private void cmbFamiliaExistente_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_cargandoDatos)
+            {
+                return;
+            }
+
+            CargarDetalleFamilia();
+            CargarCombosGestion();
+            ActualizarBotonesRemover();
+        }
+
+        private void CargarDetalleFamilia()
         {
             treeFamilia.Nodes.Clear();
 
             if (!PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerFamilias))
             {
-                ActualizarBotonQuitar();
                 return;
             }
 
-            Familia_83KI familia = ObtenerFamiliaSeleccionada();
+            Familia_83KI familia = cmbFamiliaExistente.SelectedItem as Familia_83KI;
 
             if (familia == null)
             {
-                txtNombreFamilia.Text = string.Empty;
-                ActualizarBotonQuitar();
                 return;
             }
 
             TreeNode raiz = CrearNodo(familia);
             treeFamilia.Nodes.Add(raiz);
             raiz.ExpandAll();
-            ActualizarBotonQuitar();
         }
 
         private TreeNode CrearNodo(ComponentePermiso_83KI componente)
@@ -112,48 +188,106 @@ namespace UI
             return nodo;
         }
 
-        private Familia_83KI ObtenerFamiliaSeleccionada()
+        private void treeFamilia_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            return cmbFamilias.SelectedItem as Familia_83KI;
+            ActualizarBotonesRemover();
         }
 
-        private void cmbFamilias_SelectedIndexChanged(object sender, EventArgs e)
+        private void ActualizarBotonesRemover()
         {
-            if (_cargandoDatos)
+            TreeNode nodo = treeFamilia.SelectedNode;
+            bool esHijoDirecto = nodo != null
+                && nodo.Parent != null
+                && treeFamilia.Nodes.Count > 0
+                && nodo.Parent == treeFamilia.Nodes[0];
+
+            btnQuitarPatente.Enabled = esHijoDirecto && nodo.Tag is Patente_83KI;
+            btnQuitarSubfamilia.Enabled = esHijoDirecto && nodo.Tag is Familia_83KI;
+        }
+
+        private void CargarCombosGestion()
+        {
+            CargarComboPatentesGestion();
+            CargarComboSubfamiliasGestion();
+        }
+
+        private void CargarComboPatentesGestion()
+        {
+            Familia_83KI familia = cmbFamiliaExistente.SelectedItem as Familia_83KI;
+            var patentes = _gestorRol.ObtenerPatentes().ToList();
+
+            if (familia != null)
             {
-                return;
+                var codigosDirectos = new HashSet<int>(
+                    familia.Hijos.OfType<Patente_83KI>().Select(p => p.CodigoPatente));
+                patentes = patentes.Where(p => !codigosDirectos.Contains(p.CodigoPatente)).ToList();
             }
 
-            CargarFamiliasDisponibles();
-            CargarArbolFamilia();
+            Patente_83KI seleccionada = cmbPatenteAgregar.SelectedItem as Patente_83KI;
+            int? codigoAnterior = seleccionada?.CodigoPatente;
+
+            cmbPatenteAgregar.DataSource = null;
+            cmbPatenteAgregar.DisplayMember = nameof(Patente_83KI.Nombre);
+            cmbPatenteAgregar.ValueMember = nameof(Patente_83KI.CodigoPatente);
+            cmbPatenteAgregar.DataSource = patentes;
+
+            if (codigoAnterior.HasValue && patentes.Any(p => p.CodigoPatente == codigoAnterior.Value))
+            {
+                cmbPatenteAgregar.SelectedValue = codigoAnterior.Value;
+            }
         }
 
-        private void lstPatentesDisponibles_SelectedIndexChanged(object sender, EventArgs e)
+        private void CargarComboSubfamiliasGestion()
         {
-            if (_cargandoDatos)
+            Familia_83KI familia = cmbFamiliaExistente.SelectedItem as Familia_83KI;
+            var familias = _gestorRol.ObtenerFamilias().ToList();
+
+            if (familia != null)
             {
-                return;
+                familias = familias
+                    .Where(f => f.CodigoFamilia != familia.CodigoFamilia
+                                && !familia.Contiene(f)
+                                && !f.Contiene(familia))
+                    .ToList();
             }
 
-            ActualizarBotonCrearFamilia();
-        }
+            Familia_83KI seleccionada = cmbSubfamiliaAgregar.SelectedItem as Familia_83KI;
+            int? codigoAnterior = seleccionada?.CodigoFamilia;
 
-        private void rdbSeleccionarFamilia_CheckedChanged(object sender, EventArgs e)
-        {
-            ActualizarModoFamilia();
+            cmbSubfamiliaAgregar.DataSource = null;
+            cmbSubfamiliaAgregar.DisplayMember = nameof(Familia_83KI.Nombre);
+            cmbSubfamiliaAgregar.ValueMember = nameof(Familia_83KI.CodigoFamilia);
+            cmbSubfamiliaAgregar.DataSource = familias;
+
+            if (codigoAnterior.HasValue && familias.Any(f => f.CodigoFamilia == codigoAnterior.Value))
+            {
+                cmbSubfamiliaAgregar.SelectedValue = codigoAnterior.Value;
+            }
         }
 
         private void btnAgregarPatente_Click(object sender, EventArgs e)
         {
-            AgregarPatenteSeleccionada();
-        }
+            Familia_83KI familia = cmbFamiliaExistente.SelectedItem as Familia_83KI;
+            Patente_83KI patente = cmbPatenteAgregar.SelectedItem as Patente_83KI;
 
-        private void AgregarPatenteSeleccionada()
-        {
-            Familia_83KI familia = ObtenerFamiliaSeleccionada();
-            Patente_83KI patente = lstPatentesDisponibles.SelectedItem as Patente_83KI;
+            if (familia == null)
+            {
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "FrmGestionFamilias.SeleccionarFamilia", "FrmGestionFamilias.Titulo");
+                return;
+            }
 
-            if (familia == null || patente == null)
+            if (patente == null)
+            {
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "FrmGestionFamilias.SeleccionarPatenteAgregar", "FrmGestionFamilias.Titulo");
+                return;
+            }
+
+            var resultado = IdiomaUiHelper_83KI.Mostrar(this,
+                "FrmGestionFamilias.ConfirmarAgregarPatente",
+                "FrmGestionFamilias.Titulo",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (resultado != DialogResult.Yes)
             {
                 return;
             }
@@ -161,44 +295,104 @@ namespace UI
             EjecutarOperacion(() => _gestorRol.AsignarPatenteAFamilia(familia.CodigoFamilia, patente.CodigoPatente));
         }
 
-        private void btnCrearFamilia_Click(object sender, EventArgs e)
+        private void btnQuitarPatente_Click(object sender, EventArgs e)
         {
-            string nombre = txtNombreFamilia.Text.Trim();
+            EjecutarRemocion<Patente_83KI>(
+                "FrmGestionFamilias.ConfirmarQuitarPatente",
+                "FrmGestionFamilias.NodoNoEsPatente",
+                (codigoFamilia, codigoComponente) => _gestorRol.QuitarPatenteDeFamilia(codigoFamilia, codigoComponente));
+        }
 
-            if (string.IsNullOrWhiteSpace(nombre))
+        private void btnAgregarSubfamilia_Click(object sender, EventArgs e)
+        {
+            Familia_83KI familia = cmbFamiliaExistente.SelectedItem as Familia_83KI;
+            Familia_83KI subfamilia = cmbSubfamiliaAgregar.SelectedItem as Familia_83KI;
+
+            if (familia == null)
             {
-                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Errores.NombreObligatorio", "FrmGestionFamilias.Titulo");
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "FrmGestionFamilias.SeleccionarFamilia", "FrmGestionFamilias.Titulo");
                 return;
             }
 
-            Patente_83KI patenteSeleccionada = lstPatentesDisponibles.SelectedItem as Patente_83KI;
-
-            if (patenteSeleccionada == null)
+            if (subfamilia == null)
             {
-                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "Errores.FamiliaSinPatente", "FrmGestionFamilias.Titulo");
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "FrmGestionFamilias.SeleccionarSubfamiliaAgregar", "FrmGestionFamilias.Titulo");
                 return;
             }
 
-            try
+            var resultado = IdiomaUiHelper_83KI.Mostrar(this,
+                "FrmGestionFamilias.ConfirmarAgregarSubfamilia",
+                "FrmGestionFamilias.Titulo",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (resultado != DialogResult.Yes)
             {
-                Familia_83KI familiaCreada = _gestorRol.CrearFamilia(nombre, patenteSeleccionada.CodigoPatente);
-                rdbSeleccionarFamilia.Checked = true;
-                CargarDatos();
-                cmbFamilias.SelectedValue = familiaCreada.CodigoFamilia;
-                txtNombreFamilia.Clear();
-                ActualizarModoFamilia();
+                return;
             }
-            catch (Exception ex)
+
+            EjecutarOperacion(() => _gestorRol.AsignarFamiliaAFamilia(familia.CodigoFamilia, subfamilia.CodigoFamilia));
+        }
+
+        private void btnQuitarSubfamilia_Click(object sender, EventArgs e)
+        {
+            EjecutarRemocion<Familia_83KI>(
+                "FrmGestionFamilias.ConfirmarQuitarSubfamilia",
+                "FrmGestionFamilias.NodoNoEsSubfamilia",
+                (codigoFamilia, codigoComponente) => _gestorRol.QuitarFamiliaDeFamilia(codigoFamilia, codigoComponente));
+        }
+
+        private void EjecutarRemocion<T>(string claveConfirmacion, string claveTipoInvalido,
+            Action<int, int> accionRemover) where T : ComponentePermiso_83KI
+        {
+            Familia_83KI familia = cmbFamiliaExistente.SelectedItem as Familia_83KI;
+
+            if (familia == null)
             {
-                IdiomaUiHelper_83KI.MostrarError(this, ex, "FrmGestionFamilias.Titulo", MessageBoxIcon.Warning);
+                return;
             }
+
+            TreeNode nodo = treeFamilia.SelectedNode;
+
+            if (nodo == null || nodo.Tag == null)
+            {
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, "FrmGestionFamilias.SeleccionarNodoArbol", "FrmGestionFamilias.Titulo");
+                return;
+            }
+
+            if (!(nodo.Tag is T componente))
+            {
+                IdiomaUiHelper_83KI.MostrarAdvertencia(this, claveTipoInvalido, "FrmGestionFamilias.Titulo");
+                return;
+            }
+
+            var resultado = IdiomaUiHelper_83KI.Mostrar(this,
+                claveConfirmacion,
+                "FrmGestionFamilias.Titulo",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (resultado != DialogResult.Yes)
+            {
+                return;
+            }
+
+            EjecutarOperacion(() => accionRemover(familia.CodigoFamilia, componente.Codigo));
         }
 
         private void btnEliminarFamilia_Click(object sender, EventArgs e)
         {
-            Familia_83KI familia = ObtenerFamiliaSeleccionada();
+            Familia_83KI familia = cmbFamiliaExistente.SelectedItem as Familia_83KI;
 
             if (familia == null)
+            {
+                return;
+            }
+
+            var resultado = IdiomaUiHelper_83KI.Mostrar(this,
+                "FrmGestionFamilias.ConfirmarEliminarFamilia",
+                "FrmGestionFamilias.Titulo",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (resultado != DialogResult.Yes)
             {
                 return;
             }
@@ -206,143 +400,7 @@ namespace UI
             EjecutarOperacion(() => _gestorRol.EliminarFamilia(familia.CodigoFamilia));
         }
 
-        private void btnAgregarFamilia_Click(object sender, EventArgs e)
-        {
-            Familia_83KI padre = ObtenerFamiliaSeleccionada();
-            Familia_83KI hija = cmbFamiliasDisponibles.SelectedItem as Familia_83KI;
-
-            if (padre == null || hija == null)
-            {
-                return;
-            }
-
-            EjecutarOperacion(() => _gestorRol.AsignarFamiliaAFamilia(padre.CodigoFamilia, hija.CodigoFamilia));
-        }
-
-        private void btnQuitarSeleccion_Click(object sender, EventArgs e)
-        {
-            Familia_83KI familia = ObtenerFamiliaSeleccionada();
-
-            if (familia == null || treeFamilia.SelectedNode == null || treeFamilia.SelectedNode.Parent == null)
-            {
-                return;
-            }
-
-            ComponentePermiso_83KI componente = treeFamilia.SelectedNode.Tag as ComponentePermiso_83KI;
-            Familia_83KI familiaPadre = treeFamilia.SelectedNode.Parent.Tag as Familia_83KI;
-
-            if (familiaPadre == null)
-            {
-                return;
-            }
-
-            if (componente is Patente_83KI patente)
-            {
-                EjecutarOperacion(() => _gestorRol.QuitarPatenteDeFamilia(familiaPadre.CodigoFamilia, patente.CodigoPatente));
-            }
-            else if (componente is Familia_83KI familiaHija)
-            {
-                EjecutarOperacion(() => _gestorRol.QuitarFamiliaDeFamilia(familiaPadre.CodigoFamilia, familiaHija.CodigoFamilia));
-            }
-        }
-
-        private void treeFamilia_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            ActualizarBotonQuitar();
-        }
-
-        private void ActualizarModoFamilia()
-        {
-            bool puedeVerFamilias = PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerFamilias);
-            bool puedeCrearFamilia = PermisosUi_83KI.Tiene(PermisoSistema_83KI.CrearFamilia);
-            bool puedeAgregarPatente = PermisosUi_83KI.Tiene(PermisoSistema_83KI.AgregarPatenteFamilia);
-            bool puedeAgregarSubfamilia = PermisosUi_83KI.Tiene(PermisoSistema_83KI.AgregarSubfamilia);
-            bool seleccionarExistente = rdbSeleccionarFamilia.Checked && puedeVerFamilias;
-            bool crearFamilia = rdbCrearFamilia.Checked && puedeCrearFamilia;
-
-            rdbSeleccionarFamilia.Visible = puedeVerFamilias;
-            rdbCrearFamilia.Visible = puedeCrearFamilia;
-            lblFamilia.Visible = seleccionarExistente || crearFamilia;
-            cmbFamilias.Visible = seleccionarExistente;
-            btnEliminarFamilia.Visible = seleccionarExistente && PermisosUi_83KI.Tiene(PermisoSistema_83KI.EliminarFamilia);
-            treeFamilia.Visible = seleccionarExistente;
-            btnQuitarSeleccion.Visible = seleccionarExistente && PermisosUi_83KI.TieneAlguno(
-                PermisoSistema_83KI.QuitarPatenteFamilia,
-                PermisoSistema_83KI.QuitarSubfamilia);
-            lblPatentes.Visible = (seleccionarExistente && puedeAgregarPatente) || crearFamilia;
-            lstPatentesDisponibles.Visible = (seleccionarExistente && puedeAgregarPatente) || crearFamilia;
-            btnAgregarPatente.Visible = seleccionarExistente && puedeAgregarPatente;
-            lblFamiliasDisponibles.Visible = seleccionarExistente && puedeAgregarSubfamilia;
-            cmbFamiliasDisponibles.Visible = seleccionarExistente && puedeAgregarSubfamilia;
-            btnAgregarFamilia.Visible = seleccionarExistente && puedeAgregarSubfamilia;
-            btnAgregarPatente.Enabled = seleccionarExistente && puedeAgregarPatente;
-
-            txtNombreFamilia.Visible = crearFamilia;
-            btnCrearFamilia.Visible = crearFamilia;
-            lblFamilia.Text = seleccionarExistente
-                ? IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.FamiliaExistente")
-                : IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.NombreNuevaFamilia");
-
-            if (crearFamilia)
-            {
-                lblPatentes.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.PatenteParaNuevaFamilia");
-                bool patenteSeleccionada = lstPatentesDisponibles.SelectedItem is Patente_83KI;
-                btnCrearFamilia.Enabled = patenteSeleccionada;
-            }
-
-            if (!seleccionarExistente)
-            {
-                treeFamilia.Nodes.Clear();
-                if (crearFamilia)
-                {
-                    txtNombreFamilia.Focus();
-                }
-            }
-            else
-            {
-                lblPatentes.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.PatentesDisponibles");
-                btnCrearFamilia.Enabled = true;
-                CargarArbolFamilia();
-            }
-        }
-
-        private void ActualizarBotonCrearFamilia()
-        {
-            if (!rdbCrearFamilia.Checked)
-            {
-                return;
-            }
-
-            bool patenteSeleccionada = lstPatentesDisponibles.SelectedItem is Patente_83KI;
-            btnCrearFamilia.Enabled = patenteSeleccionada;
-        }
-
-        private void ActualizarBotonQuitar()
-        {
-            btnQuitarSeleccion.Visible = rdbSeleccionarFamilia.Checked && PermisosUi_83KI.TieneAlguno(
-                PermisoSistema_83KI.QuitarPatenteFamilia,
-                PermisoSistema_83KI.QuitarSubfamilia);
-            btnQuitarSeleccion.Enabled = false;
-            btnQuitarSeleccion.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.SeleccionarPermisoOSubfamilia");
-
-            if (treeFamilia.SelectedNode == null || treeFamilia.SelectedNode.Parent == null)
-            {
-                return;
-            }
-
-            if (treeFamilia.SelectedNode.Tag is Patente_83KI)
-            {
-                btnQuitarSeleccion.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarPatenteFamilia);
-                btnQuitarSeleccion.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.QuitarPatente");
-                btnQuitarSeleccion.Enabled = btnQuitarSeleccion.Visible;
-            }
-            else if (treeFamilia.SelectedNode.Tag is Familia_83KI)
-            {
-                btnQuitarSeleccion.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarSubfamilia);
-                btnQuitarSeleccion.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.QuitarSubfamilia");
-                btnQuitarSeleccion.Enabled = btnQuitarSeleccion.Visible;
-            }
-        }
+        // ── Shared ──────────────────────────────────────────────────────
 
         private void EjecutarOperacion(Action operacion)
         {
@@ -350,8 +408,7 @@ namespace UI
             {
                 operacion();
                 CargarDatos();
-                ActualizarModoFamilia();
-                ActualizarBotonQuitar();
+                ActualizarVisibilidad();
             }
             catch (Exception ex)
             {
@@ -359,19 +416,76 @@ namespace UI
             }
         }
 
+        private void ActualizarVisibilidad()
+        {
+            bool puedeVerFamilias = PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerFamilias);
+            bool puedeCrearFamilia = PermisosUi_83KI.Tiene(PermisoSistema_83KI.CrearFamilia);
+            bool puedeEliminarFamilia = PermisosUi_83KI.Tiene(PermisoSistema_83KI.EliminarFamilia);
+            bool puedeAgregarPatente = PermisosUi_83KI.Tiene(PermisoSistema_83KI.AgregarPatenteFamilia);
+            bool puedeQuitarPatente = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarPatenteFamilia);
+            bool puedeAgregarSubfamilia = PermisosUi_83KI.Tiene(PermisoSistema_83KI.AgregarSubfamilia);
+            bool puedeQuitarSubfamilia = PermisosUi_83KI.Tiene(PermisoSistema_83KI.QuitarSubfamilia);
+
+            // Tab Crear
+            lblNombre.Visible = puedeCrearFamilia;
+            txtNombreFamilia.Visible = puedeCrearFamilia;
+            lblPatentes.Visible = puedeCrearFamilia;
+            lstPatentesDisponibles.Visible = puedeCrearFamilia;
+            lblSubfamilias.Visible = puedeCrearFamilia;
+            clbFamiliasCreacion.Visible = puedeCrearFamilia;
+            btnCrearFamilia.Visible = puedeCrearFamilia;
+            btnLimpiarCreacion.Visible = puedeCrearFamilia;
+
+            // Tab Gestionar
+            lblFamiliasExistentes.Visible = puedeVerFamilias;
+            cmbFamiliaExistente.Visible = puedeVerFamilias;
+            lblDetalleFamilia.Visible = puedeVerFamilias;
+            treeFamilia.Visible = puedeVerFamilias;
+
+            lblPatentesGestion.Visible = puedeVerFamilias && puedeAgregarPatente;
+            cmbPatenteAgregar.Visible = puedeVerFamilias && puedeAgregarPatente;
+            btnAgregarPatente.Visible = puedeVerFamilias && puedeAgregarPatente;
+
+            btnQuitarPatente.Visible = puedeVerFamilias && puedeQuitarPatente;
+
+            lblSubfamiliasGestion.Visible = puedeVerFamilias && puedeAgregarSubfamilia;
+            cmbSubfamiliaAgregar.Visible = puedeVerFamilias && puedeAgregarSubfamilia;
+            btnAgregarSubfamilia.Visible = puedeVerFamilias && puedeAgregarSubfamilia;
+
+            btnQuitarSubfamilia.Visible = puedeVerFamilias && puedeQuitarSubfamilia;
+
+            btnEliminarFamilia.Visible = puedeVerFamilias && puedeEliminarFamilia;
+        }
+
+        // ── Idioma ──────────────────────────────────────────────────────
+
         public void ActualizarIdioma(IIdioma idioma)
         {
             Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.Titulo");
-            rdbSeleccionarFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.SeleccionarFamiliaExistente");
-            rdbCrearFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.CrearFamiliaModo");
-            btnCrearFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.CrearFamilia");
-            btnEliminarFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.EliminarFamilia");
+
+            tabCrear.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.CrearFamiliaPanel");
+            tabGestionar.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.TabGestionar");
+
+            lblNombre.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.Nombre");
             lblPatentes.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.PatentesDisponibles");
+            lblSubfamilias.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.Subfamilias");
+            btnCrearFamilia.Text = IdiomaUiHelper_83KI.Texto("Comun.Guardar");
+            btnLimpiarCreacion.Text = IdiomaUiHelper_83KI.Texto("Comun.Limpiar");
+
+            lblFamiliasExistentes.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.SeleccionarFamiliaExistente");
+            lblDetalleFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.DetalleFamilia");
+
+            lblPatentesGestion.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.PatentesDisponibles");
             btnAgregarPatente.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.AgregarPatente");
-            lblFamiliasDisponibles.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.FamiliasDisponibles");
-            btnAgregarFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.AgregarSubfamilia");
-            ActualizarModoFamilia();
-            ActualizarBotonQuitar();
+            btnQuitarPatente.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.QuitarPatente");
+
+            lblSubfamiliasGestion.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.FamiliasDisponibles");
+            btnAgregarSubfamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.AgregarSubfamilia");
+            btnQuitarSubfamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.QuitarSubfamilia");
+
+            btnEliminarFamilia.Text = IdiomaUiHelper_83KI.Texto("FrmGestionFamilias.EliminarFamilia");
+
+            ActualizarVisibilidad();
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)
@@ -379,5 +493,7 @@ namespace UI
             _gestorIdioma.Desuscribir(this);
             base.OnFormClosed(e);
         }
+
+
     }
 }

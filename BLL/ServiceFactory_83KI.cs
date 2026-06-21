@@ -52,7 +52,9 @@ namespace Service
             if (_gestorRol == null)
             {
                 IRolDAL_83KI rolDal = new RolDAL_83KI();
-                _gestorRol = new GestorRolBLL_83KI(rolDal);
+                ISessionManager_83KI sessionManager = SessionManager_83KI.Instancia;
+                IBitacoraManager_83KI bitacoraManager = GetBitacoraManager();
+                _gestorRol = new GestorRolBLL_83KI(rolDal, sessionManager, bitacoraManager);
             }
 
             return _gestorRol;

@@ -125,6 +125,9 @@
     <EmbeddedResource Include="FrmCambiarContrasena.resx">
       <DependentUpon>FrmCambiarContrasena.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FrmGestionFamilias_83KI.resx">
+      <DependentUpon>FrmGestionFamilias_83KI.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmGestionUsuarios.resx">
       <DependentUpon>FrmGestionUsuarios.cs</DependentUpon>
     </EmbeddedResource>
