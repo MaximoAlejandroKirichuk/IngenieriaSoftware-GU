@@ -148,6 +148,15 @@ namespace UI
                 return Texto(clave);
             }
 
+            if (mensaje.StartsWith("Errores.", StringComparison.OrdinalIgnoreCase) && mensaje.Contains("|"))
+            {
+                int pipeIndex = mensaje.IndexOf('|');
+                string claveTraduccion = mensaje.Substring(0, pipeIndex);
+                string argsRaw = mensaje.Substring(pipeIndex + 1);
+                string[] args = argsRaw.Split('|');
+                return Texto(claveTraduccion, (object[])args);
+            }
+
             if (mensaje.StartsWith("El usuario seleccionado ", StringComparison.OrdinalIgnoreCase))
             {
                 string estado = mensaje.Substring("El usuario seleccionado ".Length);

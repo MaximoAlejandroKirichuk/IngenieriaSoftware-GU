@@ -285,6 +285,7 @@ namespace BLL
             Patente_83KI patente = ObtenerPatente(codigoPatente);
 
             ValidarPatenteEnCadenaAncestral(familia, codigoPatente);
+            ValidarPatenteEnRolesQueContienenFamilia(familia, patente);
 
             familia.Agregar(patente);
             _rolDal.AsignarPatenteAFamilia(codigoFamilia, codigoPatente);
@@ -465,6 +466,52 @@ namespace BLL
                     }
                 }
             }
+        }
+
+        private void ValidarPatenteEnRolesQueContienenFamilia(Familia_83KI familiaDestino, Patente_83KI patente)
+        {
+            foreach (Rol_83KI rol in _rolDal.ObtenerRolesConPermisos())
+            {
+                if (!RolContieneFamilia(rol, familiaDestino))
+                {
+                    continue;
+                }
+
+                if (rol.PatentesDirectas.Any(p => p.CodigoPatente == patente.CodigoPatente))
+                {
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "Errores.PatenteDuplicadaEnRolDirecto|{0}|{1}|{2}",
+                            patente.Nombre,
+                            familiaDestino.Nombre,
+                            rol.Nombre));
+                }
+
+                Familia_83KI familiaDuplicada = rol.Familias.FirstOrDefault(f =>
+                    !PerteneceARamaDeFamiliaDestino(f, familiaDestino)
+                    && f.ObtenerPatentes().Any(p => p.CodigoPatente == patente.CodigoPatente));
+
+                if (familiaDuplicada != null)
+                {
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "Errores.PatenteDuplicadaEnRolPorFamilia|{0}|{1}|{2}|{3}",
+                            patente.Nombre,
+                            familiaDestino.Nombre,
+                            rol.Nombre,
+                            familiaDuplicada.Nombre));
+                }
+            }
+        }
+
+        private bool RolContieneFamilia(Rol_83KI rol, Familia_83KI familiaDestino)
+        {
+            return rol.Familias.Any(f => PerteneceARamaDeFamiliaDestino(f, familiaDestino));
+        }
+
+        private bool PerteneceARamaDeFamiliaDestino(Familia_83KI familia, Familia_83KI familiaDestino)
+        {
+            return familia.CodigoFamilia == familiaDestino.CodigoFamilia || familia.Contiene(familiaDestino);
         }
 
         private void ValidarFamiliaEnCadenaAncestral(Familia_83KI familiaPadre, Familia_83KI familiaHija)
