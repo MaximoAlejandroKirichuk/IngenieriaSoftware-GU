@@ -16,6 +16,54 @@ namespace DAL
             private readonly string _stringConnection = "Data Source=MK\\MSSQLSERVER02;Initial Catalog=GestionUsuarios;Integrated Security=True;";
             //luki:
             //private readonly string _stringConnection = @"Data Source=localhost\SQLEXPRESS01;Initial Catalog=GestionUsuarios;Integrated Security=True;";
+
+            internal void EjecutarTransaccion(Action<SqlConnection, SqlTransaction> operacion)
+            {
+                using (SqlConnection conn = new SqlConnection(_stringConnection))
+                {
+                    conn.Open();
+                    using (SqlTransaction tran = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            operacion(conn, tran);
+                            tran.Commit();
+                        }
+                        catch
+                        {
+                            tran.Rollback();
+                            throw;
+                        }
+                    }
+                }
+            }
+
+            internal static object LeerEscalarTransaccional(SqlConnection conn, SqlTransaction tran, string consulta, List<SqlParameter> parametros = null)
+            {
+                using (SqlCommand cmd = new SqlCommand(consulta, conn, tran))
+                {
+                    if (parametros != null)
+                    {
+                        cmd.Parameters.AddRange(parametros.ToArray());
+                    }
+
+                    return cmd.ExecuteScalar();
+                }
+            }
+
+            internal static int EscribirTransaccional(SqlConnection conn, SqlTransaction tran, string consulta, List<SqlParameter> parametros)
+            {
+                using (SqlCommand cmd = new SqlCommand(consulta, conn, tran))
+                {
+                    if (parametros != null)
+                    {
+                        cmd.Parameters.AddRange(parametros.ToArray());
+                    }
+
+                    return cmd.ExecuteNonQuery();
+                }
+            }
+
             public DataSet Leer(string consulta, List<SqlParameter> parametros = null)
             {
                 DataSet ds = new DataSet();
