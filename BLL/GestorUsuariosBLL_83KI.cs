@@ -155,6 +155,13 @@ namespace BLL
             var usuario = _sessionManager.UsuarioActivo;
             if (usuario != null)
             {
+                // Persiste el idioma solo si cambio durante la sesion
+                string idiomaActual = _gestorIdioma.IdiomaActual.Id;
+                if (!string.Equals(usuario.IdiomaId, idiomaActual, StringComparison.OrdinalIgnoreCase))
+                {
+                    usuario.CambiarIdioma(idiomaActual);
+                    _dal.ActualizarIdioma(usuario.DNI, usuario.IdiomaId);
+                }
                 _sessionManager.CerrarSesion();
                 _bitacora.RegistrarEvento(
                     BitacoraEvento_83KI.CrearNuevo(
@@ -200,10 +207,7 @@ namespace BLL
         {
             var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
             _gestorIdioma.CambiarIdioma(idiomaId);
-
-            string idiomaAplicado = _gestorIdioma.IdiomaActual.Id;
-            _dal.ActualizarIdioma(usuarioActivo.DNI, idiomaAplicado);
-            usuarioActivo.CambiarIdioma(idiomaAplicado);
+            // El idioma se persiste solo en el logout, no aca
         }
 
         private void CambiarContrasena(string userName, string contrasenaActual, string nuevaContrasena)
