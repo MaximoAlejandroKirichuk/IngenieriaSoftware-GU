@@ -73,7 +73,7 @@
     "Errores.FamiliaYaContieneSubfamilia": "La familia seleccionada ya contiene otra subfamilia que está marcada. Quite la subfamilia o la familia contenedora para evitar redundancia.",
 
     "Dominio.Modulo.Usuarios": "Usuarios",
-    "Dominio.Modulo.Seguridad": "Seguridad",
+    "Dominio.Modulo.Admin": "Admin",
     "Dominio.Criticidad.Alto": "Alto",
     "Dominio.Criticidad.Medio": "Medio",
     "Dominio.Criticidad.Bajo": "Bajo",
@@ -87,6 +87,14 @@
     "Dominio.EventoBitacora.Usuariodesbloqueado": "Usuario desbloqueado",
     "Dominio.EventoBitacora.Usuariohabilitado": "Usuario habilitado",
     "Dominio.EventoBitacora.Usuariodeshabilitado": "Usuario deshabilitado",
+    "Dominio.EventoBitacora.Intentofallidodelogin": "Intento fallido de login",
+    "Dominio.EventoBitacora.Nuevorolcreado": "Nuevo rol creado",
+    "Dominio.EventoBitacora.Nuevafamiliacreada": "Nueva familia creada",
+    "Dominio.EventoBitacora.Rolmodificado": "Rol modificado",
+    "Dominio.EventoBitacora.Familiamodificada": "Familia modificada",
+    "Dominio.EventoBitacora.Roleliminado": "Rol eliminado",
+    "Dominio.EventoBitacora.Familiaeliminada": "Familia eliminada",
+    "Dominio.EventoBitacora.BitacoraexportadaaPDF": "Bitácora exportada a PDF",
 
     "Login.Titulo": "Login",
     "Login.Username": "Username",

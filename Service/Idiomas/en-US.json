@@ -73,7 +73,7 @@
     "Errores.FamiliaYaContieneSubfamilia": "The selected family already contains another checked subfamily. Remove the subfamily or the containing family to avoid redundancy.",
 
     "Dominio.Modulo.Usuarios": "Users",
-    "Dominio.Modulo.Seguridad": "Security",
+    "Dominio.Modulo.Admin": "Admin",
     "Dominio.Criticidad.Alto": "High",
     "Dominio.Criticidad.Medio": "Medium",
     "Dominio.Criticidad.Bajo": "Low",
@@ -87,6 +87,14 @@
     "Dominio.EventoBitacora.Usuariodesbloqueado": "User unlocked",
     "Dominio.EventoBitacora.Usuariohabilitado": "User enabled",
     "Dominio.EventoBitacora.Usuariodeshabilitado": "User disabled",
+    "Dominio.EventoBitacora.Intentofallidodelogin": "Failed login attempt",
+    "Dominio.EventoBitacora.Nuevorolcreado": "New role created",
+    "Dominio.EventoBitacora.Nuevafamiliacreada": "New family created",
+    "Dominio.EventoBitacora.Rolmodificado": "Role modified",
+    "Dominio.EventoBitacora.Familiamodificada": "Family modified",
+    "Dominio.EventoBitacora.Roleliminado": "Role deleted",
+    "Dominio.EventoBitacora.Familiaeliminada": "Family deleted",
+    "Dominio.EventoBitacora.BitacoraexportadaaPDF": "Event log exported to PDF",
 
     "Login.Titulo": "Login",
     "Login.Username": "Username",

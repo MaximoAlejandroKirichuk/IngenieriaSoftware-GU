@@ -9,7 +9,7 @@ namespace Service.Entidades
     public enum Modulo
     {
         Usuarios,
-        Seguridad
+        Admin
     }
 
     public enum Criticidad

@@ -67,8 +67,30 @@ namespace BLL
                 && Contiene(evento.Apellido, filtro.Apellido)
                 && Contiene(evento.Username, filtro.Username)
                 && EventoBitacoraCatalogo_83KI.CoincideConEvento(evento.Evento, filtro.Evento)
-                && (!filtro.Modulo.HasValue || evento.Modulo.Equals(filtro.Modulo.Value))
+                && CoincideConModulo(evento, filtro.Modulo)
                 && (!filtro.Criticidad.HasValue || evento.Criticidad.Equals(filtro.Criticidad.Value));
+        }
+
+        private bool CoincideConModulo(BitacoraEventoVista_83KI evento, Modulo? moduloFiltro)
+        {
+            if (!moduloFiltro.HasValue)
+            {
+                return true;
+            }
+
+            if (evento.Modulo.Equals(moduloFiltro.Value))
+            {
+                return true;
+            }
+
+            string nombreCanonico = EventoBitacoraCatalogo_83KI.ResolverNombre(evento.Evento);
+            if (string.IsNullOrWhiteSpace(nombreCanonico))
+            {
+                return false;
+            }
+
+            return EventoBitacoraCatalogo_83KI.ObtenerPorModulo(moduloFiltro.Value)
+                .Any(opcion => string.Equals(opcion.Nombre, nombreCanonico, StringComparison.OrdinalIgnoreCase));
         }
 
         private bool Contiene(string valor, string filtro)
