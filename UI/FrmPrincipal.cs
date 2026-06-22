@@ -187,7 +187,10 @@ namespace UI
 
         private void bitacoraEventosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var bitacoraEventos = new FrmBitacoraEventos(ServiceFactory_83KI.GetConsultaBitacoraEventos()))
+            using (var bitacoraEventos = new FrmBitacoraEventos(
+                ServiceFactory_83KI.GetConsultaBitacoraEventos(),
+                new Exportacion.BitacoraEventosPdfExporter_83KI(),
+                ServiceFactory_83KI.GetBitacoraManager()))
             {
                 bitacoraEventos.ShowDialog(this);
             }

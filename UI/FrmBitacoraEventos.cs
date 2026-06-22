@@ -16,20 +16,27 @@ namespace UI
         private readonly IConsultaBitacoraEventos_83KI _consultaBitacoraEventos;
         private readonly IBitacoraEventosExporter_83KI _exporter;
         private readonly IGestorIdioma_83KI _gestorIdioma;
+        private readonly IBitacoraManager_83KI _bitacoraManager;
         private readonly List<BitacoraEventoVista_83KI> _eventosVisibles = new List<BitacoraEventoVista_83KI>();
         private bool _actualizandoGrilla;
         private bool _cargandoCombos;
 
         public FrmBitacoraEventos(IConsultaBitacoraEventos_83KI consultaBitacoraEventos)
-            : this(consultaBitacoraEventos, new BitacoraEventosPdfExporter_83KI())
+            : this(consultaBitacoraEventos, new BitacoraEventosPdfExporter_83KI(), null)
         {
         }
 
         public FrmBitacoraEventos(IConsultaBitacoraEventos_83KI consultaBitacoraEventos, IBitacoraEventosExporter_83KI exporter)
+            : this(consultaBitacoraEventos, exporter, null)
+        {
+        }
+
+        public FrmBitacoraEventos(IConsultaBitacoraEventos_83KI consultaBitacoraEventos, IBitacoraEventosExporter_83KI exporter, IBitacoraManager_83KI bitacoraManager)
         {
             InitializeComponent();
             _consultaBitacoraEventos = consultaBitacoraEventos;
             _exporter = exporter;
+            _bitacoraManager = bitacoraManager;
             _gestorIdioma = Service.ServiceFactory_83KI.GetGestorIdioma();
             dgvEventos.CellFormatting += dgvEventos_CellFormatting;
             _gestorIdioma.Suscribir(this);
@@ -87,6 +94,7 @@ namespace UI
             cmbModulo.Items.Clear();
             cmbModulo.Items.Add(new ComboItemIdioma_83KI(OpcionTodos, IdiomaUiHelper_83KI.Texto("Comun.Todos")));
             cmbModulo.Items.Add(new ComboItemIdioma_83KI(Modulo.Usuarios, IdiomaUiHelper_83KI.TraducirModulo(Modulo.Usuarios)));
+            cmbModulo.Items.Add(new ComboItemIdioma_83KI(Modulo.Admin, IdiomaUiHelper_83KI.TraducirModulo(Modulo.Admin)));
             cmbModulo.SelectedIndex = 0;
             _cargandoCombos = false;
             CargarEventosPorModulo();
@@ -313,6 +321,7 @@ namespace UI
                 try
                 {
                     _exporter.Exportar(_eventosVisibles, dialogo.FileName);
+                    RegistrarAuditoriaExportacionPdf();
                     IdiomaUiHelper_83KI.MostrarInformacion(this, "FrmBitacoraEventos.PdfExportado", "Comun.Informacion");
                 }
                 catch (Exception ex)
@@ -355,11 +364,6 @@ namespace UI
                 e.Value = IdiomaUiHelper_83KI.TraducirCriticidad((Criticidad)e.Value);
                 e.FormattingApplied = true;
             }
-            else if (nombreColumna == "Evento")
-            {
-                e.Value = IdiomaUiHelper_83KI.TraducirEventoBitacora(e.Value.ToString());
-                e.FormattingApplied = true;
-            }
         }
 
         public void ActualizarIdioma(IIdioma idioma)
@@ -386,6 +390,32 @@ namespace UI
         {
             _gestorIdioma.Desuscribir(this);
             base.OnFormClosed(e);
+        }
+
+        private void RegistrarAuditoriaExportacionPdf()
+        {
+            if (_bitacoraManager == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var usuarioActivo = Service.SessionManager_83KI.Instancia.UsuarioActivo;
+                string username = usuarioActivo != null ? usuarioActivo.UserName : "Sistema";
+                _bitacoraManager.RegistrarEvento(
+                    BitacoraEvento_83KI.CrearNuevo(
+                        $"Bitácora exportada a PDF: {_eventosVisibles.Count} eventos",
+                        Criticidad.Bajo,
+                        Modulo.Admin,
+                        username
+                    )
+                );
+            }
+            catch
+            {
+                // La auditoría no debe interrumpir la exportación
+            }
         }
 
         private void RefrescarCombosTraducidos()
