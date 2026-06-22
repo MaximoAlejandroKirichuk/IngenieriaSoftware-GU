@@ -55,7 +55,15 @@ namespace UI
 
                     if (usaContrasenaPorDefecto == true)
                     {
-                        MostrarAdvertenciaYForzarCambio();
+                        bool cambioExitoso = MostrarAdvertenciaYForzarCambio();
+
+                        if (!cambioExitoso)
+                        {
+                            _gestor.Logout();
+                            txt_Contrasena.Clear();
+                            txt_Contrasena.Focus();
+                            return;
+                        }
                     }
                 }
 
@@ -102,21 +110,25 @@ namespace UI
             }
         }
 
-        private void MostrarAdvertenciaYForzarCambio()
+        private bool MostrarAdvertenciaYForzarCambio()
         {
             IdiomaUiHelper_83KI.MostrarAdvertencia(
                 this,
                 "Login.ContrasenaDefaultMensaje",
                 "Login.ContrasenaDefaultTitulo");
 
-            using (var frmCambio = new FrmCambiarContrasena(_gestor))
+            using (var frmCambio = new FrmCambiarContrasena(_gestor, forzarCambio: true))
             {
                 var resultadoCambio = frmCambio.ShowDialog(this);
 
                 if (resultadoCambio == DialogResult.OK)
                 {
                     IdiomaUiHelper_83KI.MostrarInformacion(this, "Login.ContrasenaActualizada", "Comun.Informacion");
+                    return true;
                 }
+
+                // User cancelled or closed the forced dialog — login must be aborted
+                return false;
             }
         }
 

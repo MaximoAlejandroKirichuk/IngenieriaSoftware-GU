@@ -101,7 +101,7 @@
     "Login.Contrasena": "Contraseña",
     "Login.Ingresar": "Ingresar",
     "Login.ContrasenaDefaultTitulo": "Advertencia de seguridad",
-    "Login.ContrasenaDefaultMensaje": "El sistema detectó que está utilizando la contraseña generada por defecto. Por su seguridad, recomendamos cambiarla ahora mismo.",
+    "Login.ContrasenaDefaultMensaje": "El sistema detectó que está utilizando la contraseña generada por defecto. Debe cambiarla antes de continuar.",
     "Login.ContrasenaActualizada": "Contraseña actualizada con éxito.",
 
     "FrmPrincipal.Titulo": "Principal",

@@ -101,7 +101,7 @@
     "Login.Contrasena": "Password",
     "Login.Ingresar": "Log in",
     "Login.ContrasenaDefaultTitulo": "Security warning",
-    "Login.ContrasenaDefaultMensaje": "The system detected that you are using the default generated password. For your security, we recommend changing it now.",
+    "Login.ContrasenaDefaultMensaje": "The system detected that you are using the default generated password. You must change it before continuing.",
     "Login.ContrasenaActualizada": "Password updated successfully.",
 
     "FrmPrincipal.Titulo": "Main",
