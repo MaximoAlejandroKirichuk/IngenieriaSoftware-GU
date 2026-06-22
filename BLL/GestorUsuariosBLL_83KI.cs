@@ -239,7 +239,7 @@ namespace BLL
             RegistrarAuditoriaSegura(
                 $"Contraseña modificada: {usuario.UserName} (Actor: {_sessionManager.UsuarioActivo.UserName})",
                 Criticidad.Alto,
-                Modulo.Admin,
+                Modulo.Usuarios,
                 usuario.UserName
             );
         }

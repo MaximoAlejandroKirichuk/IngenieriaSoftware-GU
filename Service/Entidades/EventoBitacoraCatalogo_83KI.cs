@@ -41,15 +41,15 @@ namespace Service.Entidades
     {
         private static readonly List<EventoBitacoraOpcion_83KI> Eventos = new List<EventoBitacoraOpcion_83KI>
         {
-            // --- Usuarios (4 eventos) ---
+            // --- Usuarios (5 eventos) ---
             new EventoBitacoraOpcion_83KI(Modulo.Usuarios, "Login exitoso", "Login exitoso:"),
             new EventoBitacoraOpcion_83KI(Modulo.Usuarios, "Logout exitoso", "Logout exitoso:"),
             new EventoBitacoraOpcion_83KI(Modulo.Usuarios, "Intento fallido de login", "Intento fallido de login:"),
             new EventoBitacoraOpcion_83KI(Modulo.Usuarios, "Usuario bloqueado por intentos fallidos", "Usuario bloqueado por intentos fallidos:"),
+            new EventoBitacoraOpcion_83KI(Modulo.Usuarios, "Contraseña modificada", "Contraseña modificada:", "ContraseÃ±a modificada:"),
 
-            // --- Admin (20 eventos) ---
+            // --- Admin (19 eventos) ---
             new EventoBitacoraOpcion_83KI(Modulo.Admin, "Usuario bloqueado", "Usuario bloqueado:"),
-            new EventoBitacoraOpcion_83KI(Modulo.Admin, "Contrase\u00f1a modificada", "Contrase\u00f1a modificada:", "Contrase\u00c3\u00b1a modificada:"),
             new EventoBitacoraOpcion_83KI(Modulo.Admin, "Usuario modificado", "Usuario modificado:"),
             new EventoBitacoraOpcion_83KI(Modulo.Admin, "Nuevo usuario creado", "Nuevo usuario creado:"),
             new EventoBitacoraOpcion_83KI(Modulo.Admin, "Usuario desbloqueado", "Usuario desbloqueado:"),
