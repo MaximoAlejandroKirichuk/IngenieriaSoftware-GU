@@ -186,7 +186,11 @@ namespace UI
                 return string.Empty;
             }
 
-            return Texto("Dominio.EventoBitacora." + CrearClaveCatalogo(evento));
+            // Resolver primero la descripcion cruda de BD al nombre canonico del catalogo
+            string nombreCanonico = EventoBitacoraCatalogo_83KI.ResolverNombre(evento);
+            string claveCatalogo = CrearClaveCatalogo(nombreCanonico ?? evento);
+
+            return Texto("Dominio.EventoBitacora." + claveCatalogo);
         }
 
         public static string CrearClaveCatalogo(string texto)

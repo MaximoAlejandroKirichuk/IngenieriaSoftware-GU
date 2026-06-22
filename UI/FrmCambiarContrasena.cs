@@ -9,11 +9,13 @@ namespace UI
     {
         private readonly IGestorUsuario_83KI _gestorUsuario;
         private readonly IGestorIdioma_83KI _gestorIdioma;
+        private readonly bool _forzarCambio;
 
-        public FrmCambiarContrasena(IGestorUsuario_83KI gestorUsuario)
+        public FrmCambiarContrasena(IGestorUsuario_83KI gestorUsuario, bool forzarCambio = false)
         {
             InitializeComponent();
             _gestorUsuario = gestorUsuario;
+            _forzarCambio = forzarCambio;
             _gestorIdioma = Service.ServiceFactory_83KI.GetGestorIdioma();
             _gestorIdioma.Suscribir(this);
         }
@@ -85,6 +87,7 @@ namespace UI
             lblConfirmarContrasena.Text = IdiomaUiHelper_83KI.Texto("FrmCambiarContrasena.ConfirmarContrasena");
             btnCambiarContrasena.Text = IdiomaUiHelper_83KI.Texto("FrmCambiarContrasena.CambiarContrasena");
             btnCancelar.Text = IdiomaUiHelper_83KI.Texto("Comun.Cancelar");
+            btnCancelar.Visible = !_forzarCambio;
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)

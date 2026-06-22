@@ -14,24 +14,22 @@ using Service.Excepciones;
 
 namespace UI
 {
-    public partial class Login : Form, IObservadorIdioma
+    public partial class Login : Form
     {
         private readonly IGestorUsuario_83KI _gestor;
         private readonly IGestorRol_83KI _gestorRol;
-        private readonly IGestorIdioma_83KI _gestorIdioma;
 
         public Login()
         {
             _gestor = Service.ServiceFactory_83KI.GetGestorUsuario();
             _gestorRol = Service.ServiceFactory_83KI.GetGestorRol();
-            _gestorIdioma = Service.ServiceFactory_83KI.GetGestorIdioma();
             InitializeComponent();
-            _gestorIdioma.Suscribir(this);
         }
 
 
         private void Login_Load(object sender, EventArgs e)
         {
+            AplicarTextosPorDefectoEspanol();
             LoginDesignConfig();
             RedondearPanel(panelLogin);
             ButtonDesing(btnLogin);
@@ -57,7 +55,15 @@ namespace UI
 
                     if (usaContrasenaPorDefecto == true)
                     {
-                        MostrarAdvertenciaYForzarCambio();
+                        bool cambioExitoso = MostrarAdvertenciaYForzarCambio();
+
+                        if (!cambioExitoso)
+                        {
+                            _gestor.Logout();
+                            txt_Contrasena.Clear();
+                            txt_Contrasena.Focus();
+                            return;
+                        }
                     }
                 }
 
@@ -104,21 +110,25 @@ namespace UI
             }
         }
 
-        private void MostrarAdvertenciaYForzarCambio()
+        private bool MostrarAdvertenciaYForzarCambio()
         {
             IdiomaUiHelper_83KI.MostrarAdvertencia(
                 this,
                 "Login.ContrasenaDefaultMensaje",
                 "Login.ContrasenaDefaultTitulo");
 
-            using (var frmCambio = new FrmCambiarContrasena(_gestor))
+            using (var frmCambio = new FrmCambiarContrasena(_gestor, forzarCambio: true))
             {
                 var resultadoCambio = frmCambio.ShowDialog(this);
 
                 if (resultadoCambio == DialogResult.OK)
                 {
                     IdiomaUiHelper_83KI.MostrarInformacion(this, "Login.ContrasenaActualizada", "Comun.Informacion");
+                    return true;
                 }
+
+                // El usuario cancela o cierra el dialogo - el login abortara
+                return false;
             }
         }
 
@@ -164,18 +174,12 @@ namespace UI
             btn.Region = new Region(path);
         }
 
-        public void ActualizarIdioma(IIdioma idioma)
+        private void AplicarTextosPorDefectoEspanol()
         {
-            Text = IdiomaUiHelper_83KI.Texto("Login.Titulo");
-            lbl_Email.Text = IdiomaUiHelper_83KI.Texto("Login.Username");
-            lbl_Contrasena.Text = IdiomaUiHelper_83KI.Texto("Login.Contrasena");
-            btnLogin.Text = IdiomaUiHelper_83KI.Texto("Login.Ingresar");
-        }
-
-        protected override void OnFormClosed(FormClosedEventArgs e)
-        {
-            _gestorIdioma.Desuscribir(this);
-            base.OnFormClosed(e);
+            Text = "Login";
+            lbl_Email.Text = "Usuario";
+            lbl_Contrasena.Text = "Contraseña";
+            btnLogin.Text = "Ingresar";
         }
     }
 }

@@ -262,7 +262,13 @@ namespace BLL
                 throw new InvalidOperationException("No se puede eliminar la familia porque es subfamilia de otra familia.");
             }
 
+            // Obtener nombre antes de eliminar para no perderlo en la auditoría
+            Familia_83KI familiaEliminada = _rolDal.ObtenerFamilias()
+                .FirstOrDefault(f => f.CodigoFamilia == codigoFamilia);
+            string nombreFamilia = familiaEliminada != null ? familiaEliminada.Nombre : codigoFamilia.ToString();
+
             _rolDal.EliminarFamilia(codigoFamilia);
+            RegistrarAuditoria(string.Format("Familia eliminada: {0} (Codigo: {1})", nombreFamilia, codigoFamilia));
         }
 
         public void EliminarRol(int codigoRol)
@@ -274,7 +280,13 @@ namespace BLL
                 throw new InvalidOperationException("El rol tiene usuarios asignados.");
             }
 
+            // Obtener nombre antes de eliminar para no perderlo en la auditoría
+            Rol_83KI rolEliminado = _rolDal.ObtenerRoles()
+                .FirstOrDefault(r => r.CodigoRol == codigoRol);
+            string nombreRol = rolEliminado != null ? rolEliminado.Nombre : codigoRol.ToString();
+
             _rolDal.EliminarRol(codigoRol);
+            RegistrarAuditoria(string.Format("Rol eliminado: {0} (Codigo: {1})", nombreRol, codigoRol));
         }
 
         public void AsignarPatenteAFamilia(int codigoFamilia, int codigoPatente)
@@ -289,6 +301,7 @@ namespace BLL
 
             familia.Agregar(patente);
             _rolDal.AsignarPatenteAFamilia(codigoFamilia, codigoPatente);
+            RegistrarAuditoria(string.Format("Familia modificada: {0}", familia.Nombre));
         }
 
         public void QuitarPatenteDeFamilia(int codigoFamilia, int codigoPatente)
@@ -308,6 +321,7 @@ namespace BLL
             }
 
             _rolDal.QuitarPatenteDeFamilia(codigoFamilia, codigoPatente);
+            RegistrarAuditoria(string.Format("Familia modificada: {0}", familia.Nombre));
         }
 
         public void AsignarFamiliaAFamilia(int codigoFamiliaPadre, int codigoFamiliaHija)
@@ -321,6 +335,7 @@ namespace BLL
 
             familiaPadre.Agregar(familiaHija);
             _rolDal.AsignarFamiliaAFamilia(codigoFamiliaPadre, codigoFamiliaHija);
+            RegistrarAuditoria(string.Format("Familia modificada: {0}", familiaPadre.Nombre));
         }
 
         public void QuitarFamiliaDeFamilia(int codigoFamiliaPadre, int codigoFamiliaHija)
@@ -339,6 +354,7 @@ namespace BLL
             }
 
             _rolDal.QuitarFamiliaDeFamilia(codigoFamiliaPadre, codigoFamiliaHija);
+            RegistrarAuditoria(string.Format("Familia modificada: {0}", familiaPadre.Nombre));
         }
 
         public void AsignarPatenteARol(int codigoRol, int codigoPatente)
@@ -349,6 +365,7 @@ namespace BLL
             Patente_83KI patente = ObtenerPatente(codigoPatente);
             rol.AgregarPatente(patente);
             _rolDal.AsignarPatenteARol(codigoRol, codigoPatente);
+            RegistrarAuditoria(string.Format("Rol modificado: {0}", rol.Nombre));
         }
 
         public void QuitarPatenteDeRol(int codigoRol, int codigoPatente)
@@ -367,6 +384,7 @@ namespace BLL
             }
 
             _rolDal.QuitarPatenteDeRol(codigoRol, codigoPatente);
+            RegistrarAuditoria(string.Format("Rol modificado: {0}", rol.Nombre));
         }
 
         public void AsignarFamiliaARol(int codigoRol, int codigoFamilia)
@@ -377,6 +395,7 @@ namespace BLL
             Familia_83KI familia = ObtenerFamilia(codigoFamilia);
             rol.AgregarFamilia(familia);
             _rolDal.AsignarFamiliaARol(codigoRol, codigoFamilia);
+            RegistrarAuditoria(string.Format("Rol modificado: {0}", rol.Nombre));
         }
 
         public void QuitarFamiliaDeRol(int codigoRol, int codigoFamilia)
@@ -395,6 +414,7 @@ namespace BLL
             }
 
             _rolDal.QuitarFamiliaDeRol(codigoRol, codigoFamilia);
+            RegistrarAuditoria(string.Format("Rol modificado: {0}", rol.Nombre));
         }
 
         private string ValidarNombre(string nombre)
@@ -547,9 +567,9 @@ namespace BLL
             try
             {
                 BitacoraEvento_83KI evento = BitacoraEvento_83KI.CrearNuevo(
-                    descripcion,
+                    $"{descripcion} (Actor: {_sessionManager.UsuarioActivo.UserName})",
                     Criticidad.Bajo,
-                    Modulo.Seguridad,
+                    Modulo.Admin,
                     _sessionManager.UsuarioActivo.UserName);
                 _bitacoraManager.RegistrarEvento(evento);
             }

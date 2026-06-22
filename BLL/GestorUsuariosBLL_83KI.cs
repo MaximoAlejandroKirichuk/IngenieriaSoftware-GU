@@ -46,7 +46,17 @@ namespace BLL
                 throw new UsuarioActivoActualmenteException_83KI();
             }
 
-            var usuario = _dal.ObtenerPorUserName(userName) ?? throw new UsuarioNoExisteException_83KI() ;
+            var usuario = _dal.ObtenerPorUserName(userName);
+            if (usuario == null)
+            {
+                RegistrarAuditoriaSegura(
+                    $"Intento fallido de login: usuario inexistente '{userName}'",
+                    Criticidad.Alto,
+                    Modulo.Usuarios,
+                    userName
+                );
+                throw new UsuarioNoExisteException_83KI();
+            }
 
             if (!usuario.Activo)
             {
@@ -81,13 +91,11 @@ namespace BLL
 
             //aca asigno el idioma para el sistema segun la tabla usuario
             _gestorIdioma.CambiarIdioma(usuario.IdiomaId);
-            _bitacora.RegistrarEvento(
-                BitacoraEvento_83KI.CrearNuevo(
-                    $"Login exitoso: {usuario.UserName}",
-                    Criticidad.Bajo,
-                    Modulo.Usuarios,
-                    userName
-                )
+            RegistrarAuditoriaSegura(
+                $"Login exitoso: {usuario.UserName}",
+                Criticidad.Bajo,
+                Modulo.Usuarios,
+                userName
             );
         }
 
@@ -123,24 +131,28 @@ namespace BLL
         {
             usuario.RegistrarIntentoFallido(DateTime.Now);
             _dal.ActualizarIntentosFallidos(usuario);
+            RegistrarAuditoriaSegura(
+                $"Intento fallido de login: {usuario.UserName}",
+                Criticidad.Alto,
+                Modulo.Usuarios,
+                usuario.UserName
+            );
         }
 
         private bool SuperoIntentosPermitidos(Usuario_83KI usuario)
         {
-            return usuario.IntentosRealizados > IntentosPermitidos;
+            return usuario.IntentosRealizados >= IntentosPermitidos;
         }
 
         private void BloquearPorIntentosFallidos(Usuario_83KI usuario)
         {
             usuario.Bloquear();
             _dal.BloquearUsuario(usuario);
-            _bitacora.RegistrarEvento(
-                BitacoraEvento_83KI.CrearNuevo(
-                    $"Usuario bloqueado por intentos fallidos: {usuario.UserName}",
-                    Criticidad.Alto,
-                    Modulo.Usuarios,
-                    usuario.UserName
-                )
+            RegistrarAuditoriaSegura(
+                $"Usuario bloqueado por intentos fallidos: {usuario.UserName}",
+                Criticidad.Alto,
+                Modulo.Usuarios,
+                usuario.UserName
             );
         }
 
@@ -155,14 +167,19 @@ namespace BLL
             var usuario = _sessionManager.UsuarioActivo;
             if (usuario != null)
             {
+                // Persiste el idioma solo si cambio durante la sesion
+                string idiomaActual = _gestorIdioma.IdiomaActual.Id;
+                if (!string.Equals(usuario.IdiomaId, idiomaActual, StringComparison.OrdinalIgnoreCase))
+                {
+                    usuario.CambiarIdioma(idiomaActual);
+                    _dal.ActualizarIdioma(usuario.DNI, usuario.IdiomaId);
+                }
                 _sessionManager.CerrarSesion();
-                _bitacora.RegistrarEvento(
-                    BitacoraEvento_83KI.CrearNuevo(
-                        $"Logout exitoso: {usuario.UserName}",
-                        Criticidad.Bajo,
-                        Modulo.Usuarios,
-                        usuario.UserName
-                    )
+                RegistrarAuditoriaSegura(
+                    $"Logout exitoso: {usuario.UserName}",
+                    Criticidad.Bajo,
+                    Modulo.Usuarios,
+                    usuario.UserName
                 );
             }
         }
@@ -180,13 +197,11 @@ namespace BLL
 
             usuario.Bloquear();
             _dal.BloquearUsuario(usuario);
-            _bitacora.RegistrarEvento(
-                BitacoraEvento_83KI.CrearNuevo(
-                    $"Usuario bloqueado: {usuario.UserName}",
-                    Criticidad.Alto,
-                    Modulo.Usuarios,
-                    usuario.UserName
-                )
+            RegistrarAuditoriaSegura(
+                $"Usuario bloqueado: {usuario.UserName} (Actor: {_sessionManager.UsuarioActivo.UserName})",
+                Criticidad.Alto,
+                Modulo.Admin,
+                usuario.UserName
             );
         }
 
@@ -200,10 +215,7 @@ namespace BLL
         {
             var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
             _gestorIdioma.CambiarIdioma(idiomaId);
-
-            string idiomaAplicado = _gestorIdioma.IdiomaActual.Id;
-            _dal.ActualizarIdioma(usuarioActivo.DNI, idiomaAplicado);
-            usuarioActivo.CambiarIdioma(idiomaAplicado);
+            // El idioma se persiste solo en el logout, no aca
         }
 
         private void CambiarContrasena(string userName, string contrasenaActual, string nuevaContrasena)
@@ -224,13 +236,11 @@ namespace BLL
                 _sessionManager.UsuarioActivo.CambiarContrasena(usuario.Contrasena);
             }
 
-            _bitacora.RegistrarEvento(
-                BitacoraEvento_83KI.CrearNuevo(
-                    $"Contraseña modificada: {usuario.UserName}",
-                    Criticidad.Alto,
-                    Modulo.Usuarios,
-                    usuario.UserName
-                )
+            RegistrarAuditoriaSegura(
+                $"Contraseña modificada: {usuario.UserName} (Actor: {_sessionManager.UsuarioActivo.UserName})",
+                Criticidad.Alto,
+                Modulo.Usuarios,
+                usuario.UserName
             );
         }
 
@@ -260,13 +270,11 @@ namespace BLL
                 _sessionManager.UsuarioActivo.ModificarEmail(usuarioModificado.Email);
             }
 
-            _bitacora.RegistrarEvento(
-                BitacoraEvento_83KI.CrearNuevo(
-                    $"Usuario modificado: DNI {usuarioModificado.DNI}. Email: {usuarioModificado.Email}. Rol: {usuarioModificado.Rol}. Actor: {usuarioActivo.UserName}",
-                    Criticidad.Alto,
-                    Modulo.Usuarios,
-                    usuarioActivo.UserName
-                )
+            RegistrarAuditoriaSegura(
+                $"Usuario modificado: DNI {usuarioModificado.DNI}. Email: {usuarioModificado.Email}. Rol: {usuarioModificado.Rol}. Actor: {usuarioActivo.UserName}",
+                Criticidad.Alto,
+                Modulo.Admin,
+                usuarioModificado.UserName
             );
         }
 
@@ -291,13 +299,11 @@ namespace BLL
 
             _dal.CrearUsuario(usuario);
 
-            _bitacora.RegistrarEvento(
-                BitacoraEvento_83KI.CrearNuevo(
-                    $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.Rol})",
-                    Criticidad.Alto,
-                    Modulo.Usuarios,
-                    usuario.UserName
-                )
+            RegistrarAuditoriaSegura(
+                $"Nuevo usuario creado: {usuario.UserName} (Rol: {usuario.Rol}) (Actor: {_sessionManager.UsuarioActivo.UserName})",
+                Criticidad.Alto,
+                Modulo.Admin,
+                usuario.UserName
             );
         }
 
@@ -314,13 +320,11 @@ namespace BLL
             string contrasenaPorDefecto = Usuario_83KI.EstablecerContrasenaPorDefecto(usuario.Apellido, usuario.DNI);
             usuario.Desbloquear(_encriptador.HashContrasena(contrasenaPorDefecto));
             _dal.DesbloquearCuenta(usuario);
-            _bitacora.RegistrarEvento(
-                BitacoraEvento_83KI.CrearNuevo(
-                    $"Usuario desbloqueado: {usuario.UserName} (Rol: {usuario.Rol})",
-                    Criticidad.Alto,
-                    Modulo.Usuarios,
-                    usuario.UserName
-                )
+            RegistrarAuditoriaSegura(
+                $"Usuario desbloqueado: {usuario.UserName} (Rol: {usuario.Rol}) (Actor: {_sessionManager.UsuarioActivo.UserName})",
+                Criticidad.Alto,
+                Modulo.Admin,
+                usuario.UserName
             );
         }
 
@@ -369,14 +373,26 @@ namespace BLL
             _dal.ActualizarEstadoActivo(usuarioGestionado.DNI, usuarioGestionado.Activo);
 
             string accion = activo ? "habilitado" : "deshabilitado";
-            _bitacora.RegistrarEvento(
-                BitacoraEvento_83KI.CrearNuevo(
-                    $"Usuario {accion}: DNI {dni}. Actor: {usuarioActivo.UserName}",
-                    Criticidad.Alto,
-                    Modulo.Usuarios,
-                    usuarioActivo.UserName
-                )
+            RegistrarAuditoriaSegura(
+                $"Usuario {accion}: DNI {dni}. Actor: {usuarioActivo.UserName}",
+                Criticidad.Alto,
+                Modulo.Admin,
+                usuarioGestionado.UserName
             );
+        }
+
+        private void RegistrarAuditoriaSegura(string descripcion, Criticidad criticidad, Modulo modulo, string username)
+        {
+            try
+            {
+                _bitacora.RegistrarEvento(
+                    BitacoraEvento_83KI.CrearNuevo(descripcion, criticidad, modulo, username)
+                );
+            }
+            catch
+            {
+                // La auditoría no debe interrumpir el flujo de negocio
+            }
         }
 
         private void ValidarPermiso(PermisoSistema_83KI permiso)
