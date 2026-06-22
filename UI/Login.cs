@@ -127,7 +127,7 @@ namespace UI
                     return true;
                 }
 
-                // User cancelled or closed the forced dialog — login must be aborted
+                // El usuario cancela o cierra el dialogo - el login abortara
                 return false;
             }
         }
