@@ -184,26 +184,6 @@ namespace BLL
             }
         }
 
-        public void BloquearUsuarioPorUserName(string userName)
-        {
-            ValidarPermiso(PermisoSistema_83KI.BloquearUsuario);
-
-            var usuario = _dal.ObtenerPorUserName(userName) ?? throw new UsuarioNoExisteException_83KI();
-
-            if (usuario.Bloqueado)
-            {
-                throw new UsuarioBloqueadoException_83KI();
-            }
-
-            usuario.Bloquear();
-            _dal.BloquearUsuario(usuario);
-            RegistrarAuditoriaSegura(
-                $"Usuario bloqueado: {usuario.UserName} (Actor: {_sessionManager.UsuarioActivo.UserName})",
-                Criticidad.Alto,
-                Modulo.Admin,
-                usuario.UserName
-            );
-        }
 
         public void CambiarContrasenaUsuarioActual(string contrasenaActual, string nuevaContrasena)
         {
