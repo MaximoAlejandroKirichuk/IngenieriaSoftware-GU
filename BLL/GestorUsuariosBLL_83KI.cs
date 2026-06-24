@@ -194,8 +194,8 @@ namespace BLL
         public void CambiarIdiomaUsuarioActual(string idiomaId)
         {
             var usuarioActivo = _sessionManager.UsuarioActivo ?? throw new UsuarioNoAutenticadoException_83KI();
+            ValidarPermiso(PermisoSistema_83KI.CambiarIdioma);
             _gestorIdioma.CambiarIdioma(idiomaId);
-            // El idioma se persiste solo en el logout, no aca
         }
 
         private void CambiarContrasena(string userName, string contrasenaActual, string nuevaContrasena)

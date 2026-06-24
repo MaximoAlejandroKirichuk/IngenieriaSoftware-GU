@@ -43,6 +43,7 @@ namespace UI
             iniciarSesionToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.ReLogin);
             cambiarContraseñaToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.CambiarContrasena);
             reToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.Ayuda);
+            menuIdioma.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.CambiarIdioma);
         }
 
         public void ActualizarIdioma(IIdioma idioma)

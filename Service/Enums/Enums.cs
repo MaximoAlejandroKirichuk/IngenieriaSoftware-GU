@@ -53,6 +53,7 @@ namespace Service.Entidades
         LimpiarFiltrosBitacora = 33,
         ExportarBitacoraPdf = 34,
         GestionAdmin = 35,
-        EliminarRol = 36
+        EliminarRol = 36,
+        CambiarIdioma = 37
     }
 }
