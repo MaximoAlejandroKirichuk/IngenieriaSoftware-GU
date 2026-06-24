@@ -28,7 +28,11 @@ namespace BLL
 
         public IEnumerable<BitacoraEventoVista_83KI> Consultar(FiltroBitacoraEventos_83KI filtro)
         {
-            ValidarPermiso(PermisoSistema_83KI.ConsultarBitacoraEventos);
+            if (!_sessionManager.TienePermiso(PermisoSistema_83KI.VerBitacoraEventos)
+                && !_sessionManager.TienePermiso(PermisoSistema_83KI.ConsultarBitacoraEventos))
+            {
+                throw new InvalidOperationException("No tiene permisos para realizar esta accion.");
+            }
 
             if (filtro == null)
             {

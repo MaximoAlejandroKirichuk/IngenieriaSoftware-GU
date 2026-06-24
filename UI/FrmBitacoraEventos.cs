@@ -48,18 +48,24 @@ namespace UI
             ConfigurarFechas();
             CargarCombos();
             RestaurarFiltrosIniciales();
-            if (PermisosUi_83KI.Tiene(PermisoSistema_83KI.ConsultarBitacoraEventos))
+            if (PuedeVerBitacora())
             {
                 CargarEventos();
             }
         }
 
+        private bool PuedeVerBitacora()
+        {
+            return PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerBitacoraEventos)
+                || PermisosUi_83KI.Tiene(PermisoSistema_83KI.ConsultarBitacoraEventos);
+        }
+
         private void AplicarPermisos()
         {
-            bool puedeConsultar = PermisosUi_83KI.Tiene(PermisoSistema_83KI.ConsultarBitacoraEventos);
+            bool puedeVer = PuedeVerBitacora();
             bool puedeFiltrar = PermisosUi_83KI.Tiene(PermisoSistema_83KI.FiltrarBitacoraEventos);
 
-            dgvEventos.Visible = puedeConsultar;
+            dgvEventos.Visible = puedeVer;
             btnAplicar.Visible = puedeFiltrar;
             btnLimpiar.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.LimpiarFiltrosBitacora);
             btnImprimir.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.ExportarBitacoraPdf);

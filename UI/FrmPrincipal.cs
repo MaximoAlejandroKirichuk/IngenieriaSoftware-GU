@@ -35,7 +35,8 @@ namespace UI
             gestionDeUsuariosToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionUsuarios);
             gestionDeFamiliasToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionFamilias);
             gestionDeRolesToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionRoles);
-            bitacoraEventosToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.ConsultarBitacoraEventos);
+            bitacoraEventosToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerBitacoraEventos)
+                || PermisosUi_83KI.Tiene(PermisoSistema_83KI.ConsultarBitacoraEventos);
             adminToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionAdmin); 
 
             menuCerrarSesion.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.CerrarSesion);
