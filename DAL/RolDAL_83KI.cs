@@ -1,5 +1,6 @@
 using DAL.DAL;
 using DAL.interfaces;
+using Service;
 using Service.Entidades;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace DAL
     public class RolDAL_83KI : IRolDAL_83KI
     {
         private readonly AccesoDAL_83KI _accesoDAL = new AccesoDAL_83KI();
+        private readonly IntegridadDAL_83KI _integridadDAL = new IntegridadDAL_83KI(new Encriptador_83KI());
 
         public IEnumerable<Rol_83KI> ObtenerRoles()
         {
@@ -81,20 +83,38 @@ namespace DAL
 
         public Rol_83KI CrearRol(string nombre)
         {
-            string consulta = @"INSERT INTO Roles (Nombre)
-                                OUTPUT INSERTED.CodigoRol
-                                VALUES (@nombre)";
-            object codigo = _accesoDAL.LeerEscalar(consulta, new List<SqlParameter> { new SqlParameter("@nombre", nombre) });
-            return new Rol_83KI(Convert.ToInt32(codigo), nombre);
+            Rol_83KI rol = null;
+            _accesoDAL.EjecutarTransaccion((conn, tran) =>
+            {
+                string consulta = @"INSERT INTO Roles (Nombre)
+                                    OUTPUT INSERTED.CodigoRol
+                                    VALUES (@nombre)";
+                object codigo = AccesoDAL_83KI.LeerEscalarTransaccional(conn, tran, consulta,
+                    new List<SqlParameter> { new SqlParameter("@nombre", nombre) });
+                int codigoRol = Convert.ToInt32(codigo);
+                rol = new Rol_83KI(codigoRol, nombre);
+
+                RecomputarIntegridadRol(codigoRol, conn, tran);
+            });
+            return rol;
         }
 
         public Familia_83KI CrearFamilia(string nombre)
         {
-            string consulta = @"INSERT INTO Familias (Nombre)
-                                OUTPUT INSERTED.CodigoFamilia
-                                VALUES (@nombre)";
-            object codigo = _accesoDAL.LeerEscalar(consulta, new List<SqlParameter> { new SqlParameter("@nombre", nombre) });
-            return new Familia_83KI(Convert.ToInt32(codigo), nombre);
+            Familia_83KI familia = null;
+            _accesoDAL.EjecutarTransaccion((conn, tran) =>
+            {
+                string consulta = @"INSERT INTO Familias (Nombre)
+                                    OUTPUT INSERTED.CodigoFamilia
+                                    VALUES (@nombre)";
+                object codigo = AccesoDAL_83KI.LeerEscalarTransaccional(conn, tran, consulta,
+                    new List<SqlParameter> { new SqlParameter("@nombre", nombre) });
+                int codigoFamilia = Convert.ToInt32(codigo);
+                familia = new Familia_83KI(codigoFamilia, nombre);
+
+                RecomputarIntegridadFamilia(codigoFamilia, conn, tran);
+            });
+            return familia;
         }
 
         public Rol_83KI CrearRolConComponentes(string nombre, List<int> codigosPatentes, List<int> codigosFamilias)
@@ -124,6 +144,7 @@ namespace DAL
                                 new SqlParameter("@codigoRol", codigoRol),
                                 new SqlParameter("@codigoPatente", codigoPatente)
                             });
+                        RecomputarIntegridadJoinRolPatente(codigoRol, codigoPatente, conn, tran);
                     }
                 }
 
@@ -139,8 +160,12 @@ namespace DAL
                                 new SqlParameter("@codigoRol", codigoRol),
                                 new SqlParameter("@codigoFamilia", codigoFamilia)
                             });
+                        RecomputarIntegridadJoinRolFamilia(codigoRol, codigoFamilia, conn, tran);
                     }
                 }
+
+                // integridad: recalcular dvh + dvv de roles
+                RecomputarIntegridadRol(codigoRol, conn, tran);
             });
 
             return rol;
@@ -173,6 +198,7 @@ namespace DAL
                                 new SqlParameter("@codigoFamilia", codigoFamilia),
                                 new SqlParameter("@codigoPatente", codigoPatente)
                             });
+                        RecomputarIntegridadJoinFamiliaPatente(codigoFamilia, codigoPatente, conn, tran);
                     }
                 }
 
@@ -188,8 +214,12 @@ namespace DAL
                                 new SqlParameter("@codigoFamiliaPadre", codigoFamilia),
                                 new SqlParameter("@codigoFamiliaHija", codigoFamiliaHija)
                             });
+                        RecomputarIntegridadJoinFamiliaFamilia(codigoFamilia, codigoFamiliaHija, conn, tran);
                     }
                 }
+
+                // integridad: recalcular dvh + dvv de familias
+                RecomputarIntegridadFamilia(codigoFamilia, conn, tran);
             });
 
             return familia;
@@ -197,15 +227,23 @@ namespace DAL
 
         public void EliminarFamilia(int codigoFamilia)
         {
-            _accesoDAL.Escribir(
-                "DELETE FROM FamiliaPatente WHERE CodigoFamilia = @codigoFamilia",
-                new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
-            _accesoDAL.Escribir(
-                "DELETE FROM FamiliaFamilia WHERE CodigoFamiliaPadre = @codigoFamilia OR CodigoFamiliaHija = @codigoFamilia",
-                new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
-            _accesoDAL.Escribir(
-                "DELETE FROM Familias WHERE CodigoFamilia = @codigoFamilia",
-                new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
+            _accesoDAL.EjecutarTransaccion((conn, tran) =>
+            {
+                AccesoDAL_83KI.EscribirTransaccional(conn, tran,
+                    "DELETE FROM FamiliaPatente WHERE CodigoFamilia = @codigoFamilia",
+                    new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
+                AccesoDAL_83KI.EscribirTransaccional(conn, tran,
+                    "DELETE FROM FamiliaFamilia WHERE CodigoFamiliaPadre = @codigoFamilia OR CodigoFamiliaHija = @codigoFamilia",
+                    new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
+                AccesoDAL_83KI.EscribirTransaccional(conn, tran,
+                    "DELETE FROM Familias WHERE CodigoFamilia = @codigoFamilia",
+                    new List<SqlParameter> { new SqlParameter("@codigoFamilia", codigoFamilia) });
+
+                // refrescar dvv de las tablas join afectadas (la fila en familias ya no existe)
+                _integridadDAL.ActualizarDVVTransaccional("FamiliaPatente", conn, tran);
+                _integridadDAL.ActualizarDVVTransaccional("FamiliaFamilia", conn, tran);
+                _integridadDAL.ActualizarDVVTransaccional("Familias", conn, tran);
+            });
         }
 
         public bool FamiliaAsignadaARol(int codigoFamilia)
@@ -241,20 +279,29 @@ namespace DAL
 
         public void EliminarRol(int codigoRol)
         {
-            _accesoDAL.Escribir(
-                "DELETE FROM RolPatente WHERE CodigoRol = @codigoRol",
-                new List<SqlParameter> { new SqlParameter("@codigoRol", codigoRol) });
-            _accesoDAL.Escribir(
-                "DELETE FROM RolFamilia WHERE CodigoRol = @codigoRol",
-                new List<SqlParameter> { new SqlParameter("@codigoRol", codigoRol) });
-            _accesoDAL.Escribir(
-                "DELETE FROM Roles WHERE CodigoRol = @codigoRol",
-                new List<SqlParameter> { new SqlParameter("@codigoRol", codigoRol) });
+            _accesoDAL.EjecutarTransaccion((conn, tran) =>
+            {
+                AccesoDAL_83KI.EscribirTransaccional(conn, tran,
+                    "DELETE FROM RolPatente WHERE CodigoRol = @codigoRol",
+                    new List<SqlParameter> { new SqlParameter("@codigoRol", codigoRol) });
+                AccesoDAL_83KI.EscribirTransaccional(conn, tran,
+                    "DELETE FROM RolFamilia WHERE CodigoRol = @codigoRol",
+                    new List<SqlParameter> { new SqlParameter("@codigoRol", codigoRol) });
+                AccesoDAL_83KI.EscribirTransaccional(conn, tran,
+                    "DELETE FROM Roles WHERE CodigoRol = @codigoRol",
+                    new List<SqlParameter> { new SqlParameter("@codigoRol", codigoRol) });
+
+                // refrescar dvv de las tablas afectadas
+                _integridadDAL.ActualizarDVVTransaccional("RolPatente", conn, tran);
+                _integridadDAL.ActualizarDVVTransaccional("RolFamilia", conn, tran);
+                _integridadDAL.ActualizarDVVTransaccional("Roles", conn, tran);
+            });
         }
 
         public void AsignarPatenteAFamilia(int codigoFamilia, int codigoPatente)
         {
-            InsertarRelacion(
+            InsertarJoinConIntegridad(
+                "FamiliaPatente",
                 "INSERT INTO FamiliaPatente (CodigoFamilia, CodigoPatente) VALUES (@codigoFamilia, @codigoPatente)",
                 new SqlParameter("@codigoFamilia", codigoFamilia),
                 new SqlParameter("@codigoPatente", codigoPatente));
@@ -262,7 +309,8 @@ namespace DAL
 
         public void QuitarPatenteDeFamilia(int codigoFamilia, int codigoPatente)
         {
-            BorrarRelacion(
+            BorrarJoinConIntegridad(
+                "FamiliaPatente",
                 "DELETE FROM FamiliaPatente WHERE CodigoFamilia = @codigoFamilia AND CodigoPatente = @codigoPatente",
                 new SqlParameter("@codigoFamilia", codigoFamilia),
                 new SqlParameter("@codigoPatente", codigoPatente));
@@ -270,23 +318,26 @@ namespace DAL
 
         public void AsignarFamiliaAFamilia(int codigoFamiliaPadre, int codigoFamiliaHija)
         {
-            InsertarRelacion(
-                "INSERT INTO FamiliaFamilia (CodigoFamiliaPadre, CodigoFamiliaHija) VALUES (@codigoFamiliaPadre, @codigoFamiliaHija)",
-                new SqlParameter("@codigoFamiliaPadre", codigoFamiliaPadre),
-                new SqlParameter("@codigoFamiliaHija", codigoFamiliaHija));
+            InsertarJoinConIntegridad(
+                "FamiliaFamilia",
+                "INSERT INTO FamiliaFamilia (CodigoFamiliaPadre, CodigoFamiliaHija) VALUES (@padre, @hija)",
+                new SqlParameter("@padre", codigoFamiliaPadre),
+                new SqlParameter("@hija", codigoFamiliaHija));
         }
 
         public void QuitarFamiliaDeFamilia(int codigoFamiliaPadre, int codigoFamiliaHija)
         {
-            BorrarRelacion(
-                "DELETE FROM FamiliaFamilia WHERE CodigoFamiliaPadre = @codigoFamiliaPadre AND CodigoFamiliaHija = @codigoFamiliaHija",
-                new SqlParameter("@codigoFamiliaPadre", codigoFamiliaPadre),
-                new SqlParameter("@codigoFamiliaHija", codigoFamiliaHija));
+            BorrarJoinConIntegridad(
+                "FamiliaFamilia",
+                "DELETE FROM FamiliaFamilia WHERE CodigoFamiliaPadre = @padre AND CodigoFamiliaHija = @hija",
+                new SqlParameter("@padre", codigoFamiliaPadre),
+                new SqlParameter("@hija", codigoFamiliaHija));
         }
 
         public void AsignarPatenteARol(int codigoRol, int codigoPatente)
         {
-            InsertarRelacion(
+            InsertarJoinConIntegridad(
+                "RolPatente",
                 "INSERT INTO RolPatente (CodigoRol, CodigoPatente) VALUES (@codigoRol, @codigoPatente)",
                 new SqlParameter("@codigoRol", codigoRol),
                 new SqlParameter("@codigoPatente", codigoPatente));
@@ -294,7 +345,8 @@ namespace DAL
 
         public void QuitarPatenteDeRol(int codigoRol, int codigoPatente)
         {
-            BorrarRelacion(
+            BorrarJoinConIntegridad(
+                "RolPatente",
                 "DELETE FROM RolPatente WHERE CodigoRol = @codigoRol AND CodigoPatente = @codigoPatente",
                 new SqlParameter("@codigoRol", codigoRol),
                 new SqlParameter("@codigoPatente", codigoPatente));
@@ -302,7 +354,8 @@ namespace DAL
 
         public void AsignarFamiliaARol(int codigoRol, int codigoFamilia)
         {
-            InsertarRelacion(
+            InsertarJoinConIntegridad(
+                "RolFamilia",
                 "INSERT INTO RolFamilia (CodigoRol, CodigoFamilia) VALUES (@codigoRol, @codigoFamilia)",
                 new SqlParameter("@codigoRol", codigoRol),
                 new SqlParameter("@codigoFamilia", codigoFamilia));
@@ -310,7 +363,8 @@ namespace DAL
 
         public void QuitarFamiliaDeRol(int codigoRol, int codigoFamilia)
         {
-            BorrarRelacion(
+            BorrarJoinConIntegridad(
+                "RolFamilia",
                 "DELETE FROM RolFamilia WHERE CodigoRol = @codigoRol AND CodigoFamilia = @codigoFamilia",
                 new SqlParameter("@codigoRol", codigoRol),
                 new SqlParameter("@codigoFamilia", codigoFamilia));
@@ -410,14 +464,102 @@ namespace DAL
             }
         }
 
-        private void InsertarRelacion(string consulta, params SqlParameter[] parametros)
+        // ------------------------------------------------------------------ //
+        //  helpers de integridad
+        // ------------------------------------------------------------------ //
+
+        /// <summary>inserta en tabla join, calcula dvh para la nueva fila y refresca dvv.</summary>
+        private void InsertarJoinConIntegridad(string tabla, string sql, params SqlParameter[] parametros)
         {
-            _accesoDAL.Escribir(consulta, parametros.ToList());
+            _accesoDAL.EjecutarTransaccion((conn, tran) =>
+            {
+                AccesoDAL_83KI.EscribirTransaccional(conn, tran, sql, parametros.ToList());
+                // tras el insert, la nueva fila necesita dvh. se lee de vuelta y se recalcula.
+                RecomputarIntegridadJoinDesdeParametros(tabla, parametros, conn, tran);
+            });
         }
 
-        private void BorrarRelacion(string consulta, params SqlParameter[] parametros)
+        /// <summary>elimina de tabla join y solo refresca dvv.</summary>
+        private void BorrarJoinConIntegridad(string tabla, string sql, params SqlParameter[] parametros)
         {
-            _accesoDAL.Escribir(consulta, parametros.ToList());
+            _accesoDAL.EjecutarTransaccion((conn, tran) =>
+            {
+                AccesoDAL_83KI.EscribirTransaccional(conn, tran, sql, parametros.ToList());
+                _integridadDAL.ActualizarDVVTransaccional(tabla, conn, tran);
+            });
+        }
+
+        /// <summary>
+        /// lee de vuelta una fila de tabla join y recalcula su dvh + dvv.
+        /// construye la clausula where desde los nombres de parametro (quitando el prefijo @).
+        /// </summary>
+        private void RecomputarIntegridadJoinDesdeParametros(
+            string tabla, SqlParameter[] parametros, SqlConnection conn, SqlTransaction tran)
+        {
+            var whereClauses = new List<string>();
+            var whereParams = new List<SqlParameter>();
+            foreach (var p in parametros)
+            {
+                string colName = p.ParameterName.TrimStart('@');
+                whereClauses.Add($"{colName} = @w_{colName}");
+                whereParams.Add(new SqlParameter($"@w_{colName}", p.Value));
+            }
+            string whereClause = string.Join(" AND ", whereClauses);
+
+            var valores = IntegridadDAL_83KI.LeerFilaTransaccional(tabla, whereClause, whereParams, conn, tran);
+            if (valores.Count > 0)
+            {
+                _integridadDAL.RecomputarIntegridadFila(tabla, valores, conn, tran);
+            }
+        }
+
+        private void RecomputarIntegridadRol(int codigoRol, SqlConnection conn, SqlTransaction tran)
+        {
+            var valores = IntegridadDAL_83KI.LeerFilaTransaccional(
+                "Roles", "CodigoRol = @cr",
+                new List<SqlParameter> { new SqlParameter("@cr", codigoRol) },
+                conn, tran);
+            if (valores.Count > 0)
+                _integridadDAL.RecomputarIntegridadFila("Roles", valores, conn, tran);
+        }
+
+        private void RecomputarIntegridadFamilia(int codigoFamilia, SqlConnection conn, SqlTransaction tran)
+        {
+            var valores = IntegridadDAL_83KI.LeerFilaTransaccional(
+                "Familias", "CodigoFamilia = @cf",
+                new List<SqlParameter> { new SqlParameter("@cf", codigoFamilia) },
+                conn, tran);
+            if (valores.Count > 0)
+                _integridadDAL.RecomputarIntegridadFila("Familias", valores, conn, tran);
+        }
+
+        // helpers de recomputo por tabla join usados por CrearRolConComponentes / CrearFamiliaConComponentes.
+        private void RecomputarIntegridadJoinRolPatente(int codigoRol, int codigoPatente, SqlConnection conn, SqlTransaction tran)
+        {
+            RecomputarIntegridadJoinDesdeParametros("RolPatente",
+                new[] { new SqlParameter("@CodigoRol", codigoRol), new SqlParameter("@CodigoPatente", codigoPatente) },
+                conn, tran);
+        }
+
+        private void RecomputarIntegridadJoinRolFamilia(int codigoRol, int codigoFamilia, SqlConnection conn, SqlTransaction tran)
+        {
+            RecomputarIntegridadJoinDesdeParametros("RolFamilia",
+                new[] { new SqlParameter("@CodigoRol", codigoRol), new SqlParameter("@CodigoFamilia", codigoFamilia) },
+                conn, tran);
+        }
+
+        private void RecomputarIntegridadJoinFamiliaPatente(int codigoFamilia, int codigoPatente, SqlConnection conn, SqlTransaction tran)
+        {
+            RecomputarIntegridadJoinDesdeParametros("FamiliaPatente",
+                new[] { new SqlParameter("@CodigoFamilia", codigoFamilia), new SqlParameter("@CodigoPatente", codigoPatente) },
+                conn, tran);
+        }
+
+        private void RecomputarIntegridadJoinFamiliaFamilia(int codigoFamiliaPadre, int codigoFamiliaHija, SqlConnection conn, SqlTransaction tran)
+        {
+            RecomputarIntegridadJoinDesdeParametros("FamiliaFamilia",
+                new[] { new SqlParameter("@CodigoFamiliaPadre", codigoFamiliaPadre), new SqlParameter("@CodigoFamiliaHija", codigoFamiliaHija) },
+                conn, tran);
         }
 
         private string ObtenerTexto(DataRow row, string columna)

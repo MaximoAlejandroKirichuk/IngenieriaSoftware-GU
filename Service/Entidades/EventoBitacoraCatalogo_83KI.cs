@@ -71,7 +71,13 @@ namespace Service.Entidades
                 "Patente quitada de familia:",
                 "Subfamilia asignada:",
                 "Subfamilia quitada:"),
-            new EventoBitacoraOpcion_83KI(Modulo.Admin, "Bit\u00e1cora exportada a PDF", "Bit\u00e1cora exportada a PDF:")
+            new EventoBitacoraOpcion_83KI(Modulo.Admin, "Bit\u00e1cora exportada a PDF", "Bit\u00e1cora exportada a PDF:"),
+
+            // --- Admin — Data Integrity & Recovery (4 events) ---
+            new EventoBitacoraOpcion_83KI(Modulo.Admin, "Integridad de datos comprometida", "Integridad de datos comprometida:"),
+            new EventoBitacoraOpcion_83KI(Modulo.Admin, "Rec\u00e1lculo de hashes ejecutado", "Rec\u00e1lculo de hashes ejecutado:"),
+            new EventoBitacoraOpcion_83KI(Modulo.Admin, "Backup de base de datos ejecutado", "Backup de base de datos ejecutado:"),
+            new EventoBitacoraOpcion_83KI(Modulo.Admin, "Restauraci\u00f3n de base de datos ejecutada", "Restauraci\u00f3n de base de datos ejecutada:")
         };
 
         public static IEnumerable<EventoBitacoraOpcion_83KI> ObtenerPorModulo(Modulo modulo)

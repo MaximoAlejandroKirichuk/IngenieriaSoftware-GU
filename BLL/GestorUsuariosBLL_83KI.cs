@@ -4,6 +4,7 @@ using System.Linq;
 using DAL;
 using DAL.interfaces;
 using Service;
+using Service.DTOs;
 using Service.Entidades;
 using Service.Excepciones;
 using Service.Excepciones.CrearUsuario;
@@ -23,13 +24,15 @@ namespace BLL
         private readonly ISessionManager_83KI _sessionManager;
         private readonly IBitacoraManager_83KI _bitacora;
         private readonly IGestorIdioma_83KI _gestorIdioma;
+        private readonly IIntegridadDatosService_83KI _integridadService;
 
         public GestorUsuarioBLL_83KI(IUsuarioDAL_83KI dal, IEncriptador_83KI encriptador, ISessionManager_83KI sessionManager, IBitacoraManager_83KI bitacora)
-            : this(dal, encriptador, sessionManager, bitacora, new RolDAL_83KI(), new GestorIdioma_83KI())
+            : this(dal, encriptador, sessionManager, bitacora, new RolDAL_83KI(), new GestorIdioma_83KI(),
+                   new IntegridadBLL_83KI(new IntegridadDAL_83KI(new Encriptador_83KI()), bitacora))
         {
         }
 
-        public GestorUsuarioBLL_83KI(IUsuarioDAL_83KI dal, IEncriptador_83KI encriptador, ISessionManager_83KI sessionManager, IBitacoraManager_83KI bitacora, IRolDAL_83KI rolDal, IGestorIdioma_83KI gestorIdioma)
+        public GestorUsuarioBLL_83KI(IUsuarioDAL_83KI dal, IEncriptador_83KI encriptador, ISessionManager_83KI sessionManager, IBitacoraManager_83KI bitacora, IRolDAL_83KI rolDal, IGestorIdioma_83KI gestorIdioma, IIntegridadDatosService_83KI integridadService)
         {
             _dal = dal;
             _encriptador = encriptador;
@@ -37,6 +40,7 @@ namespace BLL
             _bitacora = bitacora;
             _rolDal = rolDal;
             _gestorIdioma = gestorIdioma;
+            _integridadService = integridadService ?? throw new ArgumentNullException(nameof(integridadService));
         }
 
         public void Login(string userName, string contrasena)
@@ -68,28 +72,115 @@ namespace BLL
                 throw new UsuarioBloqueadoException_83KI();
             }
 
-            ReiniciarIntentosSiCorresponde(usuario);
+            // --- puerta de integridad: verifica ANTES de validar contrasena ---
+            bool integridadSana = true;
+            IntegridadSistemaEstado_83KI estadoIntegridad = null;
+
+            try
+            {
+                estadoIntegridad = _integridadService.Verificar();
+                integridadSana = estadoIntegridad.EstaSano;
+            }
+            catch
+            {
+                // si la verificacion misma falla, tratar como no sana
+                integridadSana = false;
+            }
+
+            if (!integridadSana)
+            {
+                Rol_83KI rolConPatentes = null;
+                bool tienePatentesRecuperacion = false;
+
+                if (usuario.Rol != null)
+                {
+                    // carga el rol enriquecido para evaluar patentes de recuperacion en vez de EsAdministrador fijo.
+                    // el rol plano de ObtenerPorUserName no tiene patentes, hay que enriquecerlo primero.
+                    rolConPatentes = _rolDal.ObtenerRolesConPermisos()
+                        .FirstOrDefault(r => r.CodigoRol == usuario.Rol.CodigoRol);
+
+                    tienePatentesRecuperacion = rolConPatentes != null
+                        && rolConPatentes.ObtenerPatentes().Any(p =>
+                            p.CodigoPatente == (int)PermisoSistema_83KI.RecalcularHashes
+                            || p.CodigoPatente == (int)PermisoSistema_83KI.EjecutarBackup
+                            || p.CodigoPatente == (int)PermisoSistema_83KI.EjecutarRestore);
+                }
+
+                if (!tienePatentesRecuperacion)
+                {
+                    // usuario estandar bloqueado por falla de integridad — NO incrementar contador de intentos
+                    var tablasAfectadas = estadoIntegridad?.Tablas
+                        ?.Where(t => !t.EsValido)
+                        ?.Select(t => t.NombreTabla)
+                        ?.ToList()
+                        ?? new List<string>();
+
+                    RegistrarAuditoriaSegura(
+                        "Integridad de datos comprometida",
+                        Criticidad.Alto,
+                        Modulo.Admin,
+                        userName
+                    );
+
+                    throw new IntegridadComprometidaException_83KI(tablasAfectadas);
+                }
+
+                // el usuario tiene patentes de recuperacion — asigna el rol enriquecido temprano y sigue con validacion de contrasena
+                usuario.AsignarRol(rolConPatentes);
+            }
+
+            // solo resetea intentos por tiempo cuando la integridad esta sana.
+            // con integridad daniada, escribir en Usuarios via dal
+            // recalcularia los hashes y legitimaria datos adulterados.
+            if (integridadSana)
+            {
+                ReiniciarIntentosSiCorresponde(usuario);
+            }
 
             string hash = _encriptador.HashContrasena(contrasena);
 
             if (usuario.Contrasena != hash)
             {
-                RegistrarIntentoFallido(usuario);
-
-                if (SuperoIntentosPermitidos(usuario))
+                // con integridad daniada, NO escribir estado de intentos fallidos
+                // en Usuarios. las escrituras recalculan hashes
+                // y legitimarian datos adulterados. rechazar el login de forma segura.
+                if (integridadSana)
                 {
-                    BloquearPorIntentosFallidos(usuario);
-                    throw new UsuarioBloqueadoException_83KI();
+                    RegistrarIntentoFallido(usuario);
+
+                    if (SuperoIntentosPermitidos(usuario))
+                    {
+                        BloquearPorIntentosFallidos(usuario);
+                        throw new UsuarioBloqueadoException_83KI();
+                    }
                 }
 
                 throw new ContrasenaInvalidaException_83KI($"Intento {usuario.IntentosRealizados} de {IntentosPermitidos}.");
             }
 
-            usuario.AsignarRol(ObtenerRolConPermisos(usuario.Rol));
+            if (integridadSana)
+            {
+                usuario.AsignarRol(ObtenerRolConPermisos(usuario.Rol));
+                ReiniciarIntentosFallidos(usuario);
+            }
+            // cuando la integridad no era sana pero el usuario tenia patentes de recuperacion,
+            // el rol enriquecido ya fue asignado durante la verificacion de integridad.
+            // NO llamar ReiniciarIntentosFallidos con integridad daniada — escribir
+            // en Usuarios via dal recalcularia hashes y
+            // legitimaria datos adulterados antes de la recuperacion.
             _sessionManager.IniciarSesion(usuario);
-            ReiniciarIntentosFallidos(usuario);
 
-            //aca asigno el idioma para el sistema segun la tabla usuario
+            // si el usuario con patentes de recuperacion entro con integridad daniada, establecer estado de recuperacion
+            if (!integridadSana)
+            {
+                var tablasAfectadas = estadoIntegridad?.Tablas
+                    ?.Where(t => !t.EsValido)
+                    ?.Select(t => t.NombreTabla)
+                    ?.ToList();
+                _sessionManager.EstablecerRecuperacionIntegridad(tablasAfectadas);
+            }
+
+            // asigna el idioma del sistema segun la tabla usuario
             _gestorIdioma.CambiarIdioma(usuario.IdiomaId);
             RegistrarAuditoriaSegura(
                 $"Login exitoso: {usuario.UserName}",

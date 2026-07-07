@@ -54,6 +54,9 @@ namespace Service.Entidades
         ExportarBitacoraPdf = 34,
         GestionAdmin = 35,
         EliminarRol = 36,
-        CambiarIdioma = 37
+        CambiarIdioma = 37,
+        EjecutarBackup = 38,
+        EjecutarRestore = 39,
+        RecalcularHashes = 40
     }
 }

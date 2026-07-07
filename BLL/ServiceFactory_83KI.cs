@@ -19,6 +19,8 @@ namespace Service
         private static IBitacoraManager_83KI _bitacoraManager;
         private static IConsultaBitacoraEventos_83KI _consultaBitacoraEventos;
         private static IGestorIdioma_83KI _gestorIdioma;
+        private static IIntegridadDatosService_83KI _integridadDatosService;
+        private static IRecuperacionBaseDatosService_83KI _recuperacionBaseDatosService;
 
         public static IGestorUsuario_83KI GetGestorUsuario()
         {
@@ -31,8 +33,9 @@ namespace Service
                 ISessionManager_83KI sessionManager = SessionManager_83KI.Instancia;
                 IBitacoraManager_83KI bitacoraManager = GetBitacoraManager();
                 IGestorIdioma_83KI gestorIdioma = GetGestorIdioma();
+                IIntegridadDatosService_83KI integridadService = GetIntegridadDatosService();
 
-                _gestorUsuario = new GestorUsuarioBLL_83KI(datos, encriptador, sessionManager, bitacoraManager, new RolDAL_83KI(), gestorIdioma);
+                _gestorUsuario = new GestorUsuarioBLL_83KI(datos, encriptador, sessionManager, bitacoraManager, new RolDAL_83KI(), gestorIdioma, integridadService);
             }
             return _gestorUsuario;
         }
@@ -79,6 +82,28 @@ namespace Service
             }
 
             return _consultaBitacoraEventos;
+        }
+
+        public static IIntegridadDatosService_83KI GetIntegridadDatosService()
+        {
+            if (_integridadDatosService == null)
+            {
+                IIntegridadDAL_83KI integridadDal = new IntegridadDAL_83KI(new Encriptador_83KI());
+                IBitacoraManager_83KI bitacoraManager = GetBitacoraManager();
+                _integridadDatosService = new IntegridadBLL_83KI(integridadDal, bitacoraManager);
+            }
+            return _integridadDatosService;
+        }
+
+        public static IRecuperacionBaseDatosService_83KI GetRecuperacionBaseDatosService()
+        {
+            if (_recuperacionBaseDatosService == null)
+            {
+                IRecuperacionDAL_83KI recuperacionDal = new RecuperacionDAL_83KI();
+                IBitacoraManager_83KI bitacoraManager = GetBitacoraManager();
+                _recuperacionBaseDatosService = new RecuperacionBaseDatosBLL_83KI(recuperacionDal, bitacoraManager);
+            }
+            return _recuperacionBaseDatosService;
         }
     }
 }
