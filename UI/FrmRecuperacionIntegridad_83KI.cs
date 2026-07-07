@@ -51,8 +51,6 @@ namespace UI
             grpEstado.Text = Texto("RecuperacionIntegridad.EstadoSistema");
             lblTablas.Text = Texto("RecuperacionIntegridad.TablasAfectadas");
             grpAcciones.Text = Texto("RecuperacionIntegridad.RecalcularHashes");
-            btnRecalcular.Text = Texto("RecuperacionIntegridad.RecalcularHashes");
-            lblRecalcularDesc.Text = Texto("RecuperacionIntegridad.RecalcularHashesDescripcion");
             btnBackup.Text = Texto("RecuperacionIntegridad.Backup");
             lblBackupDesc.Text = Texto("RecuperacionIntegridad.BackupDescripcion");
             btnRestore.Text = Texto("RecuperacionIntegridad.Restore");
@@ -62,11 +60,9 @@ namespace UI
 
         private void AplicarPermisos()
         {
-            btnRecalcular.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.RecalcularHashes);
             btnBackup.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.EjecutarBackup);
             btnRestore.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.EjecutarRestore);
 
-            lblRecalcularDesc.Visible = btnRecalcular.Visible;
             lblBackupDesc.Visible = btnBackup.Visible;
             lblRestoreDesc.Visible = btnRestore.Visible;
         }
@@ -161,59 +157,6 @@ namespace UI
                 lblEstadoSistema.Text = "Error al verificar el estado de integridad.";
                 treeInconsistencias.Nodes.Clear();
                 treeInconsistencias.Nodes.Add(new TreeNode(ex.Message));
-            }
-        }
-
-        private void btnRecalcular_Click(object sender, EventArgs e)
-        {
-            if (!PermisosUi_83KI.Tiene(PermisoSistema_83KI.RecalcularHashes))
-            {
-                IdiomaUiHelper_83KI.MostrarAdvertencia(
-                    this,
-                    "Errores.SinPermisos",
-                    "Comun.Seguridad");
-                return;
-            }
-
-            // guarda: no ejecutar recalculo si el sistema ya esta sano
-            var estadoActual = _integridadService.Verificar();
-            if (estadoActual.EstaSano)
-            {
-                IdiomaUiHelper_83KI.MostrarAdvertencia(
-                    this,
-                    "RecuperacionIntegridad.NadaQueRecalcular",
-                    "Comun.Informacion");
-                return;
-            }
-
-            try
-            {
-                var usuarioActivo = SessionManager_83KI.Instancia.UsuarioActivo;
-                string actor = usuarioActivo?.UserName ?? "sistema";
-
-                var estado = _integridadService.RecalcularTodo(actor);
-
-                _recalculoExitoso = estado.EstaSano;
-
-                if (estado.EstaSano)
-                {
-                    IdiomaUiHelper_83KI.MostrarInformacion(
-                        this,
-                        "RecuperacionIntegridad.RecalculoExitoso",
-                        "Comun.Informacion");
-
-                    SessionManager_83KI.Instancia.LimpiarRecuperacionIntegridad();
-
-                    DialogResult = DialogResult.OK;
-                    Close();
-                    return;
-                }
-
-                CargarEstadoIntegridad();
-            }
-            catch (Exception ex)
-            {
-                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Error", MessageBoxIcon.Error);
             }
         }
 
