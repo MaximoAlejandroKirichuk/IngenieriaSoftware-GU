@@ -71,6 +71,10 @@
     "Errores.UsuarioSeleccionadoDeshabilitado": "The selected user is already disabled.",
     "Errores.FamiliaYaContenida": "The family is already included within another selected subfamily.",
     "Errores.FamiliaYaContieneSubfamilia": "The selected family already contains another checked subfamily. Remove the subfamily or the containing family to avoid redundancy.",
+    "Errores.IntegridadComprometida": "Data integrity is compromised. Contact an administrator.",
+    "Errores.IntegridadComprometidaAdmin": "Data integrity inconsistencies were detected. As an administrator, you can execute recovery actions.",
+    "Errores.BackupFallido": "The database backup could not be completed.",
+    "Errores.RestoreFallido": "The database restore could not be completed.",
 
     "Dominio.Modulo.Usuarios": "Users",
     "Dominio.Modulo.Admin": "Admin",
@@ -95,6 +99,10 @@
     "Dominio.EventoBitacora.Roleliminado": "Role deleted",
     "Dominio.EventoBitacora.Familiaeliminada": "Family deleted",
     "Dominio.EventoBitacora.BitacoraexportadaaPDF": "Event log exported to PDF",
+    "Dominio.EventoBitacora.Integridaddedatoscomprometida": "Data integrity compromised",
+    "Dominio.EventoBitacora.Recalculodehashesejecutado": "Hash recalculation executed",
+    "Dominio.EventoBitacora.Backupdebasededatosejecutado": "Database backup executed",
+    "Dominio.EventoBitacora.Restauraciondebasededatosejecutada": "Database restore executed",
 
     "Login.Titulo": "Login",
     "Login.Username": "Username",
@@ -229,6 +237,21 @@
     "FrmGestionFamilias.NodoNoEsSubfamilia": "The selected component is not a subfamily.",
     "FrmGestionFamilias.SeleccionarPatenteAgregar": "You must select a patent to add.",
     "FrmGestionFamilias.SeleccionarSubfamiliaAgregar": "You must select a subfamily to add.",
-    "FrmGestionFamilias.SeleccionarFamilia": "You must select a family."
+    "FrmGestionFamilias.SeleccionarFamilia": "You must select a family.",
+
+    "RecuperacionIntegridad.Titulo": "Integrity Recovery",
+    "RecuperacionIntegridad.EstadoSistema": "System status",
+    "RecuperacionIntegridad.TablasAfectadas": "Affected tables",
+    "RecuperacionIntegridad.RecalcularHashes": "Recalculate hashes",
+    "RecuperacionIntegridad.RecalcularHashesDescripcion": "Recomputes integrity values from current data.",
+    "RecuperacionIntegridad.Backup": "Create current backup",
+    "RecuperacionIntegridad.BackupDescripcion": "Creates a full database backup.",
+    "RecuperacionIntegridad.Restore": "Restore database",
+    "RecuperacionIntegridad.RestoreDescripcion": "Restores the database from a backup file. The application will close.",
+    "RecuperacionIntegridad.NadaQueRecalcular": "The system is already in a healthy state. There is nothing to recalculate.",
+    "RecuperacionIntegridad.RecalculoExitoso": "Integrity hashes were recalculated successfully.",
+    "RecuperacionIntegridad.BackupExitoso": "Database backup completed successfully.",
+    "RecuperacionIntegridad.RestoreExitoso": "Restore completed. The application will now close.",
+    "RecuperacionIntegridad.RestoreAdvertencia": "This action will replace the entire database. Do you want to continue?"
   }
 }

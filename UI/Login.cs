@@ -8,9 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using Service.Entidades;
 using Service.Excepciones.Login;
 using Service.Interfaces;
 using Service.Excepciones;
+using Service;
 
 namespace UI
 {
@@ -44,12 +46,12 @@ namespace UI
             {
                 _gestor.Login(userName, contrasena);
 
-                var usuarioActivo = Service.SessionManager_83KI.Instancia.UsuarioActivo;
+                var usuarioActivo = SessionManager_83KI.Instancia.UsuarioActivo;
 
                 if (usuarioActivo != null)
                 {
-                    //aca se hace la contraseña base para compararla
-                    string contrasenaPorDefecto = Service.Entidades.Usuario_83KI.EstablecerContrasenaPorDefecto(usuarioActivo.Apellido, usuarioActivo.DNI);
+                    //aca se hace la contrasena base para compararla
+                    string contrasenaPorDefecto = Usuario_83KI.EstablecerContrasenaPorDefecto(usuarioActivo.Apellido, usuarioActivo.DNI);
 
                     bool usaContrasenaPorDefecto = (contrasena == contrasenaPorDefecto);
 
@@ -67,6 +69,70 @@ namespace UI
                     }
                 }
 
+                if (SessionManager_83KI.Instancia.RequiereRecuperacionIntegridad)
+                {
+                    bool puedeRecuperar = PermisosUi_83KI.TieneAlguno(
+                        PermisoSistema_83KI.RecalcularHashes,
+                        PermisoSistema_83KI.EjecutarRestore);
+
+                    if (puedeRecuperar)
+                    {
+                        Hide();
+
+                        bool recalculoExitoso = false;
+
+                        using (var frmRecuperacion = new FrmRecuperacionIntegridadLogin_83KI())
+                        {
+                            frmRecuperacion.ShowDialog(this);
+                            recalculoExitoso = frmRecuperacion.RecalculoExitoso;
+                        }
+
+                        if (SessionManager_83KI.Instancia.ReinicioRequeridoDespuesDeRestore)
+                        {
+                            _gestor.Logout();
+                            Close();
+                            return;
+                        }
+
+                // no permitir cerrar el formulario de recuperacion sin una recuperacion real.
+                // cancelar/cerrar sin recuperacion NO debe avanzar a FrmPrincipal.
+                        if (!recalculoExitoso)
+                        {
+                            _gestor.Logout();
+                            txt_Contrasena.Clear();
+                            txt_Contrasena.Focus();
+                            Show();
+                            return;
+                        }
+
+                        using (var formPrincipal = new FrmPrincipal(_gestor, _gestorRol))
+                        {
+                            var resultado = formPrincipal.ShowDialog(this);
+
+                            if (resultado == DialogResult.Retry)
+                            {
+                                txt_Contrasena.Clear();
+                                txt_Contrasena.Focus();
+                                Show();
+                                return;
+                            }
+                        }
+                        Close();
+                        return;
+                    }
+
+                   
+                    IdiomaUiHelper_83KI.MostrarAdvertencia(
+                        this,
+                        "Errores.SinPermisos",
+                        "Comun.Seguridad");
+                    _gestor.Logout();
+                    txt_Contrasena.Clear();
+                    txt_Contrasena.Focus();
+                    Show();
+                    return;
+                }
+
                 Hide();
 
                 using (var formPrincipal = new FrmPrincipal(_gestor, _gestorRol))
@@ -82,6 +148,12 @@ namespace UI
                     }
                 }
                 Close();
+            }
+            catch (IntegridadComprometidaException_83KI ex)
+            {
+                Show();
+                // usuario no-admin bloqueado por falla de integridad
+                IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Seguridad", MessageBoxIcon.Stop);
             }
             catch (UsuarioActivoActualmenteException_83KI ex)
             {
@@ -133,15 +205,15 @@ namespace UI
         }
 
 
-        public void LoginDesignConfig()  //diseño de la interfaz
+        public void LoginDesignConfig()  //diseno de la interfaz
         {
             BackColor = Color.FromArgb(70, 130, 180);
             txt_userName.BackColor = Color.FromArgb(240, 240, 240);
             txt_Contrasena.BackColor = Color.FromArgb(240, 240, 240);
-            //diseño imagen
+            //diseno imagen
             GraphicsPath path = new GraphicsPath();
         }
-        private void RedondearPanel(Panel panel) //diseño del panel
+        private void RedondearPanel(Panel panel) //diseno del panel
         {
             GraphicsPath path = new GraphicsPath();
             int radio = 30;
@@ -155,7 +227,7 @@ namespace UI
 
             panel.Region = new Region(path);
         }
-        public void ButtonDesing(Button btn) //diseño del boton 
+        public void ButtonDesing(Button btn) //diseno del boton
         {
             btn.BackColor = Color.FromArgb(70, 130, 180);
             btn.ForeColor = Color.White;

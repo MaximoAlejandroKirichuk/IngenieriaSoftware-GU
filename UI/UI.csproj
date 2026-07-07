@@ -49,6 +49,18 @@
   <ItemGroup>
     <Compile Include="Exportacion\BitacoraEventosPdfExporter_83KI.cs" />
     <Compile Include="Exportacion\IBitacoraEventosExporter_83KI.cs" />
+    <Compile Include="FrmRecuperacionIntegridad_83KI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmRecuperacionIntegridad_83KI.Designer.cs">
+      <DependentUpon>FrmRecuperacionIntegridad_83KI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmRecuperacionIntegridadLogin_83KI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmRecuperacionIntegridadLogin_83KI.Designer.cs">
+      <DependentUpon>FrmRecuperacionIntegridadLogin_83KI.cs</DependentUpon>
+    </Compile>
     <Compile Include="IdiomaUiHelper_83KI.cs" />
     <Compile Include="PermisosUi_83KI.cs" />
     <Compile Include="FrmConfirmarEstadoUsuario.cs">

@@ -71,6 +71,10 @@
     "Errores.UsuarioSeleccionadoDeshabilitado": "El usuario seleccionado ya se encuentra deshabilitado.",
     "Errores.FamiliaYaContenida": "La familia ya se encuentra incluida dentro de otra subfamilia seleccionada.",
     "Errores.FamiliaYaContieneSubfamilia": "La familia seleccionada ya contiene otra subfamilia que está marcada. Quite la subfamilia o la familia contenedora para evitar redundancia.",
+    "Errores.IntegridadComprometida": "La integridad de los datos está comprometida. Contacte a un administrador.",
+    "Errores.IntegridadComprometidaAdmin": "Se detectaron inconsistencias en la integridad de los datos. Como administrador, puede ejecutar acciones de recuperación.",
+    "Errores.BackupFallido": "No se pudo completar el backup de la base de datos.",
+    "Errores.RestoreFallido": "No se pudo completar la restauración de la base de datos.",
 
     "Dominio.Modulo.Usuarios": "Usuarios",
     "Dominio.Modulo.Admin": "Admin",
@@ -95,6 +99,10 @@
     "Dominio.EventoBitacora.Roleliminado": "Rol eliminado",
     "Dominio.EventoBitacora.Familiaeliminada": "Familia eliminada",
     "Dominio.EventoBitacora.BitacoraexportadaaPDF": "Bitácora exportada a PDF",
+    "Dominio.EventoBitacora.Integridaddedatoscomprometida": "Integridad de datos comprometida",
+    "Dominio.EventoBitacora.Recalculodehashesejecutado": "Recálculo de hashes ejecutado",
+    "Dominio.EventoBitacora.Backupdebasededatosejecutado": "Backup de base de datos ejecutado",
+    "Dominio.EventoBitacora.Restauraciondebasededatosejecutada": "Restauración de base de datos ejecutada",
 
     "Login.Titulo": "Login",
     "Login.Username": "Username",
@@ -229,6 +237,21 @@
     "FrmGestionFamilias.NodoNoEsSubfamilia": "El componente seleccionado no es una subfamilia.",
     "FrmGestionFamilias.SeleccionarPatenteAgregar": "Debe seleccionar una patente para agregar.",
     "FrmGestionFamilias.SeleccionarSubfamiliaAgregar": "Debe seleccionar una subfamilia para agregar.",
-    "FrmGestionFamilias.SeleccionarFamilia": "Debe seleccionar una familia."
+    "FrmGestionFamilias.SeleccionarFamilia": "Debe seleccionar una familia.",
+
+    "RecuperacionIntegridad.Titulo": "Recuperación de integridad",
+    "RecuperacionIntegridad.EstadoSistema": "Estado del sistema",
+    "RecuperacionIntegridad.TablasAfectadas": "Tablas afectadas",
+    "RecuperacionIntegridad.RecalcularHashes": "Recalcular hashes",
+    "RecuperacionIntegridad.RecalcularHashesDescripcion": "Recomputa los valores de integridad desde los datos actuales.",
+    "RecuperacionIntegridad.Backup": "Hacer backup actual",
+    "RecuperacionIntegridad.BackupDescripcion": "Genera una copia de seguridad completa de la base de datos.",
+    "RecuperacionIntegridad.Restore": "Restaurar base de datos",
+    "RecuperacionIntegridad.RestoreDescripcion": "Restaura la base de datos desde un archivo de backup. La aplicación se cerrará.",
+    "RecuperacionIntegridad.NadaQueRecalcular": "El sistema ya se encuentra en estado saludable. No hay nada que recalcular.",
+    "RecuperacionIntegridad.RecalculoExitoso": "Los hashes de integridad fueron recalculados exitosamente.",
+    "RecuperacionIntegridad.BackupExitoso": "Backup de base de datos completado exitosamente.",
+    "RecuperacionIntegridad.RestoreExitoso": "Restauración completada. La aplicación se cerrará.",
+    "RecuperacionIntegridad.RestoreAdvertencia": "Esta acción reemplazará toda la base de datos. ¿Desea continuar?"
   }
 }

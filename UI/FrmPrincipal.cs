@@ -18,6 +18,8 @@ namespace UI
         private readonly IGestorUsuario_83KI _gestorUsuario;
         private readonly IGestorRol_83KI _gestorRol;
         private readonly IGestorIdioma_83KI _gestorIdioma;
+        private readonly IIntegridadDatosService_83KI _integridadService;
+        private readonly IRecuperacionBaseDatosService_83KI _recuperacionService;
         private bool _logoutConfirmado;
 
         public FrmPrincipal(IGestorUsuario_83KI gestorUsuario, IGestorRol_83KI gestorRol)
@@ -26,6 +28,8 @@ namespace UI
             _gestorUsuario = gestorUsuario;
             _gestorRol = gestorRol;
             _gestorIdioma = ServiceFactory_83KI.GetGestorIdioma();
+            _integridadService = ServiceFactory_83KI.GetIntegridadDatosService();
+            _recuperacionService = ServiceFactory_83KI.GetRecuperacionBaseDatosService();
             AplicarPermisos();
             _gestorIdioma.Suscribir(this);
         }
@@ -37,7 +41,21 @@ namespace UI
             gestionDeRolesToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionRoles);
             bitacoraEventosToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.VerBitacoraEventos)
                 || PermisosUi_83KI.Tiene(PermisoSistema_83KI.ConsultarBitacoraEventos);
-            adminToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionAdmin); 
+            adminToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.GestionAdmin);
+
+            // menu de recuperacion: visible cuando el admin tiene al menos un permiso de recuperacion
+            recuperacionIntegridadToolStripMenuItem.Visible =
+                PermisosUi_83KI.Tiene(PermisoSistema_83KI.RecalcularHashes)
+                || PermisosUi_83KI.Tiene(PermisoSistema_83KI.EjecutarBackup)
+                || PermisosUi_83KI.Tiene(PermisoSistema_83KI.EjecutarRestore);
+
+            // oculta menus de negocio regulares cuando el estado de recuperacion de integridad esta activo
+            if (SessionManager_83KI.Instancia.RequiereRecuperacionIntegridad)
+            {
+                gestionDeUsuariosToolStripMenuItem.Visible = false;
+                gestionDeFamiliasToolStripMenuItem.Visible = false;
+                gestionDeRolesToolStripMenuItem.Visible = false;
+            }
 
             menuCerrarSesion.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.CerrarSesion);
             iniciarSesionToolStripMenuItem.Visible = PermisosUi_83KI.Tiene(PermisoSistema_83KI.ReLogin);
@@ -62,6 +80,7 @@ namespace UI
             menuIdioma.Text = Texto("FrmPrincipal.Idioma");
             espanolToolStripMenuItem.Text = Texto("FrmPrincipal.Espanol");
             inglesToolStripMenuItem.Text = Texto("FrmPrincipal.Ingles");
+            recuperacionIntegridadToolStripMenuItem.Text = Texto("RecuperacionIntegridad.Titulo");
 
             string idiomaActualId = idioma?.Id ?? GestorIdioma_83KI.IdiomaPorDefecto;
             espanolToolStripMenuItem.Checked = idiomaActualId == "es-AR";
@@ -76,7 +95,7 @@ namespace UI
 
         private string Texto(string clave)
         {
-            //Este método busca una traducción en el idioma actual.
+            //Este metodo busca una traduccion en el idioma actual.
             return _gestorIdioma.ObtenerTexto(clave);
         }
 
@@ -176,6 +195,20 @@ namespace UI
             this.Close();
         }
 
+        private void ForzarLogoutRestore()
+        {
+            MessageBox.Show(
+                Texto("RecuperacionIntegridad.RestoreExitoso"),
+                Texto("RecuperacionIntegridad.Titulo"),
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+
+            _gestorUsuario.Logout();
+            _logoutConfirmado = true;
+            DialogResult = DialogResult.Retry;
+            this.Close();
+        }
+
         private void iniciarSesionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Login login = new Login();
@@ -206,6 +239,39 @@ namespace UI
         private void inglesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _gestorUsuario.CambiarIdiomaUsuarioActual("en-US");
+        }
+
+        private void recuperacionIntegridadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!PermisosUi_83KI.TieneAlguno(
+                PermisoSistema_83KI.RecalcularHashes,
+                PermisoSistema_83KI.EjecutarBackup,
+                PermisoSistema_83KI.EjecutarRestore))
+            {
+                IdiomaUiHelper_83KI.MostrarAdvertencia(
+                    this,
+                    "Errores.SinPermisos",
+                    "Comun.Seguridad");
+                return;
+            }
+
+            using (var frmRecuperacion = new FrmRecuperacionIntegridad_83KI())
+            {
+                var resultado = frmRecuperacion.ShowDialog(this);
+
+                // post-restore la aplicacion debe cerrarse
+                if (SessionManager_83KI.Instancia.ReinicioRequeridoDespuesDeRestore)
+                {
+                    ForzarLogoutRestore();
+                    return;
+                }
+
+                // si el recalculo fue exitoso, refrescar visibilidad de permisos
+                if (frmRecuperacion.RecalculoExitoso)
+                {
+                    AplicarPermisos();
+                }
+            }
         }
     }
 }
