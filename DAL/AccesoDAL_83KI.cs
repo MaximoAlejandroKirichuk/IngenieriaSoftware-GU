@@ -29,6 +29,8 @@ namespace DAL
                 s_defaultProvider = provider;
             }
 
+            internal static IProveedorConfiguracionConexion_83KI ProveedorPredeterminado => s_defaultProvider;
+
             internal AccesoDAL_83KI()
             {
                 // constructor sin parametros mantiene compatibilidad con clases DAL no refactorizadas.
@@ -222,6 +224,27 @@ namespace DAL
                         cmd.ExecuteNonQuery();
                     }
                 }
+            }
+
+            /// <summary>
+            /// ejecuta una consulta de lectura contra la base master y devuelve un DataSet.
+            /// se usa para RESTORE FILELISTONLY y consultas de metadatos antes del restore.
+            /// </summary>
+            internal DataSet LeerDesdeMaster(string consulta)
+            {
+                DataSet ds = new DataSet();
+                using (SqlConnection conn = new SqlConnection(_masterConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(consulta, conn))
+                    {
+                        cmd.CommandTimeout = 60;
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(ds);
+                        }
+                    }
+                }
+                return ds;
             }
 
             /// <summary>

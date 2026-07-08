@@ -101,7 +101,7 @@ namespace Service
         {
             if (_recuperacionBaseDatosService == null)
             {
-                IRecuperacionDAL_83KI recuperacionDal = new RecuperacionDAL_83KI();
+                IRecuperacionDAL_83KI recuperacionDal = new RecuperacionDAL_83KI(_proveedorConfiguracionConexion);
                 IBitacoraManager_83KI bitacoraManager = GetBitacoraManager();
                 _recuperacionBaseDatosService = new RecuperacionBaseDatosBLL_83KI(recuperacionDal, bitacoraManager);
             }

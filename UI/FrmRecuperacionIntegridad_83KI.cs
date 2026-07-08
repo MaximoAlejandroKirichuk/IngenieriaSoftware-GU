@@ -183,12 +183,13 @@ namespace UI
                     return;
                 }
 
+                string rutaOriginal = saveDialog.FileName;
+                var usuarioActivo = SessionManager_83KI.Instancia.UsuarioActivo;
+                string actor = usuarioActivo?.UserName ?? "sistema";
+
                 try
                 {
-                    var usuarioActivo = SessionManager_83KI.Instancia.UsuarioActivo;
-                    string actor = usuarioActivo?.UserName ?? "sistema";
-
-                    _recuperacionService.GenerarBackup(saveDialog.FileName, actor);
+                    _recuperacionService.GenerarBackup(rutaOriginal, actor);
 
                     IdiomaUiHelper_83KI.MostrarInformacion(
                         this,
@@ -197,9 +198,93 @@ namespace UI
                 }
                 catch (Exception ex)
                 {
-                    IdiomaUiHelper_83KI.MostrarError(this, ex, "Comun.Error", MessageBoxIcon.Error);
+                    if (EsErrorAccesoBackup(ex))
+                    {
+                        string nombreArchivo = System.IO.Path.GetFileName(rutaOriginal);
+                        string rutaFallback = System.IO.Path.Combine(@"C:\BackupsSQL", nombreArchivo);
+
+                        var resultado = MessageBox.Show(
+                            this,
+                            "No se pudo escribir el backup en la ruta seleccionada. " +
+                            "Esto suele ocurrir por permisos de acceso o porque la ruta no existe.\n\n" +
+                            "Detalle: " + ObtenerDetalleSqlReal(ex) + "\n\n" +
+                            "¿Desea reintentar en la carpeta alternativa C:\\BackupsSQL\\?",
+                            Texto("Comun.Error"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning);
+
+                        if (resultado == DialogResult.Yes)
+                        {
+                            try
+                            {
+                                System.IO.Directory.CreateDirectory(@"C:\BackupsSQL");
+                                _recuperacionService.GenerarBackup(rutaFallback, actor);
+
+                                IdiomaUiHelper_83KI.MostrarInformacion(
+                                    this,
+                                    "RecuperacionIntegridad.BackupExitoso",
+                                    "Comun.Informacion");
+                                return;
+                            }
+                            catch (Exception exFallback)
+                            {
+                                MessageBox.Show(
+                                    this,
+                                    "Tampoco se pudo escribir en C:\\BackupsSQL\\. " +
+                                    "Verifique que la cuenta que ejecuta el servicio de base de datos " +
+                                    "(SQL Server o LocalDB) tenga permisos de escritura en esa carpeta.\n\n" +
+                                    "Detalle: " + ObtenerDetalleSqlReal(exFallback),
+                                    Texto("Comun.Error"),
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                                return;
+                            }
+                        }
+                    }
+
+                    string detalleBackup = ObtenerDetalleSqlReal(ex);
+                    MessageBox.Show(
+                        this,
+                        "Error al realizar el backup.\n\nDetalle: " + detalleBackup,
+                        Texto("Comun.Error"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private static bool EsErrorAccesoBackup(Exception ex)
+        {
+            var sqlEx = ObtenerSqlException(ex);
+            if (sqlEx == null)
+            {
+                return false;
+            }
+            foreach (System.Data.SqlClient.SqlError error in sqlEx.Errors)
+            {
+                if (error.Number == 3201 || error.Number == 3013)
+                    return true;
+            }
+            return false;
+        }
+
+        private static System.Data.SqlClient.SqlException ObtenerSqlException(Exception ex)
+        {
+            var current = ex;
+            while (current != null)
+            {
+                var sqlEx = current as System.Data.SqlClient.SqlException;
+                if (sqlEx != null)
+                    return sqlEx;
+                current = current.InnerException;
+            }
+            return null;
+        }
+
+        private static string ObtenerDetalleSqlReal(Exception ex)
+        {
+            var sqlEx = ObtenerSqlException(ex);
+            return sqlEx != null ? sqlEx.Message : ex.Message;
         }
 
         private void btnRestore_Click(object sender, EventArgs e)
