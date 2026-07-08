@@ -21,6 +21,8 @@ namespace Service
         private static IGestorIdioma_83KI _gestorIdioma;
         private static IIntegridadDatosService_83KI _integridadDatosService;
         private static IRecuperacionBaseDatosService_83KI _recuperacionBaseDatosService;
+        private static IBootstrapBaseDatosService_83KI _servicioBootstrapBaseDatos;
+        private static IProveedorConfiguracionConexion_83KI _proveedorConfiguracionConexion;
 
         public static IGestorUsuario_83KI GetGestorUsuario()
         {
@@ -104,6 +106,32 @@ namespace Service
                 _recuperacionBaseDatosService = new RecuperacionBaseDatosBLL_83KI(recuperacionDal, bitacoraManager);
             }
             return _recuperacionBaseDatosService;
+        }
+
+        /// <summary>
+        /// registra el proveedor de configuracion de conexion.
+        /// debe llamarse desde UI antes de usar cualquier servicio que consuma DAL.
+        /// </summary>
+        public static void EstablecerProveedorConfiguracionConexion(IProveedorConfiguracionConexion_83KI provider)
+        {
+            _proveedorConfiguracionConexion = provider;
+            // propaga el proveedor a la capa DAL para que todas las clases que usan
+            // el constructor sin parametros de AccesoDAL_83KI tambien usen la configuracion persistida.
+            DAL.DAL.AccesoDAL_83KI.EstablecerProveedorPredeterminado(provider);
+        }
+
+        /// <summary>
+        /// obtiene el servicio de bootstrap de base de datos.
+        /// requiere que EstablecerProveedorConfiguracionConexion haya sido llamado previamente.
+        /// </summary>
+        public static IBootstrapBaseDatosService_83KI ObtenerServicioBootstrapBaseDatos()
+        {
+            if (_servicioBootstrapBaseDatos == null)
+            {
+                var dal = new BootstrapBaseDatosDAL_83KI();
+                _servicioBootstrapBaseDatos = new BootstrapBaseDatosBLL_83KI(dal, _proveedorConfiguracionConexion);
+            }
+            return _servicioBootstrapBaseDatos;
         }
     }
 }

@@ -49,6 +49,13 @@
   <ItemGroup>
     <Compile Include="Exportacion\BitacoraEventosPdfExporter_83KI.cs" />
     <Compile Include="Exportacion\IBitacoraEventosExporter_83KI.cs" />
+    <Compile Include="ProveedorConfiguracionBD_83KI.cs" />
+    <Compile Include="FrmConfiguracionBD_83KI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmConfiguracionBD_83KI.Designer.cs">
+      <DependentUpon>FrmConfiguracionBD_83KI.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmRecuperacionIntegridad_83KI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,6 +132,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FrmConfiguracionBD_83KI.resx">
+      <DependentUpon>FrmConfiguracionBD_83KI.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmBitacoraEventos.resx">
       <DependentUpon>FrmBitacoraEventos.cs</DependentUpon>
     </EmbeddedResource>
@@ -193,6 +203,15 @@
       <Project>{e4575579-3219-49c0-aedf-7d9d8f9e59e4}</Project>
       <Name>Service</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Scripts\Sql\EsquemaCompleto.sql">
+      <Link>Scripts\Sql\EsquemaCompleto.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="scriptBaseDatos-CON-DATOS-LIMPIO.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

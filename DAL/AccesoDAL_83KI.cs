@@ -5,6 +5,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Service.Interfaces;
+using Service.DTOs;
 
 namespace DAL
 {
@@ -12,8 +14,59 @@ namespace DAL
     {
         internal class AccesoDAL_83KI
         {
+            private readonly IProveedorConfiguracionConexion_83KI _settingsProvider;
 
             private readonly string _stringConnection = "Data Source=MK\\MSSQLSERVER02;Initial Catalog=GestionUsuarios;Integrated Security=True;";
+
+            /// <summary>
+            /// proveedor global de configuracion de conexion establecido desde la capa de aplicacion (BLL/UI).
+            /// se usa como respaldo cuando la instancia no fue construida con un proveedor explicito.
+            /// </summary>
+            private static IProveedorConfiguracionConexion_83KI s_defaultProvider;
+
+            internal static void EstablecerProveedorPredeterminado(IProveedorConfiguracionConexion_83KI provider)
+            {
+                s_defaultProvider = provider;
+            }
+
+            internal AccesoDAL_83KI()
+            {
+                // constructor sin parametros mantiene compatibilidad con clases DAL no refactorizadas.
+                // ResolvedConnectionString revisa el proveedor de instancia, luego el predeterminado estatico,
+                // y finalmente el valor fijo historico como ultimo respaldo.
+            }
+
+            internal AccesoDAL_83KI(IProveedorConfiguracionConexion_83KI settingsProvider)
+            {
+                _settingsProvider = settingsProvider;
+            }
+
+            /// <summary>
+            /// devuelve la cadena de conexion activa:
+            /// 1. proveedor de instancia (si fue pasado al constructor)
+            /// 2. proveedor predeterminado estatico (establecido desde ServiceFactory al iniciar)
+            /// 3. valor fijo historico como ultimo respaldo.
+            /// </summary>
+            private string ResolvedConnectionString
+            {
+                get
+                {
+                    var provider = _settingsProvider ?? s_defaultProvider;
+                    if (provider != null)
+                    {
+                        var settings = provider.Cargar();
+                        if (settings != null &&
+                            !string.IsNullOrWhiteSpace(settings.InstanciaServidor) &&
+                            !string.IsNullOrWhiteSpace(settings.NombreBaseDatos))
+                        {
+                            return $"Data Source={settings.InstanciaServidor};" +
+                                   $"Initial Catalog={settings.NombreBaseDatos};" +
+                                   "Integrated Security=True;";
+                        }
+                    }
+                    return _stringConnection;
+                }
+            }
 
             // cadena de conexion a master para RESTORE DATABASE (la base destino se vuelve inaccesible).
             // se deriva de la cadena principal reemplazando el catalogo.
@@ -21,7 +74,7 @@ namespace DAL
             {
                 get
                 {
-                    var builder = new System.Data.SqlClient.SqlConnectionStringBuilder(_stringConnection);
+                    var builder = new System.Data.SqlClient.SqlConnectionStringBuilder(ResolvedConnectionString);
                     builder.InitialCatalog = "master";
                     return builder.ConnectionString;
                 }
@@ -29,7 +82,7 @@ namespace DAL
 
             internal void EjecutarTransaccion(Action<SqlConnection, SqlTransaction> operacion)
             {
-                using (SqlConnection conn = new SqlConnection(_stringConnection))
+                using (SqlConnection conn = new SqlConnection(ResolvedConnectionString))
                 {
                     conn.Open();
                     using (SqlTransaction tran = conn.BeginTransaction())
@@ -77,7 +130,7 @@ namespace DAL
             public DataSet Leer(string consulta, List<SqlParameter> parametros = null)
             {
                 DataSet ds = new DataSet();
-                using (SqlConnection conn = new SqlConnection(_stringConnection))
+                using (SqlConnection conn = new SqlConnection(ResolvedConnectionString))
                 {
                     using (SqlCommand cmd = new SqlCommand(consulta, conn))
                     {
@@ -103,7 +156,7 @@ namespace DAL
 
             public object LeerEscalar(string consulta, List<SqlParameter> parametros = null)
             {
-                using (SqlConnection conn = new SqlConnection(_stringConnection))
+                using (SqlConnection conn = new SqlConnection(ResolvedConnectionString))
                 {
                     using (SqlCommand cmd = new SqlCommand(consulta, conn))
                     {
@@ -127,7 +180,7 @@ namespace DAL
 
             public int Escribir(string consulta, List<SqlParameter> parametros)
             {
-                using (SqlConnection conn = new SqlConnection(_stringConnection))
+                using (SqlConnection conn = new SqlConnection(ResolvedConnectionString))
                 {
                     using (SqlCommand cmd = new SqlCommand(consulta, conn))
                     {
@@ -165,7 +218,7 @@ namespace DAL
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand(consulta, conn))
                     {
-                        cmd.CommandTimeout = 300; // el restore puede tardar
+                        cmd.CommandTimeout = 300; // la restauracion puede tardar
                         cmd.ExecuteNonQuery();
                     }
                 }

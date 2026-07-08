@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using Service.Interfaces;
 
 namespace DAL
 {
@@ -9,11 +10,37 @@ namespace DAL
     /// </summary>
     public class RecuperacionDAL_83KI : interfaces.IRecuperacionDAL_83KI
     {
-        private readonly DAL.AccesoDAL_83KI _acceso = new DAL.AccesoDAL_83KI();
+        private readonly DAL.AccesoDAL_83KI _acceso;
+        private readonly IProveedorConfiguracionConexion_83KI _settingsProvider;
+
+        public RecuperacionDAL_83KI()
+        {
+            _acceso = new DAL.AccesoDAL_83KI();
+        }
+
+        public RecuperacionDAL_83KI(IProveedorConfiguracionConexion_83KI settingsProvider)
+        {
+            _settingsProvider = settingsProvider;
+            _acceso = new DAL.AccesoDAL_83KI(settingsProvider);
+        }
+
+        private string DatabaseName
+        {
+            get
+            {
+                if (_settingsProvider != null)
+                {
+                    var settings = _settingsProvider.Cargar();
+                    if (settings != null && !string.IsNullOrWhiteSpace(settings.NombreBaseDatos))
+                        return settings.NombreBaseDatos;
+                }
+                return "GestionUsuarios";
+            }
+        }
 
         public void EjecutarBackup(string rutaArchivo)
         {
-            string consulta = "BACKUP DATABASE [GestionUsuarios] TO DISK = @ruta WITH INIT";
+            string consulta = $"BACKUP DATABASE [{DatabaseName}] TO DISK = @ruta WITH INIT";
             var parametros = new List<SqlParameter>
             {
                 new SqlParameter("@ruta", rutaArchivo)
@@ -26,10 +53,10 @@ namespace DAL
             // escapa comillas simples en la ruta del archivo para incrustacion segura en sql
             string rutaSegura = rutaArchivo.Replace("'", "''");
             string consulta = string.Format(
-                "ALTER DATABASE [GestionUsuarios] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; " +
-                "RESTORE DATABASE [GestionUsuarios] FROM DISK = N'{0}' WITH REPLACE; " +
-                "ALTER DATABASE [GestionUsuarios] SET MULTI_USER;",
-                rutaSegura);
+                "ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; " +
+                "RESTORE DATABASE [{0}] FROM DISK = N'{1}' WITH REPLACE; " +
+                "ALTER DATABASE [{0}] SET MULTI_USER;",
+                DatabaseName, rutaSegura);
             _acceso.EjecutarEnMaster(consulta);
         }
     }
