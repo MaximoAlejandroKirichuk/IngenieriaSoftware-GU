@@ -252,6 +252,16 @@
     "RecuperacionIntegridad.RecalculoExitoso": "Los hashes de integridad fueron recalculados exitosamente.",
     "RecuperacionIntegridad.BackupExitoso": "Backup de base de datos completado exitosamente.",
     "RecuperacionIntegridad.RestoreExitoso": "Restauración completada. La aplicación se cerrará.",
-    "RecuperacionIntegridad.RestoreAdvertencia": "Esta acción reemplazará toda la base de datos. ¿Desea continuar?"
+    "RecuperacionIntegridad.RestoreAdvertencia": "Esta acción reemplazará toda la base de datos. ¿Desea continuar?",
+    "RecuperacionIntegridad.EstadoSaludable": "El sistema se encuentra en estado saludable.",
+    "RecuperacionIntegridad.EstadoComprometido": "La integridad de los datos está comprometida.",
+    "RecuperacionIntegridad.ErrorVerificar": "Error al verificar el estado de integridad.",
+    "RecuperacionIntegridad.SinDetalleFilas": "No se pudieron obtener detalles por fila.",
+    "RecuperacionIntegridad.FilasInconsistentes": "Filas inconsistentes detectadas ({0})",
+    "RecuperacionIntegridad.Ninguna": "Ninguna",
+    "RecuperacionIntegridad.Columnas": "Columnas",
+    "RecuperacionIntegridad.InconsistenciaInsercion": "Inserción",
+    "RecuperacionIntegridad.InconsistenciaModificacion": "Modificación",
+    "RecuperacionIntegridad.InconsistenciaDesconocido": "Desconocido"
   }
 }

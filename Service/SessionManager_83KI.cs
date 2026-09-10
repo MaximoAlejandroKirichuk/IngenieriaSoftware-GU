@@ -41,6 +41,7 @@ namespace Service
         public void CerrarSesion()
         {
             UsuarioActivo = null;
+            ReinicioRequeridoDespuesDeRestore = false;
             LimpiarRecuperacionIntegridad();
         }
 

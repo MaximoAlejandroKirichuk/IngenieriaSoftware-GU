@@ -76,12 +76,12 @@ namespace UI
                 if (estado.EstaSano)
                 {
                     lblEstadoSistema.ForeColor = Color.DarkGreen;
-                    lblEstadoSistema.Text = "El sistema se encuentra en estado saludable.";
+                    lblEstadoSistema.Text = Texto("RecuperacionIntegridad.EstadoSaludable");
                 }
                 else
                 {
                     lblEstadoSistema.ForeColor = Color.DarkRed;
-                    lblEstadoSistema.Text = "La integridad de los datos esta comprometida.";
+                    lblEstadoSistema.Text = Texto("RecuperacionIntegridad.EstadoComprometido");
                 }
 
                 treeInconsistencias.Nodes.Clear();
@@ -118,7 +118,7 @@ namespace UI
                                 if (fila.ColumnasAfectadas != null && fila.ColumnasAfectadas.Count > 0)
                                 {
                                     string columnas = string.Join(", ", fila.ColumnasAfectadas);
-                                    TreeNode nodoColumnas = new TreeNode($"Columnas: {columnas}");
+                                    TreeNode nodoColumnas = new TreeNode($"{Texto("RecuperacionIntegridad.Columnas")}: {columnas}");
                                     nodoTipo.Nodes.Add(nodoColumnas);
                                 }
 
@@ -132,7 +132,7 @@ namespace UI
                         else
                         {
                             // falla a nivel tabla sin detalle por fila (ej. inaccesible)
-                            TreeNode nodoTabla = new TreeNode($"{tabla.NombreTabla} — No se pudieron obtener detalles por fila.");
+                            TreeNode nodoTabla = new TreeNode($"{tabla.NombreTabla} — {Texto("RecuperacionIntegridad.SinDetalleFilas")}");
                             treeInconsistencias.Nodes.Add(nodoTabla);
                             contador++;
                         }
@@ -140,7 +140,7 @@ namespace UI
 
                     if (contador > 0)
                     {
-                        lblTablas.Text = $"Filas inconsistentes detectadas ({contador})";
+                        lblTablas.Text = string.Format(Texto("RecuperacionIntegridad.FilasInconsistentes"), contador);
                     }
 
                     // expande los primeros dos niveles para visibilidad inmediata
@@ -149,12 +149,12 @@ namespace UI
 
                 if (treeInconsistencias.Nodes.Count == 0 && estado.EstaSano)
                 {
-                    treeInconsistencias.Nodes.Add(new TreeNode("Ninguna"));
+                    treeInconsistencias.Nodes.Add(new TreeNode(Texto("RecuperacionIntegridad.Ninguna")));
                 }
             }
             catch (Exception ex)
             {
-                lblEstadoSistema.Text = "Error al verificar el estado de integridad.";
+                lblEstadoSistema.Text = Texto("RecuperacionIntegridad.ErrorVerificar");
                 treeInconsistencias.Nodes.Clear();
                 treeInconsistencias.Nodes.Add(new TreeNode(ex.Message));
             }
@@ -361,11 +361,11 @@ namespace UI
             switch (tipo)
             {
                 case TipoInconsistenciaFilas_83KI.Insercion:
-                    return "Insercion";
+                    return IdiomaUiHelper_83KI.Texto("RecuperacionIntegridad.InconsistenciaInsercion");
                 case TipoInconsistenciaFilas_83KI.Modificacion:
-                    return "Modificacion";
+                    return IdiomaUiHelper_83KI.Texto("RecuperacionIntegridad.InconsistenciaModificacion");
                 case TipoInconsistenciaFilas_83KI.Desconocido:
-                    return "Desconocido";
+                    return IdiomaUiHelper_83KI.Texto("RecuperacionIntegridad.InconsistenciaDesconocido");
                 default:
                     return tipo.ToString();
             }

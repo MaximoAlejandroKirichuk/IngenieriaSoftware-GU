@@ -252,6 +252,16 @@
     "RecuperacionIntegridad.RecalculoExitoso": "Integrity hashes were recalculated successfully.",
     "RecuperacionIntegridad.BackupExitoso": "Database backup completed successfully.",
     "RecuperacionIntegridad.RestoreExitoso": "Restore completed. The application will now close.",
-    "RecuperacionIntegridad.RestoreAdvertencia": "This action will replace the entire database. Do you want to continue?"
+    "RecuperacionIntegridad.RestoreAdvertencia": "This action will replace the entire database. Do you want to continue?",
+    "RecuperacionIntegridad.EstadoSaludable": "The system is in a healthy state.",
+    "RecuperacionIntegridad.EstadoComprometido": "Data integrity is compromised.",
+    "RecuperacionIntegridad.ErrorVerificar": "Error checking integrity status.",
+    "RecuperacionIntegridad.SinDetalleFilas": "Could not obtain row details.",
+    "RecuperacionIntegridad.FilasInconsistentes": "Inconsistent rows detected ({0})",
+    "RecuperacionIntegridad.Ninguna": "None",
+    "RecuperacionIntegridad.Columnas": "Columns",
+    "RecuperacionIntegridad.InconsistenciaInsercion": "Insertion",
+    "RecuperacionIntegridad.InconsistenciaModificacion": "Modification",
+    "RecuperacionIntegridad.InconsistenciaDesconocido": "Unknown"
   }
 }
