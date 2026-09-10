@@ -195,6 +195,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
     }
@@ -569,15 +577,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Solucion_83KI"
-        "ProductCode" = "8:{F3467396-D589-4ED6-9C8D-E7D45F8120AB}"
-        "PackageCode" = "8:{6EBB9D77-0FC2-4423-B99D-E4BA3AFCC52C}"
+        "ProductCode" = "8:{894403D5-28B5-438B-849E-E6736AC50DDB}"
+        "PackageCode" = "8:{AA0A7B87-3BA7-4E8A-A989-9ED6F4341048}"
         "UpgradeCode" = "8:{DF52FC1E-A6B1-4B52-98B6-C789F6C5D538}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.6"
+        "ProductVersion" = "8:1.0.8"
         "Manufacturer" = "8:Default Company Name"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
