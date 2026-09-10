@@ -38,6 +38,7 @@
             this.gestionDeFamiliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gestionDeRolesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bitacoraEventosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.recuperacionIntegridadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuIdioma = new System.Windows.Forms.ToolStripMenuItem();
             this.espanolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.inglesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,13 +93,22 @@
             this.cambiarContraseñaToolStripMenuItem.Text = "Cambiar contraseña";
             this.cambiarContraseñaToolStripMenuItem.Click += new System.EventHandler(this.cambiarContraseñaToolStripMenuItem_Click);
             // 
+            // 
+            // recuperacionIntegridadToolStripMenuItem
+            // 
+            this.recuperacionIntegridadToolStripMenuItem.Name = "recuperacionIntegridadToolStripMenuItem";
+            this.recuperacionIntegridadToolStripMenuItem.Size = new System.Drawing.Size(345, 42);
+            this.recuperacionIntegridadToolStripMenuItem.Text = "Recuperacion de integridad";
+            this.recuperacionIntegridadToolStripMenuItem.Click += new System.EventHandler(this.recuperacionIntegridadToolStripMenuItem_Click);
+            // 
             // adminToolStripMenuItem
             // 
             this.adminToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gestionDeUsuariosToolStripMenuItem,
             this.gestionDeFamiliasToolStripMenuItem,
             this.gestionDeRolesToolStripMenuItem,
-            this.bitacoraEventosToolStripMenuItem});
+            this.bitacoraEventosToolStripMenuItem,
+            this.recuperacionIntegridadToolStripMenuItem});
             this.adminToolStripMenuItem.Name = "adminToolStripMenuItem";
             this.adminToolStripMenuItem.Size = new System.Drawing.Size(114, 41);
             this.adminToolStripMenuItem.Text = "Admin";
@@ -196,5 +206,6 @@
         private System.Windows.Forms.ToolStripMenuItem inglesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cambiarContraseñaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recuperacionIntegridadToolStripMenuItem;
     }
 }
